@@ -6,34 +6,22 @@ import { BeerDieLeaderboardEntry, BeerDieGame, User } from '@/lib/types'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeBeerDieLeaderboard } from '@/lib/stats'
 
-async function getData(): Promise<{ leaderboard: BeerDieLeaderboardEntry[]; players: User[]; debug?: string }> {
+async function getData(): Promise<{ leaderboard: BeerDieLeaderboardEntry[]; players: User[] }> {
   try {
     const supabase = createServerClient()
-    const [{ data: users, error: usersErr }, { data: games, error: gamesErr }] = await Promise.all([
+    const [{ data: users }, { data: games }] = await Promise.all([
       supabase.from('users').select('id, name, created_at').order('name'),
-      supabase.from('beer_die_games').select('*'),
+      supabase.from('beer_die_games').select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at'),
     ])
-
-    // Raw HTTP test to bypass JS client
-    const rawRes = await fetch(`${process.env.SUPABASE_URL}/rest/v1/beer_die_games?select=*&limit=3`, {
-      headers: {
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''}`,
-      }
-    })
-    const rawText = await rawRes.text()
-
-    if (usersErr) return { leaderboard: [], players: [], debug: `users error: ${usersErr.message}` }
-    if (gamesErr) return { leaderboard: [], players: [], debug: `games error: ${gamesErr.message} | raw: ${rawText.slice(0, 100)}` }
     const leaderboard = computeBeerDieLeaderboard((users ?? []) as User[], (games ?? []) as BeerDieGame[])
-    return { leaderboard, players: (users ?? []) as User[], debug: `users: ${users?.length}, games: ${games?.length}, leaderboard: ${leaderboard.length} | raw: ${rawText.slice(0, 100)}` }
-  } catch (e: any) {
-    return { leaderboard: [], players: [], debug: `catch: ${e?.message}` }
+    return { leaderboard, players: (users ?? []) as User[] }
+  } catch {
+    return { leaderboard: [], players: [] }
   }
 }
 
 export default async function BeerDiePage() {
-  const { leaderboard, players, debug } = await getData()
+  const { leaderboard, players } = await getData()
 
   const columns = [
     { key: 'name', label: 'Player' },
@@ -48,7 +36,6 @@ export default async function BeerDiePage() {
       <div>
         <h1 className="text-2xl font-black tracking-wide mb-1">🎲 Beer Die</h1>
         <p className="text-slate-400 text-sm">Ranked by win rate</p>
-        {debug && <p className="text-xs text-yellow-400 mt-1">{debug}</p>}
       </div>
       <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
       <div className="max-w-xs">

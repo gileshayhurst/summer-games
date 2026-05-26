@@ -14,7 +14,7 @@ export async function GET() {
         .limit(10),
       supabase
         .from('beer_die_games')
-        .select('*')
+        .select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at')
         .order('played_at', { ascending: false })
         .limit(10),
       supabase

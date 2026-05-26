@@ -7,7 +7,7 @@ export async function GET() {
   const supabase = createServerClient()
   const [{ data: users }, { data: games }] = await Promise.all([
     supabase.from('users').select('id, name, created_at').order('name'),
-    supabase.from('beer_die_games').select('*'),
+    supabase.from('beer_die_games').select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at'),
   ])
   const leaderboard = computeBeerDieLeaderboard(
     (users ?? []) as User[],
