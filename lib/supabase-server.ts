@@ -3,6 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 export function createServerClient() {
   return createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      global: {
+        fetch: (url: RequestInfo | URL, options: RequestInit = {}) =>
+          fetch(url, { ...options, cache: 'no-store' }),
+      },
+    }
   )
 }
