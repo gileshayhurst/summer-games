@@ -46,7 +46,7 @@ export function computePongHeadToHead(
     gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
   }
   let wins = 0, losses = 0
-  for (const g of gameMap.values()) {
+  for (const g of Array.from(gameMap.values())) {
     if (g.winners.has(player1Id) && g.losers.has(player2Id)) wins++
     else if (g.losers.has(player1Id) && g.winners.has(player2Id)) losses++
   }
