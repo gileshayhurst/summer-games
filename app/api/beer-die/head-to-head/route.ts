@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('beer_die_games')
-    .select('*')
+    .select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at')
     .or(`winner1_id.eq.${player1},winner2_id.eq.${player1},loser1_id.eq.${player1},loser2_id.eq.${player1}`)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

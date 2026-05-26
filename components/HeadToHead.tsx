@@ -9,50 +9,77 @@ type Props = {
 }
 
 export default function HeadToHead({ players, currentPlayerId, game }: Props) {
-  const [opponentId, setOpponentId] = useState('')
+  const [player1Id, setPlayer1Id] = useState(currentPlayerId ?? '')
+  const [player2Id, setPlayer2Id] = useState('')
   const [result, setResult] = useState<HeadToHeadResult | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const fetchH2H = async (oppId: string) => {
-    if (!oppId || !currentPlayerId) return
+  const fetchH2H = async (p1: string, p2: string) => {
+    if (!p1 || !p2 || p1 === p2) { setResult(null); return }
     setLoading(true)
-    const res = await fetch(`/api/${game}/head-to-head?player1=${currentPlayerId}&player2=${oppId}`)
+    const res = await fetch(`/api/${game}/head-to-head?player1=${p1}&player2=${p2}`)
     const data = await res.json()
     setResult(data.result)
     setLoading(false)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOpponentId(e.target.value)
-    fetchH2H(e.target.value)
+  const handlePlayer1Change = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPlayer1Id(e.target.value)
+    setResult(null)
+    fetchH2H(e.target.value, player2Id)
   }
 
-  const opponents = players.filter(p => p.id !== currentPlayerId)
+  const handlePlayer2Change = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPlayer2Id(e.target.value)
+    setResult(null)
+    fetchH2H(player1Id, e.target.value)
+  }
+
+  const player1Name = players.find(p => p.id === player1Id)?.name ?? ''
 
   return (
     <div className="bg-card rounded-lg p-4">
       <p className="text-xs text-slate-400 uppercase tracking-wide mb-3">Head-to-Head</p>
+
+      {/* If no currentPlayerId, show player 1 dropdown */}
+      {!currentPlayerId && (
+        <select
+          value={player1Id}
+          onChange={handlePlayer1Change}
+          className="bg-bg border border-slate-600 rounded px-3 py-2 text-white text-sm w-full mb-2 focus:outline-none focus:border-win"
+        >
+          <option value="">Select player...</option>
+          {players.map(p => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
+      )}
+
+      {/* Player 2 / opponent dropdown */}
       <select
-        value={opponentId}
-        onChange={handleChange}
+        value={player2Id}
+        onChange={handlePlayer2Change}
         className="bg-bg border border-slate-600 rounded px-3 py-2 text-white text-sm w-full mb-4 focus:outline-none focus:border-win"
       >
-        <option value="">Select opponent...</option>
-        {opponents.map(p => (
-          <option key={p.id} value={p.id}>{p.name}</option>
-        ))}
+        <option value="">{currentPlayerId ? 'Select opponent...' : 'vs. opponent...'}</option>
+        {players
+          .filter(p => p.id !== player1Id)
+          .map(p => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
       </select>
+
       {loading && <p className="text-slate-400 text-sm">Loading...</p>}
       {result && !loading && (
         <div className="flex gap-6 text-center">
           <div>
             <p className="text-2xl font-black text-win">{result.wins}</p>
-            <p className="text-xs text-slate-400 uppercase">Wins</p>
+            <p className="text-xs text-slate-400 uppercase">{currentPlayerId ? 'Wins' : `${player1Name} Wins`}</p>
           </div>
           <div className="text-slate-600 text-2xl self-center">–</div>
           <div>
             <p className="text-2xl font-black text-loss">{result.losses}</p>
-            <p className="text-xs text-slate-400 uppercase">Losses</p>
+            <p className="text-xs text-slate-400 uppercase">{currentPlayerId ? 'Losses' : `${player1Name} Losses`}</p>
           </div>
         </div>
       )}
