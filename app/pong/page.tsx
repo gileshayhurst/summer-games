@@ -3,9 +3,14 @@ import HeadToHead from '@/components/HeadToHead'
 import { PongLeaderboardEntry, User } from '@/lib/types'
 
 async function getData(): Promise<{ leaderboard: PongLeaderboardEntry[]; players: User[] }> {
-  const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-  const res = await fetch(`${base}/api/pong`, { cache: 'no-store' })
-  return res.json()
+  try {
+    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
+    const res = await fetch(`${base}/api/pong`, { cache: 'no-store' })
+    if (!res.ok) return { leaderboard: [], players: [] }
+    return res.json()
+  } catch {
+    return { leaderboard: [], players: [] }
+  }
 }
 
 export default async function PongPage() {

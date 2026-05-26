@@ -2,9 +2,14 @@ import Leaderboard from '@/components/Leaderboard'
 import { HeartsLeaderboardEntry } from '@/lib/types'
 
 async function getData(): Promise<{ leaderboard: HeartsLeaderboardEntry[] }> {
-  const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-  const res = await fetch(`${base}/api/hearts`, { cache: 'no-store' })
-  return res.json()
+  try {
+    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
+    const res = await fetch(`${base}/api/hearts`, { cache: 'no-store' })
+    if (!res.ok) return { leaderboard: [] }
+    return res.json()
+  } catch {
+    return { leaderboard: [] }
+  }
 }
 
 export default async function HeartsPage() {
