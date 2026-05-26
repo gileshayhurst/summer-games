@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import RecentGames from '@/components/RecentGames'
 import { RecentGame } from '@/lib/types'

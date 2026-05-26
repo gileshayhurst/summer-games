@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Leaderboard from '@/components/Leaderboard'
 import { HeartsLeaderboardEntry, HeartsGamePlayer, User } from '@/lib/types'
 import { createServerClient } from '@/lib/supabase-server'

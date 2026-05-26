@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Leaderboard from '@/components/Leaderboard'
 import HeadToHead from '@/components/HeadToHead'
 import { PongLeaderboardEntry, PongGamePlayer, User } from '@/lib/types'
