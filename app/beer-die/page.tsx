@@ -13,10 +13,20 @@ async function getData(): Promise<{ leaderboard: BeerDieLeaderboardEntry[]; play
       supabase.from('users').select('id, name, created_at').order('name'),
       supabase.from('beer_die_games').select('*'),
     ])
+
+    // Raw HTTP test to bypass JS client
+    const rawRes = await fetch(`${process.env.SUPABASE_URL}/rest/v1/beer_die_games?select=*&limit=3`, {
+      headers: {
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''}`,
+      }
+    })
+    const rawText = await rawRes.text()
+
     if (usersErr) return { leaderboard: [], players: [], debug: `users error: ${usersErr.message}` }
-    if (gamesErr) return { leaderboard: [], players: [], debug: `games error: ${gamesErr.message}` }
+    if (gamesErr) return { leaderboard: [], players: [], debug: `games error: ${gamesErr.message} | raw: ${rawText.slice(0, 100)}` }
     const leaderboard = computeBeerDieLeaderboard((users ?? []) as User[], (games ?? []) as BeerDieGame[])
-    return { leaderboard, players: (users ?? []) as User[], debug: `users: ${users?.length}, games: ${games?.length}, leaderboard: ${leaderboard.length}` }
+    return { leaderboard, players: (users ?? []) as User[], debug: `users: ${users?.length}, games: ${games?.length}, leaderboard: ${leaderboard.length} | raw: ${rawText.slice(0, 100)}` }
   } catch (e: any) {
     return { leaderboard: [], players: [], debug: `catch: ${e?.message}` }
   }
