@@ -1,13 +1,18 @@
 import Leaderboard from '@/components/Leaderboard'
 import HeadToHead from '@/components/HeadToHead'
-import { PongLeaderboardEntry, User } from '@/lib/types'
+import { PongLeaderboardEntry, PongGamePlayer, User } from '@/lib/types'
+import { createServerClient } from '@/lib/supabase-server'
+import { computePongLeaderboard } from '@/lib/stats'
 
 async function getData(): Promise<{ leaderboard: PongLeaderboardEntry[]; players: User[] }> {
   try {
-    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${base}/api/pong`, { cache: 'no-store' })
-    if (!res.ok) return { leaderboard: [], players: [] }
-    return res.json()
+    const supabase = createServerClient()
+    const [{ data: users }, { data: gamePlayers }] = await Promise.all([
+      supabase.from('users').select('id, name, created_at').order('name'),
+      supabase.from('pong_game_players').select(`game_id, player_id, side, pong_games ( id, cups_left, played_at )`),
+    ])
+    const leaderboard = computePongLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as PongGamePlayer[])
+    return { leaderboard, players: (users ?? []) as User[] }
   } catch {
     return { leaderboard: [], players: [] }
   }

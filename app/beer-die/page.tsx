@@ -1,13 +1,18 @@
 import Leaderboard from '@/components/Leaderboard'
 import HeadToHead from '@/components/HeadToHead'
-import { BeerDieLeaderboardEntry, User } from '@/lib/types'
+import { BeerDieLeaderboardEntry, BeerDieGame, User } from '@/lib/types'
+import { createServerClient } from '@/lib/supabase-server'
+import { computeBeerDieLeaderboard } from '@/lib/stats'
 
 async function getData(): Promise<{ leaderboard: BeerDieLeaderboardEntry[]; players: User[] }> {
   try {
-    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${base}/api/beer-die`, { cache: 'no-store' })
-    if (!res.ok) return { leaderboard: [], players: [] }
-    return res.json()
+    const supabase = createServerClient()
+    const [{ data: users }, { data: games }] = await Promise.all([
+      supabase.from('users').select('id, name, created_at').order('name'),
+      supabase.from('beer_die_games').select('*'),
+    ])
+    const leaderboard = computeBeerDieLeaderboard((users ?? []) as User[], (games ?? []) as BeerDieGame[])
+    return { leaderboard, players: (users ?? []) as User[] }
   } catch {
     return { leaderboard: [], players: [] }
   }

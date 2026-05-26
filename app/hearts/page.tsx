@@ -1,12 +1,17 @@
 import Leaderboard from '@/components/Leaderboard'
-import { HeartsLeaderboardEntry } from '@/lib/types'
+import { HeartsLeaderboardEntry, HeartsGamePlayer, User } from '@/lib/types'
+import { createServerClient } from '@/lib/supabase-server'
+import { computeHeartsLeaderboard } from '@/lib/stats'
 
 async function getData(): Promise<{ leaderboard: HeartsLeaderboardEntry[] }> {
   try {
-    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${base}/api/hearts`, { cache: 'no-store' })
-    if (!res.ok) return { leaderboard: [] }
-    return res.json()
+    const supabase = createServerClient()
+    const [{ data: users }, { data: gamePlayers }] = await Promise.all([
+      supabase.from('users').select('id, name, created_at').order('name'),
+      supabase.from('hearts_game_players').select(`game_id, player_id, lost, hearts_games ( id, played_at )`),
+    ])
+    const leaderboard = computeHeartsLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as HeartsGamePlayer[])
+    return { leaderboard }
   } catch {
     return { leaderboard: [] }
   }
