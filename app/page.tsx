@@ -3,10 +3,15 @@ import RecentGames from '@/components/RecentGames'
 import { RecentGame } from '@/lib/types'
 
 async function getRecentGames(): Promise<RecentGame[]> {
-  const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
-  const res = await fetch(`${base}/api/recent`, { cache: 'no-store' })
-  const data = await res.json()
-  return data.games ?? []
+  try {
+    const base = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000'
+    const res = await fetch(`${base}/api/recent`, { cache: 'no-store' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.games ?? []
+  } catch {
+    return []
+  }
 }
 
 export default async function HomePage() {
