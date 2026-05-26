@@ -32,8 +32,8 @@ export default function HeartsForm({ players }: { players: User[] }) {
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
-    setParticipants([]); setLoser(''); setSuccess(true)
-    setTimeout(() => setSuccess(false), 3000)
+    setSuccess(true)
+    setTimeout(() => { window.location.href = '/hearts' }, 1000)
   }
 
   return (

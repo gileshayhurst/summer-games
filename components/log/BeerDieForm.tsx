@@ -29,8 +29,8 @@ export default function BeerDieForm({ players }: { players: User[] }) {
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
-    setWinners([]); setLosers([]); setPoints(''); setSuccess(true)
-    setTimeout(() => setSuccess(false), 3000)
+    setSuccess(true)
+    setTimeout(() => { window.location.href = '/beer-die' }, 1000)
   }
 
   return (

@@ -26,8 +26,8 @@ export default function PongForm({ players }: { players: User[] }) {
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
-    setWinners([]); setLosers([]); setCupsLeft(''); setSuccess(true)
-    setTimeout(() => setSuccess(false), 3000)
+    setSuccess(true)
+    setTimeout(() => { window.location.href = '/pong' }, 1000)
   }
 
   return (
