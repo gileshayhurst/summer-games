@@ -14,7 +14,7 @@ export function computePongLeaderboard(
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.cup_diff += gp.pong_games.cups_left }
-    else s.losses++
+    else { s.losses++; s.cup_diff -= gp.pong_games.cups_left }
   }
 
   return users
