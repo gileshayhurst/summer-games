@@ -48,6 +48,13 @@ export type PongLeaderboardEntry = {
   cup_differential: number
 }
 
+export type BeerDieSink = {
+  id: string
+  game_id: string
+  player_id: string
+  type: 'sink' | 'self_sink'
+}
+
 export type BeerDieLeaderboardEntry = {
   player_id: string
   name: string
@@ -55,6 +62,8 @@ export type BeerDieLeaderboardEntry = {
   losses: number
   win_rate: number
   point_differential: number
+  sinks: number
+  self_sinks: number
 }
 
 export type HeartsLeaderboardEntry = {

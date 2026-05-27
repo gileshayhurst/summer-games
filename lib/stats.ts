@@ -1,5 +1,5 @@
 import {
-  User, PongGamePlayer, BeerDieGame, HeartsGamePlayer,
+  User, PongGamePlayer, BeerDieGame, BeerDieSink, HeartsGamePlayer,
   PongLeaderboardEntry, BeerDieLeaderboardEntry, HeartsLeaderboardEntry,
   HeadToHeadResult,
 } from './types'
@@ -55,9 +55,10 @@ export function computePongHeadToHead(
 
 export function computeBeerDieLeaderboard(
   users: User[],
-  games: BeerDieGame[]
+  games: BeerDieGame[],
+  sinks: BeerDieSink[] = []
 ): BeerDieLeaderboardEntry[] {
-  const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0 }]))
+  const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0, sinks: 0, self_sinks: 0 }]))
 
   for (const g of games) {
     for (const id of [g.winner1_id, g.winner2_id]) {
@@ -68,6 +69,13 @@ export function computeBeerDieLeaderboard(
       const s = stats.get(id)
       if (s) { s.losses++; s.point_diff -= g.points_differential }
     }
+  }
+
+  for (const sink of sinks) {
+    const s = stats.get(sink.player_id)
+    if (!s) continue
+    if (sink.type === 'sink') s.sinks++
+    else if (sink.type === 'self_sink') s.self_sinks++
   }
 
   return users
@@ -81,6 +89,8 @@ export function computeBeerDieLeaderboard(
         losses: s.losses,
         win_rate: total > 0 ? s.wins / total : 0,
         point_differential: s.point_diff,
+        sinks: s.sinks,
+        self_sinks: s.self_sinks,
       }
     })
     .filter(e => e.wins + e.losses > 0)

@@ -3,13 +3,25 @@ import { useState } from 'react'
 import PlayerSelector from './PlayerSelector'
 import { User } from '@/lib/types'
 
+type SinkType = 'sink' | 'self_sink' | ''
+
 export default function BeerDieForm({ players }: { players: User[] }) {
   const [winners, setWinners] = useState<string[]>([])
   const [losers, setLosers] = useState<string[]>([])
   const [points, setPoints] = useState('')
+  const [sinkMap, setSinkMap] = useState<Record<string, SinkType>>({})
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const allSelected = [...winners, ...losers]
+  const showSinks = winners.length === 2 && losers.length === 2
+
+  const setSink = (playerId: string, type: SinkType) => {
+    setSinkMap(prev => ({ ...prev, [playerId]: type }))
+  }
+
+  const getName = (id: string) => players.find(p => p.id === id)?.name ?? id
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,6 +30,11 @@ export default function BeerDieForm({ players }: { players: User[] }) {
     if (losers.length !== 2) return setError('Exactly 2 losers required')
     if (!points || Number(points) < 1) return setError('Points differential must be at least 1')
     setLoading(true)
+
+    const sinks = allSelected
+      .filter(id => sinkMap[id])
+      .map(id => ({ player_id: id, type: sinkMap[id] as 'sink' | 'self_sink' }))
+
     const res = await fetch('/api/beer-die', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -25,6 +42,7 @@ export default function BeerDieForm({ players }: { players: User[] }) {
         winner1_id: winners[0], winner2_id: winners[1],
         loser1_id: losers[0], loser2_id: losers[1],
         points_differential: Number(points),
+        sinks,
       }),
     })
     setLoading(false)
@@ -45,6 +63,47 @@ export default function BeerDieForm({ players }: { players: User[] }) {
           placeholder="1"
         />
       </div>
+
+      {showSinks && (
+        <div>
+          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Sinks (optional)</label>
+          <div className="space-y-2">
+            {allSelected.map(id => {
+              const current = sinkMap[id] ?? ''
+              return (
+                <div key={id} className="flex items-center justify-between bg-card px-3 py-2 rounded">
+                  <span className="text-sm text-white">{getName(id)}</span>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setSink(id, current === 'sink' ? '' : 'sink')}
+                      className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${
+                        current === 'sink'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                      }`}
+                    >
+                      ✓ Sink
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSink(id, current === 'self_sink' ? '' : 'self_sink')}
+                      className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${
+                        current === 'self_sink'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                      }`}
+                    >
+                      ✗ Self Sink
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {error && <p className="text-loss text-sm">{error}</p>}
       {success && <p className="text-win text-sm">Game logged! ✓</p>}
       <button type="submit" disabled={loading}
