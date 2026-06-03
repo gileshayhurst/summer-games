@@ -4,6 +4,9 @@ import {
   HeadToHeadResult,
 } from './types'
 
+const HIDDEN_PLAYERS = ['random', 'random 2']
+const isVisible = (name: string) => !HIDDEN_PLAYERS.includes(name.toLowerCase())
+
 export function computePongLeaderboard(
   users: User[],
   gamePlayers: PongGamePlayer[]
@@ -30,7 +33,7 @@ export function computePongLeaderboard(
         cup_differential: s.cup_diff,
       }
     })
-    .filter(e => e.wins + e.losses > 0)
+    .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
     .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
 }
 
@@ -93,7 +96,7 @@ export function computeBeerDieLeaderboard(
         self_sinks: s.self_sinks,
       }
     })
-    .filter(e => e.wins + e.losses > 0)
+    .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
     .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
 }
 
@@ -136,6 +139,6 @@ export function computeHeartsLeaderboard(
         loss_rate: s.played > 0 ? s.losses / s.played : 0,
       }
     })
-    .filter(e => e.games_played > 0)
+    .filter(e => e.games_played > 0 && isVisible(e.name))
     .sort((a, b) => a.loss_rate - b.loss_rate || b.games_played - a.games_played)
 }

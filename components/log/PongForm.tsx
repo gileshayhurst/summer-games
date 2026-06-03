@@ -14,8 +14,8 @@ export default function PongForm({ players }: { players: User[] }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (winners.length < 2) return setError('At least 2 winners required')
-    if (losers.length < 2) return setError('At least 2 losers required')
+    if (winners.length < 1) return setError('Select at least 1 winner')
+    if (losers.length < 1) return setError('Select at least 1 loser')
     if (cupsLeft === '' || isNaN(Number(cupsLeft)) || Number(cupsLeft) < 0)
       return setError('Enter cups left (0 or more)')
     setLoading(true)

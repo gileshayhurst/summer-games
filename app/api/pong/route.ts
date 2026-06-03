@@ -25,10 +25,10 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const { winner_ids, loser_ids, cups_left } = await req.json()
 
-  if (!Array.isArray(winner_ids) || winner_ids.length < 2)
-    return NextResponse.json({ error: 'At least 2 winners required' }, { status: 400 })
-  if (!Array.isArray(loser_ids) || loser_ids.length < 2)
-    return NextResponse.json({ error: 'At least 2 losers required' }, { status: 400 })
+  if (!Array.isArray(winner_ids) || winner_ids.length < 1)
+    return NextResponse.json({ error: 'At least 1 winner required' }, { status: 400 })
+  if (!Array.isArray(loser_ids) || loser_ids.length < 1)
+    return NextResponse.json({ error: 'At least 1 loser required' }, { status: 400 })
   if (typeof cups_left !== 'number' || cups_left < 0)
     return NextResponse.json({ error: 'cups_left must be a non-negative number' }, { status: 400 })
 
