@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Leaderboard from '@/components/Leaderboard'
 import HeadToHead from '@/components/HeadToHead'
+import PartnerRecord from '@/components/PartnerRecord'
 import { PongLeaderboardEntry, PongGamePlayer, User } from '@/lib/types'
 import { createServerClient } from '@/lib/supabase-server'
 import { computePongLeaderboard } from '@/lib/stats'
@@ -38,8 +39,9 @@ export default async function PongPage() {
         <p className="text-slate-400 text-sm">Ranked by win rate</p>
       </div>
       <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
-      <div className="max-w-xs">
+      <div className="max-w-xs space-y-4">
         <HeadToHead players={players} game="pong" />
+        <PartnerRecord players={players} game="pong" />
       </div>
     </div>
   )
