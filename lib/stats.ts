@@ -141,3 +141,37 @@ export function computeHeartsLeaderboard(
     .filter(e => e.games_played > 0 && isVisible(e.name))
     .sort((a, b) => a.loss_rate - b.loss_rate || b.games_played - a.games_played)
 }
+
+export function computePongPartnerRecord(
+  player1Id: string,
+  player2Id: string,
+  gamePlayers: PongGamePlayer[]
+): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.winners.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.losers.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeBeerDiePartnerRecord(
+  player1Id: string,
+  player2Id: string,
+  games: BeerDieGame[]
+): HeadToHeadResult {
+  let wins = 0, losses = 0
+  for (const g of games) {
+    const w = [g.winner1_id, g.winner2_id]
+    const l = [g.loser1_id, g.loser2_id]
+    if (w.includes(player1Id) && w.includes(player2Id)) wins++
+    else if (l.includes(player1Id) && l.includes(player2Id)) losses++
+  }
+  return { wins, losses }
+}
