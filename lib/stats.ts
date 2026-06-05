@@ -4,8 +4,7 @@ import {
   HeadToHeadResult,
 } from './types'
 
-const HIDDEN_PLAYERS = ['random', 'random 2']
-const isVisible = (name: string) => !HIDDEN_PLAYERS.includes(name.toLowerCase())
+const isVisible = (name: string) => !name.toLowerCase().startsWith('random')
 
 export function computePongLeaderboard(
   users: User[],
