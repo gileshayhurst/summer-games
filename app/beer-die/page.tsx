@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import HeadToHead from '@/components/HeadToHead'
+import PartnerRecord from '@/components/PartnerRecord'
 import { BeerDieLeaderboardEntry, BeerDieGame, BeerDieSink, User } from '@/lib/types'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeBeerDieLeaderboard } from '@/lib/stats'
@@ -81,8 +82,9 @@ export default async function BeerDiePage() {
         </div>
       )}
 
-      <div className="max-w-xs">
+      <div className="max-w-xs space-y-4">
         <HeadToHead players={players} game="beer-die" />
+        <PartnerRecord players={players} game="beer-die" />
       </div>
     </div>
   )
