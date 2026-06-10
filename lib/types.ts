@@ -19,12 +19,15 @@ export type PongGamePlayer = {
 
 export type BeerDieGame = {
   id: string
-  winner1_id: string
-  winner2_id: string
-  loser1_id: string
-  loser2_id: string
   points_differential: number
   played_at: string
+}
+
+export type BeerDieGamePlayer = {
+  game_id: string
+  player_id: string
+  side: 'winner' | 'loser'
+  beer_die_games: BeerDieGame
 }
 
 export type HeartsGame = {
@@ -92,10 +95,8 @@ export type RecentBeerDieGame = {
   type: 'beer-die'
   id: string
   played_at: string
-  winner1: string
-  winner2: string
-  loser1: string
-  loser2: string
+  winners: string[]
+  losers: string[]
   points_differential: number
 }
 

@@ -16,7 +16,7 @@ async function getRecentGames(): Promise<RecentGame[]> {
         .limit(10),
       supabase
         .from('beer_die_games')
-        .select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at')
+        .select(`id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )`)
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
@@ -25,14 +25,6 @@ async function getRecentGames(): Promise<RecentGame[]> {
         .order('played_at', { ascending: false })
         .limit(10),
     ])
-
-    const allBeerDieIds = (beerDieGames ?? []).flatMap((g: any) => [
-      g.winner1_id, g.winner2_id, g.loser1_id, g.loser2_id,
-    ])
-    const { data: bdUsers } = allBeerDieIds.length
-      ? await supabase.from('users').select('id, name').in('id', Array.from(new Set(allBeerDieIds)))
-      : { data: [] }
-    const nameMap = new Map((bdUsers ?? []).map((u: any) => [u.id, u.name as string]))
 
     const recent: RecentGame[] = [
       ...(pongGames ?? []).map((g: any) => ({
@@ -47,10 +39,8 @@ async function getRecentGames(): Promise<RecentGame[]> {
         type: 'beer-die' as const,
         id: g.id,
         played_at: g.played_at,
-        winner1: nameMap.get(g.winner1_id) ?? '',
-        winner2: nameMap.get(g.winner2_id) ?? '',
-        loser1: nameMap.get(g.loser1_id) ?? '',
-        loser2: nameMap.get(g.loser2_id) ?? '',
+        winners: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
+        losers: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
         points_differential: g.points_differential,
       })),
       ...(heartsGames ?? []).map((g: any) => ({

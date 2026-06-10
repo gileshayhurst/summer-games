@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { User } from '@/lib/types'
 import { AdminBeerDieGame } from '@/app/admin/page'
+import PlayerSelector from '@/components/log/PlayerSelector'
 
 type Props = {
   game: AdminBeerDieGame
@@ -11,63 +12,32 @@ type Props = {
 }
 
 export default function EditBeerDieGame({ game, players, onSave, onCancel }: Props) {
-  const [winner1, setWinner1] = useState(game.winner1_id)
-  const [winner2, setWinner2] = useState(game.winner2_id)
-  const [loser1, setLoser1] = useState(game.loser1_id)
-  const [loser2, setLoser2] = useState(game.loser2_id)
+  const [winners, setWinners] = useState<string[]>(game.winner_ids)
+  const [losers, setLosers] = useState<string[]>(game.loser_ids)
   const [points, setPoints] = useState(String(game.points_differential))
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const selectClass = "bg-bg border border-slate-600 rounded px-3 py-2 text-white text-sm w-full focus:outline-none focus:border-win"
-
   const save = async () => {
     setError('')
-    if (!winner1 || !winner2 || !loser1 || !loser2) return setError('All 4 players required')
-    const ids = [winner1, winner2, loser1, loser2]
-    if (new Set(ids).size !== 4) return setError('All 4 players must be different')
+    if (winners.length < 1) return setError('At least 1 winner required')
+    if (losers.length < 1) return setError('At least 1 loser required')
     if (!points || Number(points) < 1) return setError('Points must be at least 1')
     setLoading(true)
     const res = await fetch(`/api/beer-die/${game.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ winner1_id: winner1, winner2_id: winner2, loser1_id: loser1, loser2_id: loser2, points_differential: Number(points) }),
+      body: JSON.stringify({ winner_ids: winners, loser_ids: losers, points_differential: Number(points) }),
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
     onSave()
   }
 
-  const playerOptions = players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)
-
   return (
     <div className="mt-3 p-4 bg-slate-800 rounded-lg space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-1">Winner 1</label>
-          <select value={winner1} onChange={e => setWinner1(e.target.value)} className={selectClass}>
-            <option value="">Select...</option>{playerOptions}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-1">Winner 2</label>
-          <select value={winner2} onChange={e => setWinner2(e.target.value)} className={selectClass}>
-            <option value="">Select...</option>{playerOptions}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-1">Loser 1</label>
-          <select value={loser1} onChange={e => setLoser1(e.target.value)} className={selectClass}>
-            <option value="">Select...</option>{playerOptions}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-1">Loser 2</label>
-          <select value={loser2} onChange={e => setLoser2(e.target.value)} className={selectClass}>
-            <option value="">Select...</option>{playerOptions}
-          </select>
-        </div>
-      </div>
+      <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team" excluded={losers} />
+      <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team" excluded={winners} />
       <div>
         <label className="text-xs text-slate-400 uppercase tracking-wide block mb-1">Points Differential</label>
         <input

@@ -2,21 +2,21 @@ export const dynamic = 'force-dynamic'
 
 import HeadToHead from '@/components/HeadToHead'
 import PartnerRecord from '@/components/PartnerRecord'
-import { BeerDieLeaderboardEntry, BeerDieGame, BeerDieSink, User } from '@/lib/types'
+import { BeerDieLeaderboardEntry, BeerDieGamePlayer, BeerDieSink, User } from '@/lib/types'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeBeerDieLeaderboard } from '@/lib/stats'
 
 async function getData(): Promise<{ leaderboard: BeerDieLeaderboardEntry[]; players: User[] }> {
   try {
     const supabase = createServerClient()
-    const [{ data: users }, { data: games }, { data: sinks }] = await Promise.all([
+    const [{ data: users }, { data: gamePlayers }, { data: sinks }] = await Promise.all([
       supabase.from('users').select('id, name, created_at').order('name'),
-      supabase.from('beer_die_games').select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at'),
+      supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games ( id, points_differential, played_at )'),
       supabase.from('beer_die_sinks').select('id, game_id, player_id, type'),
     ])
     const leaderboard = computeBeerDieLeaderboard(
       (users ?? []) as User[],
-      (games ?? []) as BeerDieGame[],
+      (gamePlayers ?? []) as unknown as BeerDieGamePlayer[],
       (sinks ?? []) as BeerDieSink[]
     )
     return { leaderboard, players: (users ?? []) as User[] }

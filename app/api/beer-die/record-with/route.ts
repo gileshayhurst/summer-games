@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeBeerDiePartnerRecord } from '@/lib/stats'
-import { BeerDieGame } from '@/lib/types'
+import { BeerDieGamePlayer } from '@/lib/types'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -12,12 +12,12 @@ export async function GET(req: NextRequest) {
 
   const supabase = createServerClient()
   const { data, error } = await supabase
-    .from('beer_die_games')
-    .select('id, winner1_id, winner2_id, loser1_id, loser2_id, points_differential, played_at')
-    .or(`winner1_id.eq.${player1},winner2_id.eq.${player1},loser1_id.eq.${player1},loser2_id.eq.${player1}`)
+    .from('beer_die_game_players')
+    .select('game_id, player_id, side, beer_die_games ( id, points_differential, played_at )')
+    .in('player_id', [player1, player2])
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const result = computeBeerDiePartnerRecord(player1, player2, (data ?? []) as BeerDieGame[])
+  const result = computeBeerDiePartnerRecord(player1, player2, (data ?? []) as unknown as BeerDieGamePlayer[])
   return NextResponse.json({ result })
 }

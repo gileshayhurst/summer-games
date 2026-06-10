@@ -15,7 +15,7 @@ export default function BeerDieForm({ players }: { players: User[] }) {
   const [loading, setLoading] = useState(false)
 
   const allSelected = [...winners, ...losers]
-  const showSinks = winners.length === 2 && losers.length === 2
+  const showSinks = allSelected.length > 0
 
   const setSink = (playerId: string, type: SinkType) => {
     setSinkMap(prev => ({ ...prev, [playerId]: type }))
@@ -26,8 +26,8 @@ export default function BeerDieForm({ players }: { players: User[] }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (winners.length !== 2) return setError('Exactly 2 winners required')
-    if (losers.length !== 2) return setError('Exactly 2 losers required')
+    if (winners.length < 1) return setError('At least 1 winner required')
+    if (losers.length < 1) return setError('At least 1 loser required')
     if (!points || Number(points) < 1) return setError('Points differential must be at least 1')
     setLoading(true)
 
@@ -39,8 +39,8 @@ export default function BeerDieForm({ players }: { players: User[] }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        winner1_id: winners[0], winner2_id: winners[1],
-        loser1_id: losers[0], loser2_id: losers[1],
+        winner_ids: winners,
+        loser_ids: losers,
         points_differential: Number(points),
         sinks,
       }),
@@ -53,8 +53,8 @@ export default function BeerDieForm({ players }: { players: User[] }) {
 
   return (
     <form onSubmit={submit} className="space-y-5">
-      <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team (2)" excluded={losers} maxSelect={2} />
-      <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team (2)" excluded={winners} maxSelect={2} />
+      <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team" excluded={losers} />
+      <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team" excluded={winners} />
       <div>
         <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Points Won By</label>
         <input

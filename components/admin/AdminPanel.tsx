@@ -70,7 +70,7 @@ export default function AdminPanel({ pongGames, beerDieGames, heartsGames, playe
     }
     if (g.kind === 'beer-die') {
       const d = g.data as AdminBeerDieGame
-      return `${name(d.winner1_id)} & ${name(d.winner2_id)} def. ${name(d.loser1_id)} & ${name(d.loser2_id)} +${d.points_differential}`
+      return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.points_differential}`
     }
     const d = g.data as AdminHeartsGame
     const loserName = name(d.game_players.find(p => p.lost)?.player_id ?? '')

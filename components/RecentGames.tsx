@@ -6,7 +6,7 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
     detail: `${g.cups_left} cup${g.cups_left !== 1 ? 's' : ''} left`,
   }
   if (g.type === 'beer-die') return {
-    title: `${g.winner1} & ${g.winner2} beat ${g.loser1} & ${g.loser2}`,
+    title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,
   }
   return {
