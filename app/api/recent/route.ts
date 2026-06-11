@@ -10,16 +10,19 @@ export async function GET() {
       supabase
         .from('pong_games')
         .select(`id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )`)
+        .eq('approved', true)
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('beer_die_games')
         .select(`id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )`)
+        .eq('approved', true)
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('hearts_games')
         .select(`id, played_at, hearts_game_players ( lost, users ( id, name ) )`)
+        .eq('approved', true)
         .order('played_at', { ascending: false })
         .limit(10),
     ])
