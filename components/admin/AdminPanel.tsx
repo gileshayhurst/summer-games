@@ -1,30 +1,38 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { User } from '@/lib/types'
-import { AdminPongGame, AdminBeerDieGame, AdminHeartsGame } from '@/app/admin/page'
+import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame } from '@/app/admin/page'
 import EditPongGame from './EditPongGame'
 import EditBeerDieGame from './EditBeerDieGame'
+import EditCornholeGame from './EditCornholeGame'
+import EditSpikeballGame from './EditSpikeballGame'
 import EditHeartsGame from './EditHeartsGame'
 
 type AllGame =
   | { kind: 'pong'; played_at: string; data: AdminPongGame }
   | { kind: 'beer-die'; played_at: string; data: AdminBeerDieGame }
+  | { kind: 'cornhole'; played_at: string; data: AdminCornholeGame }
+  | { kind: 'spikeball'; played_at: string; data: AdminSpikeballGame }
   | { kind: 'hearts'; played_at: string; data: AdminHeartsGame }
 
 type Props = {
   pongGames: AdminPongGame[]
   beerDieGames: AdminBeerDieGame[]
+  cornholeGames: AdminCornholeGame[]
+  spikeballGames: AdminSpikeballGame[]
   heartsGames: AdminHeartsGame[]
   pendingPongGames: AdminPongGame[]
   pendingBeerDieGames: AdminBeerDieGame[]
+  pendingCornholeGames: AdminCornholeGame[]
+  pendingSpikeballGames: AdminSpikeballGame[]
   pendingHeartsGames: AdminHeartsGame[]
   players: User[]
   groupPin: string
 }
 
 export default function AdminPanel({
-  pongGames, beerDieGames, heartsGames,
-  pendingPongGames, pendingBeerDieGames, pendingHeartsGames,
+  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames,
+  pendingPongGames, pendingBeerDieGames, pendingCornholeGames, pendingSpikeballGames, pendingHeartsGames,
   players, groupPin,
 }: Props) {
   const [authed, setAuthed] = useState(false)
@@ -56,27 +64,37 @@ export default function AdminPanel({
   const allGames: AllGame[] = [
     ...pongGames.map(g => ({ kind: 'pong' as const, played_at: g.played_at, data: g })),
     ...beerDieGames.map(g => ({ kind: 'beer-die' as const, played_at: g.played_at, data: g })),
+    ...cornholeGames.map(g => ({ kind: 'cornhole' as const, played_at: g.played_at, data: g })),
+    ...spikeballGames.map(g => ({ kind: 'spikeball' as const, played_at: g.played_at, data: g })),
     ...heartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
   ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
 
   const pendingGames: AllGame[] = [
     ...pendingPongGames.map(g => ({ kind: 'pong' as const, played_at: g.played_at, data: g })),
     ...pendingBeerDieGames.map(g => ({ kind: 'beer-die' as const, played_at: g.played_at, data: g })),
+    ...pendingCornholeGames.map(g => ({ kind: 'cornhole' as const, played_at: g.played_at, data: g })),
+    ...pendingSpikeballGames.map(g => ({ kind: 'spikeball' as const, played_at: g.played_at, data: g })),
     ...pendingHeartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
   ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
 
+  const apiPath = (kind: string, id: string) => {
+    if (kind === 'pong') return `/api/pong/${id}`
+    if (kind === 'beer-die') return `/api/beer-die/${id}`
+    if (kind === 'cornhole') return `/api/cornhole/${id}`
+    if (kind === 'spikeball') return `/api/spikeball/${id}`
+    return `/api/hearts/${id}`
+  }
+
   const handleDelete = async (kind: string, id: string) => {
     setDeleteLoading(true)
-    const endpoint = kind === 'pong' ? `/api/pong/${id}` : kind === 'beer-die' ? `/api/beer-die/${id}` : `/api/hearts/${id}`
-    await fetch(endpoint, { method: 'DELETE' })
+    await fetch(apiPath(kind, id), { method: 'DELETE' })
     setDeleteLoading(false)
     window.location.reload()
   }
 
   const handleApprove = async (kind: string, id: string) => {
     setApproveLoading(id)
-    const endpoint = kind === 'pong' ? `/api/pong/${id}` : kind === 'beer-die' ? `/api/beer-die/${id}` : `/api/hearts/${id}`
-    await fetch(endpoint, { method: 'PATCH' })
+    await fetch(apiPath(kind, id), { method: 'PATCH' })
     setApproveLoading(null)
     window.location.reload()
   }
@@ -93,14 +111,35 @@ export default function AdminPanel({
       const d = g.data as AdminBeerDieGame
       return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.points_differential}`
     }
+    if (g.kind === 'cornhole') {
+      const d = g.data as AdminCornholeGame
+      return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.points_differential}`
+    }
+    if (g.kind === 'spikeball') {
+      const d = g.data as AdminSpikeballGame
+      return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.points_differential}`
+    }
     const d = g.data as AdminHeartsGame
     const loserName = name(d.game_players.find(p => p.lost)?.player_id ?? '')
     const others = d.game_players.filter(p => !p.lost).map(p => name(p.player_id)).join(', ')
     return `${others} — ${loserName} lost`
   }
 
-  const badgeColor = (kind: string) =>
-    kind === 'pong' ? 'bg-blue-100 text-blue-700' : kind === 'beer-die' ? 'bg-amber-100 text-amber-700' : 'bg-pink-100 text-pink-700'
+  const badgeLabel = (kind: string) => {
+    if (kind === 'pong') return 'PONG'
+    if (kind === 'beer-die') return 'DIE'
+    if (kind === 'cornhole') return 'CORN'
+    if (kind === 'spikeball') return 'SPIKE'
+    return 'HEARTS'
+  }
+
+  const badgeColor = (kind: string) => {
+    if (kind === 'pong') return 'bg-blue-100 text-blue-700'
+    if (kind === 'beer-die') return 'bg-amber-100 text-amber-700'
+    if (kind === 'cornhole') return 'bg-green-100 text-green-700'
+    if (kind === 'spikeball') return 'bg-orange-100 text-orange-700'
+    return 'bg-pink-100 text-pink-700'
+  }
 
   if (!authed) {
     return (
@@ -135,7 +174,7 @@ export default function AdminPanel({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${badgeColor(g.kind)}`}>
-              {g.kind === 'pong' ? 'PONG' : g.kind === 'beer-die' ? 'DIE' : 'HEARTS'}
+              {badgeLabel(g.kind)}
             </span>
             <span className="text-sm text-stone-900 truncate">{gameSummary(g)}</span>
             <span className="text-xs text-muted shrink-0">{formatDate(g.played_at)}</span>
@@ -193,6 +232,12 @@ export default function AdminPanel({
         )}
         {!isPending && isEditing && g.kind === 'beer-die' && (
           <EditBeerDieGame game={g.data as AdminBeerDieGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+        {!isPending && isEditing && g.kind === 'cornhole' && (
+          <EditCornholeGame game={g.data as AdminCornholeGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+        {!isPending && isEditing && g.kind === 'spikeball' && (
+          <EditSpikeballGame game={g.data as AdminSpikeballGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
         {!isPending && isEditing && g.kind === 'hearts' && (
           <EditHeartsGame game={g.data as AdminHeartsGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
