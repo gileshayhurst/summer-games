@@ -4,13 +4,17 @@ import { User } from '@/lib/types'
 import PongForm from './PongForm'
 import BeerDieForm from './BeerDieForm'
 import HeartsForm from './HeartsForm'
+import CornholeForm from './CornholeForm'
+import SpikeballForm from './SpikeballForm'
 
-type Tab = 'pong' | 'beer-die' | 'hearts'
+type Tab = 'pong' | 'beer-die' | 'hearts' | 'cornhole' | 'spikeball'
 
 const tabs: { id: Tab; label: string }[] = [
   { id: 'pong', label: '🏓 Pong' },
   { id: 'beer-die', label: '🎲 Beer Die' },
   { id: 'hearts', label: '♥ Hearts' },
+  { id: 'cornhole', label: '🌽 Cornhole' },
+  { id: 'spikeball', label: '🏐 Spikeball' },
 ]
 
 export default function LogTabs({ players }: { players: User[] }) {
@@ -18,7 +22,7 @@ export default function LogTabs({ players }: { players: User[] }) {
 
   return (
     <div>
-      <div className="flex gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-8">
         {tabs.map(t => (
           <button key={t.id} onClick={() => setActive(t.id)}
             className={`px-5 py-2 rounded-full font-black text-sm transition-colors uppercase tracking-wide ${
@@ -31,6 +35,8 @@ export default function LogTabs({ players }: { players: User[] }) {
       {active === 'pong' && <PongForm players={players} />}
       {active === 'beer-die' && <BeerDieForm players={players} />}
       {active === 'hearts' && <HeartsForm players={players} />}
+      {active === 'cornhole' && <CornholeForm players={players} />}
+      {active === 'spikeball' && <SpikeballForm players={players} />}
     </div>
   )
 }
