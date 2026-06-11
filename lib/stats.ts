@@ -1,5 +1,7 @@
 import {
   User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
+  CornholeGamePlayer, CornholeLeaderboardEntry,
+  SpikeballGamePlayer, SpikeballLeaderboardEntry,
   PongLeaderboardEntry, BeerDieLeaderboardEntry, HeartsLeaderboardEntry,
   HeadToHeadResult,
 } from './types'
@@ -166,6 +168,108 @@ export function computeBeerDiePartnerRecord(
   player2Id: string,
   gamePlayers: BeerDieGamePlayer[]
 ): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.winners.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.losers.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeCornholeLeaderboard(
+  users: User[],
+  gamePlayers: CornholeGamePlayer[]
+): CornholeLeaderboardEntry[] {
+  const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0 }]))
+  for (const gp of gamePlayers) {
+    const s = stats.get(gp.player_id)
+    if (!s) continue
+    if (gp.side === 'winner') { s.wins++; s.point_diff += gp.cornhole_games.points_differential }
+    else { s.losses++; s.point_diff -= gp.cornhole_games.points_differential }
+  }
+  return users
+    .map(u => {
+      const s = stats.get(u.id)!
+      const total = s.wins + s.losses
+      return { player_id: u.id, name: u.name, wins: s.wins, losses: s.losses, win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff }
+    })
+    .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
+    .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
+}
+
+export function computeCornholeHeadToHead(player1Id: string, player2Id: string, gamePlayers: CornholeGamePlayer[]): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.losers.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.winners.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeCornholePartnerRecord(player1Id: string, player2Id: string, gamePlayers: CornholeGamePlayer[]): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.winners.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.losers.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeSpikeballLeaderboard(
+  users: User[],
+  gamePlayers: SpikeballGamePlayer[]
+): SpikeballLeaderboardEntry[] {
+  const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0 }]))
+  for (const gp of gamePlayers) {
+    const s = stats.get(gp.player_id)
+    if (!s) continue
+    if (gp.side === 'winner') { s.wins++; s.point_diff += gp.spikeball_games.points_differential }
+    else { s.losses++; s.point_diff -= gp.spikeball_games.points_differential }
+  }
+  return users
+    .map(u => {
+      const s = stats.get(u.id)!
+      const total = s.wins + s.losses
+      return { player_id: u.id, name: u.name, wins: s.wins, losses: s.losses, win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff }
+    })
+    .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
+    .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
+}
+
+export function computeSpikeballHeadToHead(player1Id: string, player2Id: string, gamePlayers: SpikeballGamePlayer[]): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.losers.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.winners.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeSpikeballPartnerRecord(player1Id: string, player2Id: string, gamePlayers: SpikeballGamePlayer[]): HeadToHeadResult {
   const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
   for (const gp of gamePlayers) {
     if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
