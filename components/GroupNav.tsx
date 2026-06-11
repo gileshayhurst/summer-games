@@ -73,7 +73,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
             onClick={e => e.stopPropagation()}
           >
             <p className="text-stone-900 font-bold mb-6">
-              This will take you back to the &ldquo;create a group screen&rdquo;.
+              This will take you back to the &apos;create a group screen&apos;.
             </p>
             <div className="flex gap-3 justify-end">
               <button
