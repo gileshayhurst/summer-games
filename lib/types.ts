@@ -1,3 +1,12 @@
+export type Group = {
+  id: string
+  slug: string
+  name: string
+  pin: string
+  premium: boolean
+  created_at: string
+}
+
 export type User = {
   id: string
   name: string
