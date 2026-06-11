@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import CurvedArrow from '@/components/CurvedArrow'
+import SuggestionForm from '@/components/SuggestionForm'
 
 export default function LandingPage() {
   return (
@@ -53,12 +54,12 @@ export default function LandingPage() {
               <p className="text-muted text-sm">Public link your whole group can bookmark. No login needed.</p>
             </div>
           </div>
-          <p className="mt-16 text-muted text-sm">
-            <span id="want-anchor">Want</span> to suggest a game?{' '}
-            <a href="mailto:summergamesapp@gmail.com?subject=Game suggestion" className="text-brand underline hover:text-orange-700">
-              Let us know →
-            </a>
-          </p>
+          <div className="mt-16">
+            <p className="text-muted text-sm mb-4">
+              <span id="want-anchor">Want</span> to suggest a game or give other feedback?
+            </p>
+            <SuggestionForm />
+          </div>
           <CurvedArrow fromId="multi-games-card" toId="want-anchor" />
         </div>
       </main>
