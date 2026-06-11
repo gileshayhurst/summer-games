@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const supabase = createServerClient()
   const [{ data: users }, { data: gamePlayers }] = await Promise.all([
     supabase.from('users').select('id, name, created_at').eq('group_id', group_id).order('name'),
-    supabase.from('pong_game_players').select('game_id, player_id, side, pong_games ( id, cups_left, played_at )').eq('group_id', group_id),
+    supabase.from('pong_game_players').select('game_id, player_id, side, pong_games!inner ( id, cups_left, played_at )').eq('group_id', group_id).eq('pong_games.approved', true),
   ])
   const leaderboard = computePongLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as PongGamePlayer[])
   return NextResponse.json({ leaderboard, players: users ?? [] })

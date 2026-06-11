@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const supabase = createServerClient()
   const [{ data: users }, { data: gamePlayers }, { data: sinks }] = await Promise.all([
     supabase.from('users').select('id, name, created_at').eq('group_id', group_id).order('name'),
-    supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games ( id, points_differential, played_at )').eq('group_id', group_id),
+    supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games!inner ( id, points_differential, played_at )').eq('group_id', group_id).eq('beer_die_games.approved', true),
     supabase.from('beer_die_sinks').select('id, game_id, player_id, type').eq('group_id', group_id),
   ])
   const leaderboard = computeBeerDieLeaderboard(
