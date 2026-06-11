@@ -27,3 +27,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }
+
+export async function PATCH(_req: NextRequest, { params }: { params: { id: string } }) {
+  const supabase = createServerClient()
+  const { error } = await supabase.from('hearts_games').update({ approved: true }).eq('id', params.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ ok: true })
+}
