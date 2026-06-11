@@ -40,14 +40,14 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
   const player1Name = players.find(p => p.id === player1Id)?.name ?? ''
 
   return (
-    <div className="bg-card rounded-lg p-4">
-      <p className="text-xs text-slate-400 uppercase tracking-wide mb-3">Record With</p>
+    <div className="bg-card rounded-xl p-4 border border-warm">
+      <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Record With</p>
 
       {!currentPlayerId && (
         <select
           value={player1Id}
           onChange={handlePlayer1Change}
-          className="bg-bg border border-slate-600 rounded px-3 py-2 text-white text-sm w-full mb-2 focus:outline-none focus:border-win"
+          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-2 focus:outline-none focus:border-win"
         >
           <option value="">Select player...</option>
           {players.map(p => (
@@ -59,7 +59,7 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
       <select
         value={player2Id}
         onChange={handlePlayer2Change}
-        className="bg-bg border border-slate-600 rounded px-3 py-2 text-white text-sm w-full mb-4 focus:outline-none focus:border-win"
+        className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-4 focus:outline-none focus:border-win"
       >
         <option value="">{currentPlayerId ? 'Select teammate...' : 'with teammate...'}</option>
         {players
@@ -69,17 +69,17 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
           ))}
       </select>
 
-      {loading && <p className="text-slate-400 text-sm">Loading...</p>}
+      {loading && <p className="text-muted text-sm">Loading...</p>}
       {result && !loading && (
         <div className="flex gap-6 text-center">
           <div>
             <p className="text-2xl font-black text-win">{result.wins}</p>
-            <p className="text-xs text-slate-400 uppercase">{currentPlayerId ? 'Wins' : `${player1Name} Wins`}</p>
+            <p className="text-xs text-muted uppercase tracking-wide">{currentPlayerId ? 'Wins' : `${player1Name} Wins`}</p>
           </div>
-          <div className="text-slate-600 text-2xl self-center">–</div>
+          <div className="text-muted text-2xl self-center">–</div>
           <div>
             <p className="text-2xl font-black text-loss">{result.losses}</p>
-            <p className="text-xs text-slate-400 uppercase">{currentPlayerId ? 'Losses' : `${player1Name} Losses`}</p>
+            <p className="text-xs text-muted uppercase tracking-wide">{currentPlayerId ? 'Losses' : `${player1Name} Losses`}</p>
           </div>
         </div>
       )}

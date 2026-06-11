@@ -1,23 +1,46 @@
+'use client'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function GroupNav({ slug, groupName }: { slug: string; groupName: string }) {
   const base = `/g/${slug}`
+  const pathname = usePathname()
+
+  const navItems = [
+    { href: `${base}/pong`, label: 'Pong' },
+    { href: `${base}/beer-die`, label: 'Beer Die' },
+    { href: `${base}/hearts`, label: 'Hearts' },
+    { href: `${base}/players`, label: 'Players' },
+  ]
+
   return (
-    <nav className="bg-card border-b border-slate-700 px-4 py-3 flex items-center gap-6 sticky top-0 z-10">
-      <Link href={base} className="text-win font-black text-sm tracking-widest uppercase">
+    <nav className="bg-card border-b border-warm px-4 py-3 flex items-center sticky top-0 z-10">
+      <Link href={base} className="text-brand font-black text-sm tracking-widest uppercase shrink-0">
         {groupName}
       </Link>
-      <div className="flex items-center gap-4 text-slate-400 text-sm">
-        <Link href={`${base}/pong`} className="hover:text-white transition-colors">🏓 Pong</Link>
-        <Link href={`${base}/beer-die`} className="hover:text-white transition-colors">🎲 Beer Die</Link>
-        <Link href={`${base}/hearts`} className="hover:text-white transition-colors">♥ Hearts</Link>
-        <Link href={`${base}/players`} className="hover:text-white transition-colors">👥 Players</Link>
+      <div className="flex-1 flex items-center justify-evenly px-4">
+        {navItems.map(({ href, label }) => {
+          const isActive = pathname === href || pathname.startsWith(href + '/')
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`text-xs font-black uppercase tracking-widest transition-colors ${
+                isActive
+                  ? 'text-win border-b-2 border-win pb-0.5'
+                  : 'text-muted hover:text-stone-900'
+              }`}
+            >
+              {label}
+            </Link>
+          )
+        })}
       </div>
       <Link
         href={`${base}/log`}
-        className="ml-auto bg-win text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-green-400 transition-colors"
+        className="shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
       >
-        + LOG GAME
+        LOG GAME →
       </Link>
     </nav>
   )

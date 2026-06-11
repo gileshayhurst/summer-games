@@ -52,8 +52,8 @@ export default async function GroupHomePage({ params }: { params: { slug: string
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-4xl font-black tracking-widest text-win uppercase">{group.name}</h1>
-        <p className="text-slate-400 mt-2">The unofficial official scoreboard.</p>
+        <h1 className="text-4xl font-black tracking-tight text-stone-900 uppercase">{group.name}</h1>
+        <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
       </div>
       <div className="grid grid-cols-3 gap-4">
         {[
@@ -62,13 +62,13 @@ export default async function GroupHomePage({ params }: { params: { slug: string
           { href: `${base}/hearts`, label: '♥ Hearts' },
         ].map(({ href, label }) => (
           <Link key={href} href={href}
-            className="bg-card rounded-lg p-6 text-center font-bold hover:bg-slate-700 transition-colors text-lg">
+            className="bg-card rounded-xl p-6 text-center font-black uppercase tracking-widest text-sm hover:bg-amber-50 transition-colors border border-warm">
             {label}
           </Link>
         ))}
       </div>
       <div>
-        <h2 className="text-lg font-bold mb-4 tracking-wide uppercase text-slate-400">Recent Games</h2>
+        <h2 className="text-xs font-black mb-4 tracking-widest uppercase text-muted">Recent Games</h2>
         <RecentGames games={games} />
       </div>
     </div>

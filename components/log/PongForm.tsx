@@ -37,17 +37,17 @@ export default function PongForm({ players }: { players: User[] }) {
       <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team" excluded={losers} />
       <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team" excluded={winners} />
       <div>
-        <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Cups Left (winners)</label>
+        <label className="text-xs text-muted uppercase tracking-widest font-black block mb-2">Cups Left (winners)</label>
         <input
           type="number" min="0" value={cupsLeft} onChange={e => setCupsLeft(e.target.value)}
-          className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-24 focus:outline-none focus:border-win"
+          className="bg-card border border-warm rounded px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win"
           placeholder="0"
         />
       </div>
       {error && <p className="text-loss text-sm">{error}</p>}
-      {success && <p className="text-win text-sm">Game logged! ✓</p>}
+      {success && <p className="text-win text-sm font-bold">Game logged! ✓</p>}
       <button type="submit" disabled={loading}
-        className="bg-win text-black font-bold px-6 py-2 rounded hover:bg-green-400 disabled:opacity-50 transition-colors">
+        className="bg-win text-white font-black px-6 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors uppercase tracking-wide">
         {loading ? 'Saving...' : 'Submit'}
       </button>
     </form>

@@ -25,13 +25,13 @@ export default function AddPlayerForm({ groupId, groupSlug }: { groupId: string;
   }
 
   return (
-    <div className="bg-card rounded-lg p-6 max-w-sm">
-      <h2 className="font-bold mb-4">Add New Player</h2>
+    <div className="bg-card rounded-xl p-6 max-w-sm border border-warm">
+      <h2 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-4">Add New Player</h2>
       <form onSubmit={submit} className="flex gap-3">
         <input name="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name" required
-          className="bg-bg border border-slate-600 rounded px-3 py-2 text-white flex-1 focus:outline-none focus:border-win text-sm" />
+          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win text-sm" />
         <button type="submit" disabled={loading}
-          className="bg-win text-black font-bold px-4 py-2 rounded hover:bg-green-400 transition-colors text-sm disabled:opacity-50">
+          className="bg-win text-white font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors text-sm disabled:opacity-50 uppercase tracking-wide">
           Add
         </button>
       </form>

@@ -46,22 +46,22 @@ export default function EditHeartsGame({ game, players, onSave, onCancel }: Prop
   }
 
   return (
-    <div className="mt-3 p-4 bg-slate-800 rounded-lg space-y-3">
+    <div className="mt-3 p-4 bg-amber-50 border border-warm rounded-xl space-y-3">
       <div>
-        <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">Players (click to toggle)</p>
+        <p className="text-xs text-muted uppercase tracking-wide mb-2">Players (click to toggle)</p>
         <div className="space-y-2">
           {players.map(p => {
             const inGame = participants.includes(p.id)
             const isLoser = loser === p.id
             return (
-              <div key={p.id} className={`flex items-center justify-between px-3 py-2 rounded transition-colors ${inGame ? 'bg-card' : 'bg-slate-900/50'}`}>
+              <div key={p.id} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${inGame ? 'bg-card border border-warm' : 'bg-stone-50 border border-stone-200'}`}>
                 <button type="button" onClick={() => toggleParticipant(p.id)}
-                  className={`text-sm font-medium text-left ${inGame ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+                  className={`text-sm font-medium text-left ${inGame ? 'text-stone-900' : 'text-muted hover:text-stone-700'}`}>
                   {p.name}
                 </button>
                 {inGame && (
                   <button type="button" onClick={() => setLoser(isLoser ? '' : p.id)}
-                    className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${isLoser ? 'bg-loss text-white' : 'bg-slate-600 text-slate-400 hover:bg-slate-500'}`}>
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${isLoser ? 'bg-loss text-white' : 'bg-stone-200 text-stone-500 hover:bg-stone-300'}`}>
                     {isLoser ? 'LOST' : 'won'}
                   </button>
                 )}
@@ -73,11 +73,11 @@ export default function EditHeartsGame({ game, players, onSave, onCancel }: Prop
       {error && <p className="text-loss text-sm">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="bg-win text-black font-bold px-4 py-1.5 rounded text-sm hover:bg-green-400 disabled:opacity-50">
+          className="bg-win text-white font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
           {loading ? 'Saving...' : 'Save'}
         </button>
         <button onClick={onCancel}
-          className="bg-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded text-sm hover:bg-slate-600">
+          className="bg-stone-100 text-stone-600 font-bold px-4 py-1.5 rounded-full text-sm hover:bg-stone-200">
           Cancel
         </button>
       </div>

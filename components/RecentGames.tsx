@@ -19,7 +19,7 @@ const gameEmoji: Record<string, string> = { pong: '🏓', 'beer-die': '🎲', he
 
 export default function RecentGames({ games }: { games: RecentGame[] }) {
   if (games.length === 0)
-    return <p className="text-slate-500 text-sm">No games yet — go log one!</p>
+    return <p className="text-muted text-sm">No games yet — go log one!</p>
 
   return (
     <div className="space-y-2">
@@ -27,13 +27,13 @@ export default function RecentGames({ games }: { games: RecentGame[] }) {
         const { title, detail } = formatGame(g)
         const date = new Date(g.played_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         return (
-          <div key={`${g.type}-${g.id}`} className="bg-card rounded-lg px-4 py-3 flex items-center gap-4">
+          <div key={`${g.type}-${g.id}`} className="bg-card rounded-xl px-4 py-3 flex items-center gap-4 border border-warm">
             <span className="text-lg">{gameEmoji[g.type]}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{title}</p>
-              <p className="text-xs text-slate-400">{detail}</p>
+              <p className="text-sm font-bold text-stone-900 truncate">{title}</p>
+              <p className="text-xs text-muted">{detail}</p>
             </div>
-            <span className="text-xs text-slate-500 shrink-0">{date}</span>
+            <span className="text-xs text-muted shrink-0">{date}</span>
           </div>
         )
       })}

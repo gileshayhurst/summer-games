@@ -12,13 +12,13 @@ type Props = {
 
 export default function Leaderboard({ entries, columns }: Props) {
   return (
-    <div className="bg-card rounded-lg overflow-hidden">
+    <div className="bg-card rounded-xl overflow-hidden border border-warm">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700">
-            <th className="text-left px-4 py-3 text-slate-400 text-xs uppercase tracking-wide w-8">#</th>
+          <tr className="border-b border-warm">
+            <th className="text-left px-4 py-3 text-muted text-xs uppercase tracking-widest font-black w-8">#</th>
             {columns.map(c => (
-              <th key={c.key} className="text-left px-4 py-3 text-slate-400 text-xs uppercase tracking-wide">
+              <th key={c.key} className="text-left px-4 py-3 text-muted text-xs uppercase tracking-widest font-black">
                 {c.label}
               </th>
             ))}
@@ -26,20 +26,20 @@ export default function Leaderboard({ entries, columns }: Props) {
         </thead>
         <tbody>
           {entries.map((entry, i) => (
-            <tr key={entry.player_id as string} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-              <td className="px-4 py-3 text-slate-500 font-mono">
+            <tr key={entry.player_id as string} className="border-b border-warm hover:bg-amber-50 transition-colors">
+              <td className="px-4 py-3 text-muted font-mono">
                 {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
               </td>
               {columns.map(c => {
                 const val = entry[c.key]
                 const display = c.format ? c.format(val as number) : val
-                let color = 'text-white'
+                let color = 'text-stone-900 font-bold'
                 if (c.colorize) {
                   color = typeof val === 'number' && val > 0
-                    ? 'text-win'
+                    ? 'text-win font-bold'
                     : typeof val === 'number' && val < 0
-                    ? 'text-loss'
-                    : 'text-white'
+                    ? 'text-loss font-bold'
+                    : 'text-stone-900 font-bold'
                 }
                 return (
                   <td key={c.key} className={`px-4 py-3 ${color}`}>
@@ -51,7 +51,7 @@ export default function Leaderboard({ entries, columns }: Props) {
           ))}
           {entries.length === 0 && (
             <tr>
-              <td colSpan={columns.length + 1} className="px-4 py-8 text-center text-slate-500">
+              <td colSpan={columns.length + 1} className="px-4 py-8 text-center text-muted">
                 No games yet
               </td>
             </tr>

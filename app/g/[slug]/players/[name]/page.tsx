@@ -30,17 +30,17 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
   const hearts = heartsLB.find(e => e.player_id === player.id)
 
   const Stat = ({ label, value }: { label: string; value: string }) => (
-    <div className="bg-bg rounded p-3 text-center">
-      <p className="text-lg font-black text-white">{value}</p>
-      <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">{label}</p>
+    <div className="bg-card rounded-xl p-3 text-center border border-warm">
+      <p className="text-lg font-black text-stone-900">{value}</p>
+      <p className="text-xs text-muted uppercase tracking-widest mt-1">{label}</p>
     </div>
   )
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-black tracking-wide">{name}</h1>
+      <h1 className="text-3xl font-black uppercase tracking-tight">{name}</h1>
       <section>
-        <h2 className="text-lg font-bold mb-4">🏓 Pong</h2>
+        <h2 className="text-xs font-black uppercase tracking-widest text-muted mb-4">🏓 Pong</h2>
         {pong ? (
           <div className="space-y-4">
             <div className="grid grid-cols-4 gap-3">
@@ -53,10 +53,10 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
               <HeadToHead players={(users ?? []) as User[]} currentPlayerId={player.id} game="pong" />
             </div>
           </div>
-        ) : <p className="text-slate-500">No pong games yet</p>}
+        ) : <p className="text-muted text-sm">No pong games yet</p>}
       </section>
       <section>
-        <h2 className="text-lg font-bold mb-4">🎲 Beer Die</h2>
+        <h2 className="text-xs font-black uppercase tracking-widest text-muted mb-4">🎲 Beer Die</h2>
         {beerDie ? (
           <div className="space-y-4">
             <div className="grid grid-cols-4 gap-3">
@@ -69,17 +69,17 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
               <HeadToHead players={(users ?? []) as User[]} currentPlayerId={player.id} game="beer-die" />
             </div>
           </div>
-        ) : <p className="text-slate-500">No beer die games yet</p>}
+        ) : <p className="text-muted text-sm">No beer die games yet</p>}
       </section>
       <section>
-        <h2 className="text-lg font-bold mb-4">♥ Hearts</h2>
+        <h2 className="text-xs font-black uppercase tracking-widest text-muted mb-4">♥ Hearts</h2>
         {hearts ? (
           <div className="grid grid-cols-3 gap-3 max-w-xs">
             <Stat label="Games" value={String(hearts.games_played)} />
             <Stat label="Losses" value={String(hearts.losses)} />
             <Stat label="Loss%" value={`${(hearts.loss_rate * 100).toFixed(1)}%`} />
           </div>
-        ) : <p className="text-slate-500">No hearts games yet</p>}
+        ) : <p className="text-muted text-sm">No hearts games yet</p>}
       </section>
     </div>
   )

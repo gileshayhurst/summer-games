@@ -48,55 +48,55 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg text-white">
+    <div className="min-h-screen bg-bg text-stone-900">
       <div className="max-w-lg mx-auto px-4 py-12">
-        <Link href="/" className="text-slate-400 text-sm hover:text-white mb-8 inline-block">← Back</Link>
-        <h1 className="text-3xl font-black tracking-wide mb-2">Create Your Group</h1>
-        <p className="text-slate-400 text-sm mb-8">Set up your leaderboard in 60 seconds.</p>
+        <Link href="/" className="text-muted text-sm hover:text-stone-900 mb-8 inline-block">← Back</Link>
+        <h1 className="text-3xl font-black uppercase tracking-tight mb-2">Create Your Group</h1>
+        <p className="text-muted text-sm mb-8">Set up your leaderboard in 60 seconds.</p>
         <form onSubmit={submit} className="space-y-6">
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Group Name</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Group Name</label>
             <input
               value={name} onChange={e => handleNameChange(e.target.value)}
               placeholder="Rob's Crew"
-              className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-full focus:outline-none focus:border-win"
+              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
             />
           </div>
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">URL Slug</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">URL Slug</label>
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 text-sm">summergames.app/g/</span>
+              <span className="text-muted text-sm">summergames.app/g/</span>
               <input
                 value={slug} onChange={e => setSlug(toSlug(e.target.value))}
                 placeholder="robs-crew"
-                className="bg-card border border-slate-600 rounded px-3 py-2 text-white flex-1 focus:outline-none focus:border-win"
+                className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Admin PIN (4 digits)</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Admin PIN (4 digits)</label>
             <input
               type="password" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
               placeholder="••••"
-              className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-24 focus:outline-none focus:border-win"
+              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win"
             />
           </div>
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Players</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Players</label>
             <div className="space-y-2">
               {players.map((p, i) => (
                 <input
                   key={i} value={p} onChange={e => updatePlayer(i, e.target.value)}
                   placeholder={`Player ${i + 1}`}
-                  className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-full focus:outline-none focus:border-win"
+                  className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
                 />
               ))}
             </div>
           </div>
           {error && <p className="text-loss text-sm">{error}</p>}
           <button type="submit" disabled={loading}
-            className="bg-win text-black font-bold px-6 py-2 rounded hover:bg-green-400 disabled:opacity-50 transition-colors w-full">
-            {loading ? 'Creating...' : 'Create Group'}
+            className="bg-win text-white font-black px-6 py-2 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors w-full">
+            {loading ? 'Creating...' : 'Create Group →'}
           </button>
         </form>
       </div>

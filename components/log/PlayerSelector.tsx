@@ -22,7 +22,7 @@ export default function PlayerSelector({ players, selected, onChange, label, exc
 
   return (
     <div>
-      <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">{label}</p>
+      <p className="text-xs text-muted uppercase tracking-widest font-black mb-2">{label}</p>
       <div className="flex flex-wrap gap-2">
         {players.map(p => {
           const isSelected = selected.includes(p.id)
@@ -33,12 +33,12 @@ export default function PlayerSelector({ players, selected, onChange, label, exc
               type="button"
               disabled={isExcluded}
               onClick={() => toggle(p.id)}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-sm font-bold transition-colors ${
                 isSelected
-                  ? 'bg-win text-black'
+                  ? 'bg-win text-white'
                   : isExcluded
-                  ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-warm'
               }`}
             >
               {p.name}

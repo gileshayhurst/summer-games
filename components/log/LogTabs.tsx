@@ -21,8 +21,8 @@ export default function LogTabs({ players }: { players: User[] }) {
       <div className="flex gap-2 mb-8">
         {tabs.map(t => (
           <button key={t.id} onClick={() => setActive(t.id)}
-            className={`px-4 py-2 rounded font-medium text-sm transition-colors ${
-              active === t.id ? 'bg-win text-black' : 'bg-card text-slate-400 hover:text-white'
+            className={`px-5 py-2 rounded-full font-black text-sm transition-colors uppercase tracking-wide ${
+              active === t.id ? 'bg-win text-white' : 'bg-card text-muted hover:text-stone-900 border border-warm'
             }`}>
             {t.label}
           </button>

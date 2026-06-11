@@ -15,12 +15,12 @@ export default async function GroupPlayersPage({ params }: { params: { slug: str
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-wide mb-8">👥 Players</h1>
+      <h1 className="text-3xl font-black uppercase tracking-tight mb-8">👥 Players</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-10">
         {(players ?? []).map((p: Pick<User, 'id' | 'name'>) => (
           <Link key={p.id} href={`/g/${params.slug}/players/${encodeURIComponent(p.name)}`}
-            className="bg-card rounded-lg p-4 text-center hover:bg-slate-700 transition-colors">
-            <p className="font-bold text-white">{p.name}</p>
+            className="bg-card rounded-xl p-4 text-center hover:bg-amber-50 transition-colors border border-warm">
+            <p className="font-black text-stone-900 uppercase tracking-wide text-sm">{p.name}</p>
           </Link>
         ))}
       </div>

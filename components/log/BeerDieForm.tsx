@@ -59,31 +59,31 @@ export default function BeerDieForm({ players }: { players: User[] }) {
       <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team" excluded={losers} />
       <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team" excluded={winners} />
       <div>
-        <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Points Won By</label>
+        <label className="text-xs text-muted uppercase tracking-widest font-black block mb-2">Points Won By</label>
         <input
           type="number" min="1" value={points} onChange={e => setPoints(e.target.value)}
-          className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-24 focus:outline-none focus:border-win"
+          className="bg-card border border-warm rounded px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win"
           placeholder="1"
         />
       </div>
 
       {showSinks && (
         <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Sinks (optional)</label>
+          <label className="text-xs text-muted uppercase tracking-widest font-black block mb-2">Sinks (optional)</label>
           <div className="space-y-2">
             {allSelected.map(id => {
               const current = sinkMap[id] ?? ''
               return (
-                <div key={id} className="flex items-center justify-between bg-card px-3 py-2 rounded">
-                  <span className="text-sm text-white">{getName(id)}</span>
+                <div key={id} className="flex items-center justify-between bg-card px-3 py-2 rounded-lg border border-warm">
+                  <span className="text-sm font-bold text-stone-900">{getName(id)}</span>
                   <div className="flex gap-1.5">
                     <button
                       type="button"
                       onClick={() => setSink(id, current === 'sink' ? '' : 'sink')}
-                      className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${
                         current === 'sink'
                           ? 'bg-green-500 text-white'
-                          : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                          : 'bg-stone-100 text-muted hover:bg-stone-200 border border-warm'
                       }`}
                     >
                       ✓ Sink
@@ -91,10 +91,10 @@ export default function BeerDieForm({ players }: { players: User[] }) {
                     <button
                       type="button"
                       onClick={() => setSink(id, current === 'self_sink' ? '' : 'self_sink')}
-                      className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${
                         current === 'self_sink'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                          ? 'bg-loss text-white'
+                          : 'bg-stone-100 text-muted hover:bg-stone-200 border border-warm'
                       }`}
                     >
                       ✗ Self Sink
@@ -108,9 +108,9 @@ export default function BeerDieForm({ players }: { players: User[] }) {
       )}
 
       {error && <p className="text-loss text-sm">{error}</p>}
-      {success && <p className="text-win text-sm">Game logged! ✓</p>}
+      {success && <p className="text-win text-sm font-bold">Game logged! ✓</p>}
       <button type="submit" disabled={loading}
-        className="bg-win text-black font-bold px-6 py-2 rounded hover:bg-green-400 disabled:opacity-50 transition-colors">
+        className="bg-win text-white font-black px-6 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors uppercase tracking-wide">
         {loading ? 'Saving...' : 'Submit'}
       </button>
     </form>

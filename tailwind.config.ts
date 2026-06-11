@@ -5,11 +5,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#0f172a',
-        card: '#1e293b',
-        win: '#22c55e',
+        bg: '#fffbf0',
+        card: '#fff7ed',
+        win: '#f97316',
         loss: '#ef4444',
-        gold: '#f59e0b',
+        gold: '#eab308',
+        brand: '#c2410c',
+        muted: '#78716c',
+        warm: '#f0e0b8',
       },
     },
   },

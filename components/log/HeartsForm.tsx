@@ -41,21 +41,21 @@ export default function HeartsForm({ players }: { players: User[] }) {
   return (
     <form onSubmit={submit} className="space-y-5">
       <div>
-        <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">Who Played? (click to add, then mark who lost)</p>
+        <p className="text-xs text-muted uppercase tracking-widest font-black mb-2">Who Played? (click to add, then mark who lost)</p>
         <div className="space-y-2">
           {players.map(p => {
             const inGame = participants.includes(p.id)
             const isLoser = loser === p.id
             return (
-              <div key={p.id} className={`flex items-center justify-between px-3 py-2 rounded transition-colors ${inGame ? 'bg-card' : 'bg-slate-800/50'}`}>
+              <div key={p.id} className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors border ${inGame ? 'bg-card border-warm' : 'bg-stone-50 border-stone-200'}`}>
                 <button type="button" onClick={() => toggleParticipant(p.id)}
-                  className={`text-sm font-medium text-left ${inGame ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+                  className={`text-sm font-bold text-left ${inGame ? 'text-stone-900' : 'text-muted hover:text-stone-900'}`}>
                   {p.name}
                 </button>
                 {inGame && (
                   <button type="button" onClick={() => setLoser(isLoser ? '' : p.id)}
-                    className={`text-xs font-bold px-2 py-0.5 rounded transition-colors ${isLoser ? 'bg-loss text-white' : 'bg-slate-600 text-slate-400 hover:bg-slate-500'}`}>
-                    {isLoser ? 'LOST' : 'won'}
+                    className={`text-xs font-black px-3 py-0.5 rounded-full transition-colors uppercase tracking-wide ${isLoser ? 'bg-loss text-white' : 'bg-stone-100 text-muted hover:bg-stone-200 border border-warm'}`}>
+                    {isLoser ? 'Lost' : 'Won'}
                   </button>
                 )}
               </div>
@@ -64,9 +64,9 @@ export default function HeartsForm({ players }: { players: User[] }) {
         </div>
       </div>
       {error && <p className="text-loss text-sm">{error}</p>}
-      {success && <p className="text-win text-sm">Game logged! ✓</p>}
+      {success && <p className="text-win text-sm font-bold">Game logged! ✓</p>}
       <button type="submit" disabled={loading}
-        className="bg-win text-black font-bold px-6 py-2 rounded hover:bg-green-400 disabled:opacity-50 transition-colors">
+        className="bg-win text-white font-black px-6 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors uppercase tracking-wide">
         {loading ? 'Saving...' : 'Submit'}
       </button>
     </form>

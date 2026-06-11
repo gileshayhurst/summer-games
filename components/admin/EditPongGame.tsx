@@ -36,24 +36,24 @@ export default function EditPongGame({ game, players, onSave, onCancel }: Props)
   }
 
   return (
-    <div className="mt-3 p-4 bg-slate-800 rounded-lg space-y-4">
+    <div className="mt-3 p-4 bg-amber-50 border border-warm rounded-xl space-y-4">
       <PlayerSelector players={players} selected={winners} onChange={setWinners} label="Winning Team" excluded={losers} />
       <PlayerSelector players={players} selected={losers} onChange={setLosers} label="Losing Team" excluded={winners} />
       <div>
-        <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Cups Left</label>
+        <label className="text-xs text-muted uppercase tracking-wide block mb-2">Cups Left</label>
         <input
           type="number" min="0" value={cupsLeft} onChange={e => setCupsLeft(e.target.value)}
-          className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-24 focus:outline-none focus:border-win"
+          className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win"
         />
       </div>
       {error && <p className="text-loss text-sm">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="bg-win text-black font-bold px-4 py-1.5 rounded text-sm hover:bg-green-400 disabled:opacity-50">
+          className="bg-win text-white font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
           {loading ? 'Saving...' : 'Save'}
         </button>
         <button onClick={onCancel}
-          className="bg-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded text-sm hover:bg-slate-600">
+          className="bg-stone-100 text-stone-600 font-bold px-4 py-1.5 rounded-full text-sm hover:bg-stone-200">
           Cancel
         </button>
       </div>

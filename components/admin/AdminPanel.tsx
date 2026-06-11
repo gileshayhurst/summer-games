@@ -100,26 +100,26 @@ export default function AdminPanel({
   }
 
   const badgeColor = (kind: string) =>
-    kind === 'pong' ? 'bg-blue-900 text-blue-300' : kind === 'beer-die' ? 'bg-yellow-900 text-yellow-300' : 'bg-pink-900 text-pink-300'
+    kind === 'pong' ? 'bg-blue-100 text-blue-700' : kind === 'beer-die' ? 'bg-amber-100 text-amber-700' : 'bg-pink-100 text-pink-700'
 
   if (!authed) {
     return (
       <form onSubmit={handlePinSubmit} className="max-w-xs space-y-4">
         <div>
-          <label className="text-xs text-slate-400 uppercase tracking-wide block mb-2">Enter PIN</label>
+          <label className="text-xs text-muted uppercase tracking-wide block mb-2">Enter PIN</label>
           <input
             type="password"
             value={pin}
             onChange={e => { setPin(e.target.value); setPinError(false) }}
-            className="bg-card border border-slate-600 rounded px-3 py-2 text-white w-full focus:outline-none focus:border-win"
+            className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
             placeholder="••••"
             autoFocus
           />
         </div>
         {pinError && <p className="text-loss text-sm">Incorrect PIN</p>}
         <button type="submit"
-          className="bg-win text-black font-bold px-6 py-2 rounded hover:bg-green-400 transition-colors">
-          Unlock
+          className="bg-win text-white font-black px-6 py-2 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors">
+          Unlock →
         </button>
       </form>
     )
@@ -131,14 +131,14 @@ export default function AdminPanel({
     const isConfirmingDelete = confirmDeleteId === id
 
     return (
-      <div key={id} className="bg-card rounded-lg px-4 py-3">
+      <div key={id} className="bg-card rounded-xl border border-warm px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span className={`text-xs font-bold px-2 py-0.5 rounded shrink-0 ${badgeColor(g.kind)}`}>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${badgeColor(g.kind)}`}>
               {g.kind === 'pong' ? 'PONG' : g.kind === 'beer-die' ? 'DIE' : 'HEARTS'}
             </span>
-            <span className="text-sm text-slate-300 truncate">{gameSummary(g)}</span>
-            <span className="text-xs text-slate-500 shrink-0">{formatDate(g.played_at)}</span>
+            <span className="text-sm text-stone-900 truncate">{gameSummary(g)}</span>
+            <span className="text-xs text-muted shrink-0">{formatDate(g.played_at)}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {!isConfirmingDelete && (
@@ -147,21 +147,21 @@ export default function AdminPanel({
                   <button
                     onClick={() => handleApprove(g.kind, id)}
                     disabled={approveLoading === id}
-                    className="text-xs font-bold bg-win text-black px-2 py-1 rounded hover:bg-green-400 disabled:opacity-50 transition-colors"
+                    className="text-xs font-bold bg-win text-white px-2 py-1 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors"
                   >
                     {approveLoading === id ? '...' : '✓ Approve'}
                   </button>
                 ) : (
                   <button
                     onClick={() => setEditingId(isEditing ? null : id)}
-                    className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                    className="text-xs text-muted hover:text-stone-900 px-2 py-1 rounded hover:bg-amber-50 transition-colors"
                   >
                     {isEditing ? 'Close' : '✏️ Edit'}
                   </button>
                 )}
                 <button
                   onClick={() => setConfirmDeleteId(id)}
-                  className="text-xs text-slate-400 hover:text-loss px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                  className="text-xs text-muted hover:text-loss px-2 py-1 rounded hover:bg-amber-50 transition-colors"
                 >
                   🗑 Delete
                 </button>
@@ -169,17 +169,17 @@ export default function AdminPanel({
             )}
             {isConfirmingDelete && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">Sure?</span>
+                <span className="text-xs text-muted">Sure?</span>
                 <button
                   onClick={() => handleDelete(g.kind, id)}
                   disabled={deleteLoading}
-                  className="text-xs font-bold bg-loss text-white px-2 py-1 rounded hover:bg-red-600 disabled:opacity-50"
+                  className="text-xs font-bold bg-loss text-white px-2 py-1 rounded-full hover:bg-red-600 disabled:opacity-50"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setConfirmDeleteId(null)}
-                  className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600"
+                  className="text-xs bg-stone-100 text-stone-600 px-2 py-1 rounded hover:bg-stone-200"
                 >
                   Cancel
                 </button>
@@ -205,9 +205,9 @@ export default function AdminPanel({
     <div className="space-y-6">
       {pendingGames.length > 0 && (
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">
+          <h2 className="text-sm font-black uppercase tracking-widest text-muted mb-3">
             Pending Approval
-            <span className="ml-2 bg-yellow-900 text-yellow-300 text-xs px-1.5 py-0.5 rounded">{pendingGames.length}</span>
+            <span className="ml-2 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded-full">{pendingGames.length}</span>
           </h2>
           <div className="space-y-2">
             {pendingGames.map(g => <GameRow key={g.data.id} g={g} isPending={true} />)}
@@ -217,10 +217,10 @@ export default function AdminPanel({
 
       <div>
         {pendingGames.length > 0 && (
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">Approved Games</h2>
+          <h2 className="text-sm font-black uppercase tracking-widest text-muted mb-3">Approved Games</h2>
         )}
         <div className="space-y-2">
-          {allGames.length === 0 && <p className="text-slate-500 text-sm">No games logged yet.</p>}
+          {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
           {allGames.map(g => <GameRow key={g.data.id} g={g} isPending={false} />)}
         </div>
       </div>

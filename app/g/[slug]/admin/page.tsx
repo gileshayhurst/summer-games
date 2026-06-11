@@ -63,8 +63,8 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-wide mb-1">⚙️ Admin</h1>
-      <p className="text-slate-400 text-sm mb-8">Edit or delete logged games.</p>
+      <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
+      <p className="text-muted text-sm mb-8">Edit or delete logged games.</p>
       <AdminPanel
         pongGames={assemblePong(pongGamesRaw ?? [])}
         beerDieGames={assembleBeerDie(beerDieGamesRaw ?? [])}

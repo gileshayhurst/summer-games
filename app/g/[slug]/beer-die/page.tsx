@@ -36,8 +36,8 @@ export default async function GroupBeerDiePage({ params }: { params: { slug: str
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-black tracking-wide mb-1">🎲 Beer Die</h1>
-        <p className="text-slate-400 text-sm">Ranked by win rate</p>
+        <h1 className="text-3xl font-black uppercase tracking-tight mb-1">🎲 Beer Die</h1>
+        <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
       <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
       <div className="max-w-xs space-y-4">
