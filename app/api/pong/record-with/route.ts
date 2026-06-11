@@ -14,9 +14,10 @@ export async function GET(req: NextRequest) {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('pong_game_players')
-    .select('game_id, player_id, side, pong_games ( id, cups_left, played_at )')
+    .select('game_id, player_id, side, pong_games!inner ( id, cups_left, played_at )')
     .in('player_id', [player1, player2])
     .eq('group_id', group_id)
+    .eq('pong_games.approved', true)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const result = computePongPartnerRecord(player1, player2, (data ?? []) as unknown as PongGamePlayer[])
