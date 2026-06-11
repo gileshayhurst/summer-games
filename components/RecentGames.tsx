@@ -9,13 +9,27 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
     title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,
   }
+  if (g.type === 'cornhole') return {
+    title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
+    detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,
+  }
+  if (g.type === 'spikeball') return {
+    title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
+    detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,
+  }
   return {
     title: `Hearts — ${g.players.join(', ')}`,
     detail: `${g.loser} lost`,
   }
 }
 
-const gameEmoji: Record<string, string> = { pong: '🏓', 'beer-die': '🎲', hearts: '♥' }
+const gameEmoji: Record<string, string> = {
+  pong: '🏓',
+  'beer-die': '🎲',
+  cornhole: '🌽',
+  spikeball: '🏐',
+  hearts: '♥',
+}
 
 export default function RecentGames({ games }: { games: RecentGame[] }) {
   if (games.length === 0)

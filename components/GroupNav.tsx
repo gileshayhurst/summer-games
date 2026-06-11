@@ -10,6 +10,8 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
     { href: `${base}/pong`, label: 'Pong' },
     { href: `${base}/beer-die`, label: 'Beer Die' },
     { href: `${base}/hearts`, label: 'Hearts' },
+    { href: `${base}/cornhole`, label: 'Cornhole' },
+    { href: `${base}/spikeball`, label: 'Spikeball' },
     { href: `${base}/players`, label: 'Players' },
   ]
 
@@ -18,7 +20,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
       <Link href={base} className="text-brand font-black text-sm tracking-widest uppercase shrink-0">
         {groupName}
       </Link>
-      <div className="flex-1 flex items-center justify-evenly px-4">
+      <div className="flex-1 flex items-center justify-evenly px-4 flex-wrap gap-y-1">
         {navItems.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
           return (

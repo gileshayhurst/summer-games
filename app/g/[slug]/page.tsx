@@ -9,13 +9,23 @@ import { notFound } from 'next/navigation'
 async function getRecentGames(groupId: string): Promise<RecentGame[]> {
   try {
     const supabase = createServerClient()
-    const [{ data: pongGames }, { data: beerDieGames }, { data: heartsGames }] = await Promise.all([
+    const [
+      { data: pongGames },
+      { data: beerDieGames },
+      { data: cornholeGames },
+      { data: spikeballGames },
+      { data: heartsGames },
+    ] = await Promise.all([
       supabase.from('pong_games').select('id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )')
-        .eq('group_id', groupId).order('played_at', { ascending: false }).limit(10),
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
       supabase.from('beer_die_games').select('id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )')
-        .eq('group_id', groupId).order('played_at', { ascending: false }).limit(10),
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
+      supabase.from('cornhole_games').select('id, points_differential, played_at, cornhole_game_players ( side, users ( id, name ) )')
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
+      supabase.from('spikeball_games').select('id, points_differential, played_at, spikeball_game_players ( side, users ( id, name ) )')
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
       supabase.from('hearts_games').select('id, played_at, hearts_game_players ( lost, users ( id, name ) )')
-        .eq('group_id', groupId).order('played_at', { ascending: false }).limit(10),
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
     ])
 
     const recent: RecentGame[] = [
@@ -29,6 +39,18 @@ async function getRecentGames(groupId: string): Promise<RecentGame[]> {
         type: 'beer-die' as const, id: g.id, played_at: g.played_at,
         winners: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
         losers: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
+        points_differential: g.points_differential,
+      })),
+      ...(cornholeGames ?? []).map((g: any) => ({
+        type: 'cornhole' as const, id: g.id, played_at: g.played_at,
+        winners: (g.cornhole_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
+        losers: (g.cornhole_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
+        points_differential: g.points_differential,
+      })),
+      ...(spikeballGames ?? []).map((g: any) => ({
+        type: 'spikeball' as const, id: g.id, played_at: g.played_at,
+        winners: (g.spikeball_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
+        losers: (g.spikeball_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
         points_differential: g.points_differential,
       })),
       ...(heartsGames ?? []).map((g: any) => ({
@@ -55,11 +77,13 @@ export default async function GroupHomePage({ params }: { params: { slug: string
         <h1 className="text-4xl font-black tracking-tight text-stone-900 uppercase">{group.name}</h1>
         <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 sm:grid-cols-5">
         {[
           { href: `${base}/pong`, label: '🏓 Pong' },
           { href: `${base}/beer-die`, label: '🎲 Beer Die' },
           { href: `${base}/hearts`, label: '♥ Hearts' },
+          { href: `${base}/cornhole`, label: '🌽 Cornhole' },
+          { href: `${base}/spikeball`, label: '🏐 Spikeball' },
         ].map(({ href, label }) => (
           <Link key={href} href={href}
             className="bg-card rounded-xl p-6 text-center font-black uppercase tracking-widest text-sm hover:bg-amber-50 transition-colors border border-warm">
