@@ -99,6 +99,7 @@ export default async function AdminPage() {
         beerDieGames={beerDieGames}
         heartsGames={heartsGames}
         players={players}
+        groupPin="1111"
       />
     </div>
   )

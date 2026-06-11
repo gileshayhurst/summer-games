@@ -6,8 +6,6 @@ import EditPongGame from './EditPongGame'
 import EditBeerDieGame from './EditBeerDieGame'
 import EditHeartsGame from './EditHeartsGame'
 
-const ADMIN_PASSWORD = '1111'
-
 type AllGame =
   | { kind: 'pong'; played_at: string; data: AdminPongGame }
   | { kind: 'beer-die'; played_at: string; data: AdminBeerDieGame }
@@ -18,9 +16,10 @@ type Props = {
   beerDieGames: AdminBeerDieGame[]
   heartsGames: AdminHeartsGame[]
   players: User[]
+  groupPin: string
 }
 
-export default function AdminPanel({ pongGames, beerDieGames, heartsGames, players }: Props) {
+export default function AdminPanel({ pongGames, beerDieGames, heartsGames, players, groupPin }: Props) {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
   const [pinError, setPinError] = useState(false)
@@ -34,7 +33,7 @@ export default function AdminPanel({ pongGames, beerDieGames, heartsGames, playe
 
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (pin === ADMIN_PASSWORD) {
+    if (pin === groupPin) {
       sessionStorage.setItem('admin_authed', '1')
       setAuthed(true)
     } else {
