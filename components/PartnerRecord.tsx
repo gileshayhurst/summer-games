@@ -6,7 +6,7 @@ import { useGroup } from '@/lib/group-context'
 type Props = {
   players: User[]
   currentPlayerId?: string
-  game: 'pong' | 'beer-die'
+  game: 'pong' | 'beer-die' | 'cornhole' | 'spikeball'
 }
 
 export default function PartnerRecord({ players, currentPlayerId, game }: Props) {
