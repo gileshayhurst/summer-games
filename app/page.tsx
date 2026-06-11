@@ -1,89 +1,53 @@
-export const dynamic = 'force-dynamic'
-
 import Link from 'next/link'
-import RecentGames from '@/components/RecentGames'
-import { RecentGame } from '@/lib/types'
-import { createServerClient } from '@/lib/supabase-server'
 
-async function getRecentGames(): Promise<RecentGame[]> {
-  try {
-    const supabase = createServerClient()
-    const [{ data: pongGames }, { data: beerDieGames }, { data: heartsGames }] = await Promise.all([
-      supabase
-        .from('pong_games')
-        .select(`id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )`)
-        .order('played_at', { ascending: false })
-        .limit(10),
-      supabase
-        .from('beer_die_games')
-        .select(`id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )`)
-        .order('played_at', { ascending: false })
-        .limit(10),
-      supabase
-        .from('hearts_games')
-        .select(`id, played_at, hearts_game_players ( lost, users ( id, name ) )`)
-        .order('played_at', { ascending: false })
-        .limit(10),
-    ])
-
-    const recent: RecentGame[] = [
-      ...(pongGames ?? []).map((g: any) => ({
-        type: 'pong' as const,
-        id: g.id,
-        played_at: g.played_at,
-        winners: (g.pong_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
-        losers: (g.pong_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
-        cups_left: g.cups_left,
-      })),
-      ...(beerDieGames ?? []).map((g: any) => ({
-        type: 'beer-die' as const,
-        id: g.id,
-        played_at: g.played_at,
-        winners: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
-        losers: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
-        points_differential: g.points_differential,
-      })),
-      ...(heartsGames ?? []).map((g: any) => ({
-        type: 'hearts' as const,
-        id: g.id,
-        played_at: g.played_at,
-        players: (g.hearts_game_players ?? []).map((p: any) => p.users?.name ?? 'Unknown'),
-        loser: (g.hearts_game_players ?? []).find((p: any) => p.lost)?.users?.name ?? '',
-      })),
-    ]
-
-    recent.sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
-    return recent.slice(0, 20)
-  } catch {
-    return []
-  }
-}
-
-export default async function HomePage() {
-  const games = await getRecentGames()
-
+export default function LandingPage() {
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="text-4xl font-black tracking-widest text-win uppercase">Summer Games</h1>
-        <p className="text-slate-400 mt-2">The unofficial official scoreboard.</p>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { href: '/pong', label: '🏓 Pong' },
-          { href: '/beer-die', label: '🎲 Beer Die' },
-          { href: '/hearts', label: '♥ Hearts' },
-        ].map(({ href, label }) => (
-          <Link key={href} href={href}
-            className="bg-card rounded-lg p-6 text-center font-bold hover:bg-slate-700 transition-colors text-lg">
-            {label}
+    <div className="min-h-screen bg-bg text-white">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        <span className="text-win font-black text-sm tracking-widest uppercase">Summer Games</span>
+        <Link href="/create"
+          className="bg-win text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-green-400 transition-colors">
+          Create Your Group
+        </Link>
+      </header>
+      <main className="max-w-2xl mx-auto px-6 py-20 text-center">
+        <h1 className="text-5xl font-black tracking-widest uppercase text-win mb-4">Summer Games</h1>
+        <p className="text-xl text-slate-300 mb-4">
+          Track wins, losses, and bragging rights for your crew.
+        </p>
+        <p className="text-slate-400 mb-12">
+          Leaderboards for Pong, Beer Die, Hearts, and more — shared with your whole group, no app needed.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <Link href="/create"
+            className="bg-win text-black font-bold px-8 py-3 rounded-lg hover:bg-green-400 transition-colors text-lg">
+            Create Your Group
           </Link>
-        ))}
-      </div>
-      <div>
-        <h2 className="text-lg font-bold mb-4 tracking-wide uppercase text-slate-400">Recent Games</h2>
-        <RecentGames games={games} />
-      </div>
+          <Link href="/g/summer-games"
+            className="bg-card text-white font-bold px-8 py-3 rounded-lg hover:bg-slate-700 transition-colors text-lg">
+            See an Example →
+          </Link>
+        </div>
+        <div className="mt-20 grid grid-cols-3 gap-6 text-left">
+          {[
+            { icon: '🏓', title: 'Multiple Games', desc: 'Pong, Beer Die, Hearts — with more games added based on what groups want.' },
+            { icon: '📊', title: 'Live Leaderboards', desc: 'Win rates, differentials, head-to-head records. Always up to date.' },
+            { icon: '🔗', title: 'Shareable', desc: 'Public links your whole group can bookmark. No login required.' },
+          ].map(({ icon, title, desc }) => (
+            <div key={title} className="bg-card rounded-lg p-5">
+              <div className="text-2xl mb-2">{icon}</div>
+              <h3 className="font-bold mb-1">{title}</h3>
+              <p className="text-slate-400 text-sm">{desc}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-16 text-slate-500 text-sm">
+          Want to suggest a game?{' '}
+          <a href="mailto:summergamesapp@gmail.com?subject=Game suggestion" className="text-slate-300 underline hover:text-white">
+            Let us know
+          </a>
+        </p>
+      </main>
     </div>
   )
 }
