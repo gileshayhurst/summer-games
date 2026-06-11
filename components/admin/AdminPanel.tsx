@@ -15,17 +15,25 @@ type Props = {
   pongGames: AdminPongGame[]
   beerDieGames: AdminBeerDieGame[]
   heartsGames: AdminHeartsGame[]
+  pendingPongGames: AdminPongGame[]
+  pendingBeerDieGames: AdminBeerDieGame[]
+  pendingHeartsGames: AdminHeartsGame[]
   players: User[]
   groupPin: string
 }
 
-export default function AdminPanel({ pongGames, beerDieGames, heartsGames, players, groupPin }: Props) {
+export default function AdminPanel({
+  pongGames, beerDieGames, heartsGames,
+  pendingPongGames, pendingBeerDieGames, pendingHeartsGames,
+  players, groupPin,
+}: Props) {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
   const [pinError, setPinError] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [approveLoading, setApproveLoading] = useState<string | null>(null)
 
   useEffect(() => {
     if (sessionStorage.getItem('admin_authed') === '1') setAuthed(true)
@@ -51,11 +59,25 @@ export default function AdminPanel({ pongGames, beerDieGames, heartsGames, playe
     ...heartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
   ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
 
+  const pendingGames: AllGame[] = [
+    ...pendingPongGames.map(g => ({ kind: 'pong' as const, played_at: g.played_at, data: g })),
+    ...pendingBeerDieGames.map(g => ({ kind: 'beer-die' as const, played_at: g.played_at, data: g })),
+    ...pendingHeartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
+  ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
+
   const handleDelete = async (kind: string, id: string) => {
     setDeleteLoading(true)
     const endpoint = kind === 'pong' ? `/api/pong/${id}` : kind === 'beer-die' ? `/api/beer-die/${id}` : `/api/hearts/${id}`
     await fetch(endpoint, { method: 'DELETE' })
     setDeleteLoading(false)
+    window.location.reload()
+  }
+
+  const handleApprove = async (kind: string, id: string) => {
+    setApproveLoading(id)
+    const endpoint = kind === 'pong' ? `/api/pong/${id}` : kind === 'beer-die' ? `/api/beer-die/${id}` : `/api/hearts/${id}`
+    await fetch(endpoint, { method: 'PATCH' })
+    setApproveLoading(null)
     window.location.reload()
   }
 
@@ -103,89 +125,105 @@ export default function AdminPanel({ pongGames, beerDieGames, heartsGames, playe
     )
   }
 
-  return (
-    <div className="space-y-2">
-      {allGames.length === 0 && <p className="text-slate-500 text-sm">No games logged yet.</p>}
-      {allGames.map(g => {
-        const id = g.data.id
-        const isEditing = editingId === id
-        const isConfirmingDelete = confirmDeleteId === id
+  const GameRow = ({ g, isPending }: { g: AllGame; isPending: boolean }) => {
+    const id = g.data.id
+    const isEditing = editingId === id
+    const isConfirmingDelete = confirmDeleteId === id
 
-        return (
-          <div key={id} className="bg-card rounded-lg px-4 py-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded shrink-0 ${badgeColor(g.kind)}`}>
-                  {g.kind === 'pong' ? 'PONG' : g.kind === 'beer-die' ? 'DIE' : 'HEARTS'}
-                </span>
-                <span className="text-sm text-slate-300 truncate">{gameSummary(g)}</span>
-                <span className="text-xs text-slate-500 shrink-0">{formatDate(g.played_at)}</span>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {!isConfirmingDelete && (
-                  <>
-                    <button
-                      onClick={() => setEditingId(isEditing ? null : id)}
-                      className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded hover:bg-slate-700 transition-colors"
-                    >
-                      {isEditing ? 'Close' : '✏️ Edit'}
-                    </button>
-                    <button
-                      onClick={() => setConfirmDeleteId(id)}
-                      className="text-xs text-slate-400 hover:text-loss px-2 py-1 rounded hover:bg-slate-700 transition-colors"
-                    >
-                      🗑 Delete
-                    </button>
-                  </>
+    return (
+      <div key={id} className="bg-card rounded-lg px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className={`text-xs font-bold px-2 py-0.5 rounded shrink-0 ${badgeColor(g.kind)}`}>
+              {g.kind === 'pong' ? 'PONG' : g.kind === 'beer-die' ? 'DIE' : 'HEARTS'}
+            </span>
+            <span className="text-sm text-slate-300 truncate">{gameSummary(g)}</span>
+            <span className="text-xs text-slate-500 shrink-0">{formatDate(g.played_at)}</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {!isConfirmingDelete && (
+              <>
+                {isPending ? (
+                  <button
+                    onClick={() => handleApprove(g.kind, id)}
+                    disabled={approveLoading === id}
+                    className="text-xs font-bold bg-win text-black px-2 py-1 rounded hover:bg-green-400 disabled:opacity-50 transition-colors"
+                  >
+                    {approveLoading === id ? '...' : '✓ Approve'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setEditingId(isEditing ? null : id)}
+                    className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                  >
+                    {isEditing ? 'Close' : '✏️ Edit'}
+                  </button>
                 )}
-                {isConfirmingDelete && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400">Sure?</span>
-                    <button
-                      onClick={() => handleDelete(g.kind, id)}
-                      disabled={deleteLoading}
-                      className="text-xs font-bold bg-loss text-white px-2 py-1 rounded hover:bg-red-600 disabled:opacity-50"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      onClick={() => setConfirmDeleteId(null)}
-                      className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() => setConfirmDeleteId(id)}
+                  className="text-xs text-slate-400 hover:text-loss px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                >
+                  🗑 Delete
+                </button>
+              </>
+            )}
+            {isConfirmingDelete && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">Sure?</span>
+                <button
+                  onClick={() => handleDelete(g.kind, id)}
+                  disabled={deleteLoading}
+                  className="text-xs font-bold bg-loss text-white px-2 py-1 rounded hover:bg-red-600 disabled:opacity-50"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setConfirmDeleteId(null)}
+                  className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600"
+                >
+                  Cancel
+                </button>
               </div>
-            </div>
-
-            {isEditing && g.kind === 'pong' && (
-              <EditPongGame
-                game={g.data as AdminPongGame}
-                players={players}
-                onSave={() => window.location.reload()}
-                onCancel={() => setEditingId(null)}
-              />
-            )}
-            {isEditing && g.kind === 'beer-die' && (
-              <EditBeerDieGame
-                game={g.data as AdminBeerDieGame}
-                players={players}
-                onSave={() => window.location.reload()}
-                onCancel={() => setEditingId(null)}
-              />
-            )}
-            {isEditing && g.kind === 'hearts' && (
-              <EditHeartsGame
-                game={g.data as AdminHeartsGame}
-                players={players}
-                onSave={() => window.location.reload()}
-                onCancel={() => setEditingId(null)}
-              />
             )}
           </div>
-        )
-      })}
+        </div>
+
+        {!isPending && isEditing && g.kind === 'pong' && (
+          <EditPongGame game={g.data as AdminPongGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+        {!isPending && isEditing && g.kind === 'beer-die' && (
+          <EditBeerDieGame game={g.data as AdminBeerDieGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+        {!isPending && isEditing && g.kind === 'hearts' && (
+          <EditHeartsGame game={g.data as AdminHeartsGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {pendingGames.length > 0 && (
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">
+            Pending Approval
+            <span className="ml-2 bg-yellow-900 text-yellow-300 text-xs px-1.5 py-0.5 rounded">{pendingGames.length}</span>
+          </h2>
+          <div className="space-y-2">
+            {pendingGames.map(g => <GameRow key={g.data.id} g={g} isPending={true} />)}
+          </div>
+        </div>
+      )}
+
+      <div>
+        {pendingGames.length > 0 && (
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">Approved Games</h2>
+        )}
+        <div className="space-y-2">
+          {allGames.length === 0 && <p className="text-slate-500 text-sm">No games logged yet.</p>}
+          {allGames.map(g => <GameRow key={g.data.id} g={g} isPending={false} />)}
+        </div>
+      </div>
     </div>
   )
 }

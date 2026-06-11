@@ -98,6 +98,9 @@ export default async function AdminPage() {
         pongGames={pongGames}
         beerDieGames={beerDieGames}
         heartsGames={heartsGames}
+        pendingPongGames={[]}
+        pendingBeerDieGames={[]}
+        pendingHeartsGames={[]}
         players={players}
         groupPin="1111"
       />
