@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic'
 
 import Leaderboard from '@/components/Leaderboard'
-import { HeartsGamePlayer, User } from '@/lib/types'
+import RecentGames from '@/components/RecentGames'
+import { HeartsGamePlayer, User, RecentHeartsGame } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { computeHeartsLeaderboard } from '@/lib/stats'
 import { notFound } from 'next/navigation'
@@ -11,12 +12,22 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
   if (!group) notFound()
 
   const supabase = createServerClient()
-  const [{ data: users }, { data: gamePlayers }] = await Promise.all([
+  const [{ data: users }, { data: gamePlayers }, { data: recentRaw }] = await Promise.all([
     supabase.from('users').select('id, name, created_at').eq('group_id', group.id).order('name'),
     supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games ( id, played_at )').eq('group_id', group.id),
+    supabase.from('hearts_games').select('id, played_at, hearts_game_players ( lost, users ( id, name ) )')
+      .eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }).limit(5),
   ])
 
   const leaderboard = computeHeartsLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as HeartsGamePlayer[])
+
+  const recentGames: RecentHeartsGame[] = (recentRaw ?? []).map((g: any) => ({
+    type: 'hearts' as const,
+    id: g.id,
+    played_at: g.played_at,
+    players: (g.hearts_game_players ?? []).map((p: any) => p.users?.name ?? 'Unknown'),
+    loser: (g.hearts_game_players ?? []).find((p: any) => p.lost)?.users?.name ?? '',
+  }))
 
   const columns = [
     { key: 'name', label: 'Player' },
@@ -32,6 +43,10 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
         <p className="text-muted text-sm">Ranked by lowest loss rate</p>
       </div>
       <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <div>
+        <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
+        <RecentGames games={recentGames} />
+      </div>
     </div>
   )
 }
