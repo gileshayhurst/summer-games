@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { User, HeadToHeadResult } from '@/lib/types'
+import { useGroup } from '@/lib/group-context'
 
 type Props = {
   players: User[]
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export default function PartnerRecord({ players, currentPlayerId, game }: Props) {
+  const { id: groupId } = useGroup()
   const [player1Id, setPlayer1Id] = useState(currentPlayerId ?? '')
   const [player2Id, setPlayer2Id] = useState('')
   const [result, setResult] = useState<HeadToHeadResult | null>(null)
@@ -17,7 +19,7 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
   const fetchRecord = async (p1: string, p2: string) => {
     if (!p1 || !p2 || p1 === p2) { setResult(null); return }
     setLoading(true)
-    const res = await fetch(`/api/${game}/record-with?player1=${p1}&player2=${p2}`)
+    const res = await fetch(`/api/${game}/record-with?player1=${p1}&player2=${p2}&group_id=${groupId}`)
     const data = await res.json()
     setResult(data.result)
     setLoading(false)

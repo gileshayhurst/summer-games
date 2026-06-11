@@ -2,8 +2,10 @@
 import { useState } from 'react'
 import PlayerSelector from './PlayerSelector'
 import { User } from '@/lib/types'
+import { useGroup } from '@/lib/group-context'
 
 export default function PongForm({ players }: { players: User[] }) {
+  const { id: groupId, slug: groupSlug } = useGroup()
   const [winners, setWinners] = useState<string[]>([])
   const [losers, setLosers] = useState<string[]>([])
   const [cupsLeft, setCupsLeft] = useState('')
@@ -22,12 +24,12 @@ export default function PongForm({ players }: { players: User[] }) {
     const res = await fetch('/api/pong', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ winner_ids: winners, loser_ids: losers, cups_left: Number(cupsLeft) }),
+      body: JSON.stringify({ winner_ids: winners, loser_ids: losers, cups_left: Number(cupsLeft), group_id: groupId }),
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
     setSuccess(true)
-    setTimeout(() => { window.location.href = '/pong' }, 1000)
+    setTimeout(() => { window.location.href = `/g/${groupSlug}/pong` }, 1000)
   }
 
   return (

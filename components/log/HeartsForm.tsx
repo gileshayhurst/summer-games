@@ -1,8 +1,10 @@
 'use client'
 import { useState } from 'react'
 import { User } from '@/lib/types'
+import { useGroup } from '@/lib/group-context'
 
 export default function HeartsForm({ players }: { players: User[] }) {
+  const { id: groupId, slug: groupSlug } = useGroup()
   const [participants, setParticipants] = useState<string[]>([])
   const [loser, setLoser] = useState<string>('')
   const [error, setError] = useState('')
@@ -28,12 +30,12 @@ export default function HeartsForm({ players }: { players: User[] }) {
     const res = await fetch('/api/hearts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ game_players }),
+      body: JSON.stringify({ game_players, group_id: groupId }),
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
     setSuccess(true)
-    setTimeout(() => { window.location.href = '/hearts' }, 1000)
+    setTimeout(() => { window.location.href = `/g/${groupSlug}/hearts` }, 1000)
   }
 
   return (

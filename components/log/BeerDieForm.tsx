@@ -2,10 +2,12 @@
 import { useState } from 'react'
 import PlayerSelector from './PlayerSelector'
 import { User } from '@/lib/types'
+import { useGroup } from '@/lib/group-context'
 
 type SinkType = 'sink' | 'self_sink' | ''
 
 export default function BeerDieForm({ players }: { players: User[] }) {
+  const { id: groupId, slug: groupSlug } = useGroup()
   const [winners, setWinners] = useState<string[]>([])
   const [losers, setLosers] = useState<string[]>([])
   const [points, setPoints] = useState('')
@@ -43,12 +45,13 @@ export default function BeerDieForm({ players }: { players: User[] }) {
         loser_ids: losers,
         points_differential: Number(points),
         sinks,
+        group_id: groupId,
       }),
     })
     setLoading(false)
     if (!res.ok) { const d = await res.json(); return setError(d.error) }
     setSuccess(true)
-    setTimeout(() => { window.location.href = '/beer-die' }, 1000)
+    setTimeout(() => { window.location.href = `/g/${groupSlug}/beer-die` }, 1000)
   }
 
   return (
