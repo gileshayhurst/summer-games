@@ -56,6 +56,13 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
           })}
         </div>
         <Link
+          href={`${base}/admin`}
+          className="text-muted hover:text-stone-900 transition-colors mr-2 text-base shrink-0"
+          aria-label="Admin settings"
+        >
+          ⚙️
+        </Link>
+        <Link
           href={`${base}/log`}
           className="shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
         >
