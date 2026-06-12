@@ -33,7 +33,7 @@ export default function LandingPage() {
           </Link>
           <Link href="/g/summer-games"
             className="text-muted font-bold px-8 py-3 rounded-full border-2 border-warm hover:bg-card transition-colors text-base tracking-wide uppercase">
-            See an Example
+            See an Example (Press home in top left to return)
           </Link>
         </div>
         <div className="relative">
