@@ -74,7 +74,7 @@ export default function CreatePage() {
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Admin PIN (4 digits)</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Admin PIN (4 digits) — accessible through ⚙️</label>
             <input
               type="password" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
               placeholder="••••"
