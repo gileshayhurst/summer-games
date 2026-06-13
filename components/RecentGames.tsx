@@ -1,4 +1,5 @@
 import { RecentGame } from '@/lib/types'
+import GameIcon from './icons/GameIcon'
 
 function formatGame(g: RecentGame): { title: string; detail: string } {
   if (g.type === 'pong') return {
@@ -23,14 +24,6 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
   }
 }
 
-const gameEmoji: Record<string, string> = {
-  pong: '🏓',
-  'beer-die': '🎲',
-  cornhole: '🌽',
-  spikeball: '🏐',
-  hearts: '♥',
-}
-
 export default function RecentGames({ games }: { games: RecentGame[] }) {
   if (games.length === 0)
     return <p className="text-muted text-sm">No games yet — go log one!</p>
@@ -42,7 +35,7 @@ export default function RecentGames({ games }: { games: RecentGame[] }) {
         const date = new Date(g.played_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         return (
           <div key={`${g.type}-${g.id}`} className="bg-card rounded-xl px-4 py-3 flex items-center gap-4 border border-warm">
-            <span className="text-lg">{gameEmoji[g.type]}</span>
+            <GameIcon type={g.type} className="w-6 h-6 shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-stone-900 truncate">{title}</p>
               <p className="text-xs text-muted">{detail}</p>
