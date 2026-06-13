@@ -1,20 +1,22 @@
 'use client'
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { User } from '@/lib/types'
 import PongForm from './PongForm'
 import BeerDieForm from './BeerDieForm'
 import HeartsForm from './HeartsForm'
 import CornholeForm from './CornholeForm'
 import SpikeballForm from './SpikeballForm'
+import GameIcon from '../icons/GameIcon'
 
 type Tab = 'pong' | 'beer-die' | 'hearts' | 'cornhole' | 'spikeball'
 
-const tabs: { id: Tab; label: string }[] = [
+const tabs: { id: Tab; label: ReactNode }[] = [
   { id: 'pong', label: '🏓 Pong' },
   { id: 'beer-die', label: '🎲 Beer Die' },
   { id: 'hearts', label: '♥ Hearts' },
-  { id: 'cornhole', label: '🌽 Cornhole' },
-  { id: 'spikeball', label: '🏐 Spikeball' },
+  { id: 'cornhole', label: <><GameIcon type="cornhole" className="inline w-4 h-4 mr-1 align-middle" /> Cornhole</> },
+  { id: 'spikeball', label: <><GameIcon type="spikeball" className="inline w-4 h-4 mr-1 align-middle" /> Spikeball</> },
 ]
 
 export default function LogTabs({ players }: { players: User[] }) {
