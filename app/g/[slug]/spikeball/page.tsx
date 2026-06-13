@@ -8,6 +8,7 @@ import { SpikeballGamePlayer, User, RecentSpikeballGame } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { computeSpikeballLeaderboard } from '@/lib/stats'
 import { notFound } from 'next/navigation'
+import SpikeballIcon from '@/components/icons/SpikeballIcon'
 
 export default async function GroupSpikeballPage({ params }: { params: { slug: string } }) {
   const group = await getGroupBySlug(params.slug)
@@ -46,7 +47,7 @@ export default async function GroupSpikeballPage({ params }: { params: { slug: s
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-black uppercase tracking-tight mb-1">🏐 Spikeball</h1>
+        <h1 className="text-3xl font-black uppercase tracking-tight mb-1"><SpikeballIcon className="inline w-9 h-9 mr-1 align-middle" /> Spikeball</h1>
         <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
       <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
