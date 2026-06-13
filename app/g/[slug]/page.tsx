@@ -5,6 +5,8 @@ import RecentGames from '@/components/RecentGames'
 import { RecentGame } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { notFound } from 'next/navigation'
+import type { ReactNode } from 'react'
+import GameIcon from '@/components/icons/GameIcon'
 
 async function getRecentGames(groupId: string): Promise<RecentGame[]> {
   try {
@@ -78,13 +80,13 @@ export default async function GroupHomePage({ params }: { params: { slug: string
         <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
       </div>
       <div className="grid grid-cols-3 gap-4 sm:grid-cols-5">
-        {[
+        {([
           { href: `${base}/pong`, label: '🏓 Pong' },
           { href: `${base}/beer-die`, label: '🎲 Beer Die' },
           { href: `${base}/hearts`, label: '♥ Hearts' },
-          { href: `${base}/cornhole`, label: '🌽 Cornhole' },
-          { href: `${base}/spikeball`, label: '🏐 Spikeball' },
-        ].map(({ href, label }) => (
+          { href: `${base}/cornhole`, label: <><GameIcon type="cornhole" className="inline w-5 h-5 mr-1 align-middle" /> Cornhole</> },
+          { href: `${base}/spikeball`, label: <><GameIcon type="spikeball" className="inline w-5 h-5 mr-1 align-middle" /> Spikeball</> },
+        ] as { href: string; label: ReactNode }[]).map(({ href, label }) => (
           <Link key={href} href={href}
             className="bg-card rounded-xl p-6 text-center font-black uppercase tracking-widest text-sm hover:bg-amber-50 transition-colors border border-warm">
             {label}
