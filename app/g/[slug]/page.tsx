@@ -2,11 +2,12 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import RecentGames from '@/components/RecentGames'
-import { RecentGame } from '@/lib/types'
+import { RecentGame, User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer, CornholeGamePlayer, SpikeballGamePlayer } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
+import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard } from '@/lib/stats'
 import { notFound } from 'next/navigation'
-import type { ReactNode } from 'react'
-import GameIcon from '@/components/icons/GameIcon'
+
+type GameLeader = { name: string; wins: number; losses: number; winRatePct: number } | null
 
 async function getRecentGames(groupId: string): Promise<RecentGame[]> {
   try {
@@ -66,11 +67,71 @@ async function getRecentGames(groupId: string): Promise<RecentGame[]> {
   } catch { return [] }
 }
 
+async function getGameLeaders(groupId: string): Promise<Record<string, GameLeader>> {
+  try {
+    const supabase = createServerClient()
+    const [
+      { data: users },
+      { data: pongPlayers },
+      { data: beerDiePlayers },
+      { data: beerDieSinks },
+      { data: heartsPlayers },
+      { data: cornholePlayers },
+      { data: spikeballPlayers },
+    ] = await Promise.all([
+      supabase.from('users').select('id, name, created_at').eq('group_id', groupId).order('name'),
+      supabase.from('pong_game_players').select('game_id, player_id, side, pong_games ( id, cups_left, played_at )').eq('group_id', groupId),
+      supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games ( id, points_differential, played_at )').eq('group_id', groupId),
+      supabase.from('beer_die_sinks').select('id, game_id, player_id, type').eq('group_id', groupId),
+      supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games ( id, played_at )').eq('group_id', groupId),
+      supabase.from('cornhole_game_players').select('game_id, player_id, side, cornhole_games ( id, points_differential, played_at )').eq('group_id', groupId),
+      supabase.from('spikeball_game_players').select('game_id, player_id, side, spikeball_games ( id, points_differential, played_at )').eq('group_id', groupId),
+    ])
+
+    const u = (users ?? []) as User[]
+
+    const pongTop = computePongLeaderboard(u, (pongPlayers ?? []) as unknown as PongGamePlayer[])[0]
+    const beerDieTop = computeBeerDieLeaderboard(u, (beerDiePlayers ?? []) as unknown as BeerDieGamePlayer[], (beerDieSinks ?? []) as BeerDieSink[])[0]
+    const heartsTop = computeHeartsLeaderboard(u, (heartsPlayers ?? []) as unknown as HeartsGamePlayer[])[0]
+    const cornholeTop = computeCornholeLeaderboard(u, (cornholePlayers ?? []) as unknown as CornholeGamePlayer[])[0]
+    const spikeballTop = computeSpikeballLeaderboard(u, (spikeballPlayers ?? []) as unknown as SpikeballGamePlayer[])[0]
+
+    const toLeader = (entry: any, isHearts = false): GameLeader => {
+      if (!entry) return null
+      if (isHearts) {
+        const wins = entry.games_played - entry.losses
+        return { name: entry.name, wins, losses: entry.losses, winRatePct: Math.round((1 - entry.loss_rate) * 100) }
+      }
+      return { name: entry.name, wins: entry.wins, losses: entry.losses, winRatePct: Math.round(entry.win_rate * 100) }
+    }
+
+    return {
+      pong: toLeader(pongTop),
+      'beer-die': toLeader(beerDieTop),
+      hearts: toLeader(heartsTop, true),
+      cornhole: toLeader(cornholeTop),
+      spikeball: toLeader(spikeballTop),
+    }
+  } catch { return {} }
+}
+
+const GAME_CARDS = [
+  { key: 'pong', slug: 'pong', icon: '🏓', name: 'Pong' },
+  { key: 'beer-die', slug: 'beer-die', icon: '🎲', name: 'Beer Die' },
+  { key: 'hearts', slug: 'hearts', icon: '♥', name: 'Hearts' },
+  { key: 'cornhole', slug: 'cornhole', icon: '🌽', name: 'Cornhole' },
+  { key: 'spikeball', slug: 'spikeball', icon: '🏐', name: 'Spikeball' },
+]
+
 export default async function GroupHomePage({ params }: { params: { slug: string } }) {
   const group = await getGroupBySlug(params.slug)
   if (!group) notFound()
 
-  const games = await getRecentGames(group.id)
+  const [games, leaders] = await Promise.all([
+    getRecentGames(group.id),
+    getGameLeaders(group.id),
+  ])
+
   const base = `/g/${params.slug}`
 
   return (
@@ -79,19 +140,24 @@ export default async function GroupHomePage({ params }: { params: { slug: string
         <h1 className="text-4xl font-black tracking-tight text-stone-900 uppercase">{group.name}</h1>
         <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
       </div>
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-5">
-        {([
-          { href: `${base}/pong`, label: '🏓 Pong' },
-          { href: `${base}/beer-die`, label: '🎲 Beer Die' },
-          { href: `${base}/hearts`, label: '♥ Hearts' },
-          { href: `${base}/cornhole`, label: <><GameIcon type="cornhole" className="inline w-5 h-5 mr-1 align-middle" /> Cornhole</> },
-          { href: `${base}/spikeball`, label: <><GameIcon type="spikeball" className="inline w-5 h-5 mr-1 align-middle" /> Spikeball</> },
-        ] as { href: string; label: ReactNode }[]).map(({ href, label }) => (
-          <Link key={href} href={href}
-            className="bg-card rounded-xl p-6 text-center font-black uppercase tracking-widest text-sm hover:bg-amber-50 transition-colors border border-warm">
-            {label}
-          </Link>
-        ))}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        {GAME_CARDS.map(({ key, slug, icon, name }) => {
+          const leader = leaders[key] ?? null
+          return (
+            <Link
+              key={key}
+              href={`${base}/${slug}`}
+              className="bg-card rounded-xl p-4 border border-warm hover:bg-amber-50 transition-colors"
+            >
+              <div className="text-xl mb-1">{icon}</div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-stone-900 mb-2">{name}</div>
+              <div className="text-sm font-black text-stone-900 truncate">{leader?.name ?? '—'}</div>
+              <div className={`text-[10px] font-bold ${leader ? 'text-muted' : 'text-stone-300'}`}>
+                {leader ? `${leader.wins}W · ${leader.losses}L · ${leader.winRatePct}%` : 'No games yet'}
+              </div>
+            </Link>
+          )
+        })}
       </div>
       <div>
         <h2 className="text-xs font-black mb-4 tracking-widest uppercase text-muted">Recent Games</h2>
