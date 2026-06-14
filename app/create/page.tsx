@@ -52,7 +52,8 @@ export default function CreatePage() {
       <div className="max-w-lg mx-auto px-4 py-12">
         <Link href="/" className="text-muted text-sm hover:text-stone-900 mb-8 inline-block">← Back</Link>
         <h1 className="text-3xl font-black uppercase tracking-tight mb-2">Create Your Group</h1>
-        <p className="text-muted text-sm mb-8">Set up your leaderboard in 60 seconds.</p>
+        <p className="text-muted text-sm mb-1">Set up your leaderboard in 60 seconds.</p>
+        <p className="text-muted text-sm mb-8">Once created, tap the Share button then &ldquo;Add to Home Screen&rdquo; for easier access.</p>
         <form onSubmit={submit} className="space-y-6">
           <div>
             <label className="text-xs text-muted uppercase tracking-wide block mb-2">Group Name</label>
