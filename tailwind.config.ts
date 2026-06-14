@@ -13,6 +13,7 @@ const config: Config = {
         brand: '#c2410c',
         muted: '#78716c',
         warm: '#f0e0b8',
+        forest: '#1A4731',
       },
     },
   },

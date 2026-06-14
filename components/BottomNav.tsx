@@ -134,12 +134,11 @@ export default function BottomNav({ slug }: { slug: string }) {
                     disabled={!isPinned && !canPin}
                     className={`text-[10px] font-black px-3 py-1 rounded-full transition-colors ${
                       isPinned
-                        ? 'text-white'
+                        ? 'bg-forest text-white'
                         : canPin
                         ? 'bg-stone-100 text-muted'
                         : 'bg-stone-100 text-stone-300 cursor-not-allowed'
                     }`}
-                    style={isPinned ? { backgroundColor: '#1A4731' } : undefined}
                   >
                     {isPinned ? 'PINNED' : '+ PIN'}
                   </button>
