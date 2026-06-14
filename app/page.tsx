@@ -51,7 +51,7 @@ export default function LandingPage() {
             <div className="bg-card rounded-xl p-5 border border-warm">
               <div className="text-2xl mb-2">🔗</div>
               <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Shareable</h3>
-              <p className="text-muted text-sm">Public link your whole group can bookmark. No login needed.</p>
+              <p className="text-muted text-sm">Public link your whole group can add to home screen to view as an app! No login necessary.</p>
             </div>
           </div>
           <div className="mt-16">
