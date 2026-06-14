@@ -51,7 +51,27 @@ export default function BottomNav({ slug }: { slug: string }) {
 
   const isFull = pinned.length >= MAX_PINS
   const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug))
-  const touchStartY = useRef(0)
+  const sheetRef = useRef<HTMLDivElement>(null)
+
+  // Lock body scroll when sheet is open + swipe-down to dismiss
+  useEffect(() => {
+    if (!showMore) return
+    document.body.style.overflow = 'hidden'
+    const sheet = sheetRef.current
+    let startY = 0
+    const onStart = (e: TouchEvent) => { startY = e.touches[0].clientY }
+    const onMove = (e: TouchEvent) => { if (e.touches[0].clientY > startY) e.preventDefault() }
+    const onEnd = (e: TouchEvent) => { if (e.changedTouches[0].clientY - startY > 50) setShowMore(false) }
+    sheet?.addEventListener('touchstart', onStart, { passive: true })
+    sheet?.addEventListener('touchmove', onMove, { passive: false })
+    sheet?.addEventListener('touchend', onEnd, { passive: true })
+    return () => {
+      document.body.style.overflow = ''
+      sheet?.removeEventListener('touchstart', onStart)
+      sheet?.removeEventListener('touchmove', onMove)
+      sheet?.removeEventListener('touchend', onEnd)
+    }
+  }, [showMore])
 
   const tabClass = (gameSlug: string) =>
     `flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
@@ -113,9 +133,8 @@ export default function BottomNav({ slug }: { slug: string }) {
       {/* More sheet */}
       {showMore && (
         <div
+          ref={sheetRef}
           className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl"
-          onTouchStart={(e) => { touchStartY.current = e.touches[0].clientY }}
-          onTouchEnd={(e) => { if (e.changedTouches[0].clientY - touchStartY.current > 50) setShowMore(false) }}
         >
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-8 h-1 bg-warm rounded-full" />
