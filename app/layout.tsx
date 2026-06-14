@@ -7,6 +7,14 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Summer Games',
   description: 'Track your friend group\'s game results',
+  themeColor: '#1A4731',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    apple: '/icons/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
