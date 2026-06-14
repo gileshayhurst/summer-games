@@ -21,19 +21,12 @@ type Props = {
   cornholeGames: AdminCornholeGame[]
   spikeballGames: AdminSpikeballGame[]
   heartsGames: AdminHeartsGame[]
-  pendingPongGames: AdminPongGame[]
-  pendingBeerDieGames: AdminBeerDieGame[]
-  pendingCornholeGames: AdminCornholeGame[]
-  pendingSpikeballGames: AdminSpikeballGame[]
-  pendingHeartsGames: AdminHeartsGame[]
   players: User[]
   groupPin: string
 }
 
 export default function AdminPanel({
-  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames,
-  pendingPongGames, pendingBeerDieGames, pendingCornholeGames, pendingSpikeballGames, pendingHeartsGames,
-  players, groupPin,
+  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, players, groupPin,
 }: Props) {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
@@ -41,7 +34,6 @@ export default function AdminPanel({
   const [editingId, setEditingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const [approveLoading, setApproveLoading] = useState<string | null>(null)
 
   useEffect(() => {
     if (sessionStorage.getItem('admin_authed') === '1') setAuthed(true)
@@ -69,14 +61,6 @@ export default function AdminPanel({
     ...heartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
   ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
 
-  const pendingGames: AllGame[] = [
-    ...pendingPongGames.map(g => ({ kind: 'pong' as const, played_at: g.played_at, data: g })),
-    ...pendingBeerDieGames.map(g => ({ kind: 'beer-die' as const, played_at: g.played_at, data: g })),
-    ...pendingCornholeGames.map(g => ({ kind: 'cornhole' as const, played_at: g.played_at, data: g })),
-    ...pendingSpikeballGames.map(g => ({ kind: 'spikeball' as const, played_at: g.played_at, data: g })),
-    ...pendingHeartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
-  ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
-
   const apiPath = (kind: string, id: string) => {
     if (kind === 'pong') return `/api/pong/${id}`
     if (kind === 'beer-die') return `/api/beer-die/${id}`
@@ -89,13 +73,6 @@ export default function AdminPanel({
     setDeleteLoading(true)
     await fetch(apiPath(kind, id), { method: 'DELETE' })
     setDeleteLoading(false)
-    window.location.reload()
-  }
-
-  const handleApprove = async (kind: string, id: string) => {
-    setApproveLoading(id)
-    await fetch(apiPath(kind, id), { method: 'PATCH' })
-    setApproveLoading(null)
     window.location.reload()
   }
 
@@ -164,7 +141,7 @@ export default function AdminPanel({
     )
   }
 
-  const GameRow = ({ g, isPending }: { g: AllGame; isPending: boolean }) => {
+  const GameRow = ({ g }: { g: AllGame }) => {
     const id = g.data.id
     const isEditing = editingId === id
     const isConfirmingDelete = confirmDeleteId === id
@@ -182,22 +159,12 @@ export default function AdminPanel({
           <div className="flex items-center gap-2 shrink-0">
             {!isConfirmingDelete && (
               <>
-                {isPending ? (
-                  <button
-                    onClick={() => handleApprove(g.kind, id)}
-                    disabled={approveLoading === id}
-                    className="text-xs font-bold bg-win text-white px-2 py-1 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors"
-                  >
-                    {approveLoading === id ? '...' : '✓ Approve'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setEditingId(isEditing ? null : id)}
-                    className="text-xs text-muted hover:text-stone-900 px-2 py-1 rounded hover:bg-amber-50 transition-colors"
-                  >
-                    {isEditing ? 'Close' : '✏️ Edit'}
-                  </button>
-                )}
+                <button
+                  onClick={() => setEditingId(isEditing ? null : id)}
+                  className="text-xs text-muted hover:text-stone-900 px-2 py-1 rounded hover:bg-amber-50 transition-colors"
+                >
+                  {isEditing ? 'Close' : '✏️ Edit'}
+                </button>
                 <button
                   onClick={() => setConfirmDeleteId(id)}
                   className="text-xs text-muted hover:text-loss px-2 py-1 rounded hover:bg-amber-50 transition-colors"
@@ -227,19 +194,19 @@ export default function AdminPanel({
           </div>
         </div>
 
-        {!isPending && isEditing && g.kind === 'pong' && (
+        {isEditing && g.kind === 'pong' && (
           <EditPongGame game={g.data as AdminPongGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
-        {!isPending && isEditing && g.kind === 'beer-die' && (
+        {isEditing && g.kind === 'beer-die' && (
           <EditBeerDieGame game={g.data as AdminBeerDieGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
-        {!isPending && isEditing && g.kind === 'cornhole' && (
+        {isEditing && g.kind === 'cornhole' && (
           <EditCornholeGame game={g.data as AdminCornholeGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
-        {!isPending && isEditing && g.kind === 'spikeball' && (
+        {isEditing && g.kind === 'spikeball' && (
           <EditSpikeballGame game={g.data as AdminSpikeballGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
-        {!isPending && isEditing && g.kind === 'hearts' && (
+        {isEditing && g.kind === 'hearts' && (
           <EditHeartsGame game={g.data as AdminHeartsGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
       </div>
@@ -247,28 +214,9 @@ export default function AdminPanel({
   }
 
   return (
-    <div className="space-y-6">
-      {pendingGames.length > 0 && (
-        <div>
-          <h2 className="text-sm font-black uppercase tracking-widest text-muted mb-3">
-            Pending Approval
-            <span className="ml-2 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded-full">{pendingGames.length}</span>
-          </h2>
-          <div className="space-y-2">
-            {pendingGames.map(g => <GameRow key={g.data.id} g={g} isPending={true} />)}
-          </div>
-        </div>
-      )}
-
-      <div>
-        {pendingGames.length > 0 && (
-          <h2 className="text-sm font-black uppercase tracking-widest text-muted mb-3">Approved Games</h2>
-        )}
-        <div className="space-y-2">
-          {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
-          {allGames.map(g => <GameRow key={g.data.id} g={g} isPending={false} />)}
-        </div>
-      </div>
+    <div className="space-y-2">
+      {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
+      {allGames.map(g => <GameRow key={g.data.id} g={g} />)}
     </div>
   )
 }
