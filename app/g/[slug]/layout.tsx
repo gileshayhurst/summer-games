@@ -1,7 +1,14 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { getGroupBySlug } from '@/lib/supabase-server'
 import GroupProvider from '@/components/GroupProvider'
 import GroupNav from '@/components/GroupNav'
+
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  return { manifest: `/g/${params.slug}/manifest.webmanifest` }
+}
 
 export default async function GroupLayout({
   children,
