@@ -13,36 +13,26 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
   const supabase = createServerClient()
   const [
     { data: pongGamesRaw },
-    { data: pendingPongRaw },
     { data: pongPlayers },
     { data: beerDieGamesRaw },
-    { data: pendingBeerDieRaw },
     { data: beerDiePlayers },
     { data: cornholeGamesRaw },
-    { data: pendingCornholeRaw },
     { data: cornholePlayers },
     { data: spikeballGamesRaw },
-    { data: pendingSpikeballRaw },
     { data: spikeballPlayers },
     { data: heartsGamesRaw },
-    { data: pendingHeartsRaw },
     { data: heartsPlayers },
     { data: users },
   ] = await Promise.all([
-    supabase.from('pong_games').select('id, cups_left, played_at').eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }),
-    supabase.from('pong_games').select('id, cups_left, played_at').eq('group_id', group.id).eq('approved', false).order('played_at', { ascending: false }),
+    supabase.from('pong_games').select('id, cups_left, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('pong_game_players').select('game_id, player_id, side').eq('group_id', group.id),
-    supabase.from('beer_die_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }),
-    supabase.from('beer_die_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', false).order('played_at', { ascending: false }),
+    supabase.from('beer_die_games').select('id, points_differential, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('beer_die_game_players').select('game_id, player_id, side').eq('group_id', group.id),
-    supabase.from('cornhole_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }),
-    supabase.from('cornhole_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', false).order('played_at', { ascending: false }),
+    supabase.from('cornhole_games').select('id, points_differential, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('cornhole_game_players').select('game_id, player_id, side').eq('group_id', group.id),
-    supabase.from('spikeball_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }),
-    supabase.from('spikeball_games').select('id, points_differential, played_at').eq('group_id', group.id).eq('approved', false).order('played_at', { ascending: false }),
+    supabase.from('spikeball_games').select('id, points_differential, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('spikeball_game_players').select('game_id, player_id, side').eq('group_id', group.id),
-    supabase.from('hearts_games').select('id, played_at').eq('group_id', group.id).eq('approved', true).order('played_at', { ascending: false }),
-    supabase.from('hearts_games').select('id, played_at').eq('group_id', group.id).eq('approved', false).order('played_at', { ascending: false }),
+    supabase.from('hearts_games').select('id, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('hearts_game_players').select('game_id, player_id, lost').eq('group_id', group.id),
     supabase.from('users').select('id, name, created_at').eq('group_id', group.id).order('name'),
   ])
@@ -87,11 +77,6 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
         cornholeGames={assembleCornhole(cornholeGamesRaw ?? [])}
         spikeballGames={assembleSpikeball(spikeballGamesRaw ?? [])}
         heartsGames={assembleHearts(heartsGamesRaw ?? [])}
-        pendingPongGames={assemblePong(pendingPongRaw ?? [])}
-        pendingBeerDieGames={assembleBeerDie(pendingBeerDieRaw ?? [])}
-        pendingCornholeGames={assembleCornhole(pendingCornholeRaw ?? [])}
-        pendingSpikeballGames={assembleSpikeball(pendingSpikeballRaw ?? [])}
-        pendingHeartsGames={assembleHearts(pendingHeartsRaw ?? [])}
         players={(users ?? []) as User[]}
         groupPin={group.pin}
       />
