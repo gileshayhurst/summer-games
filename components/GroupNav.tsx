@@ -26,7 +26,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
 
   return (
     <>
-      <nav className="bg-card border-b border-warm px-4 pb-3 flex items-center sticky top-0 z-10" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
+      <nav className="bg-card border-b border-warm px-4 pb-3 flex items-center sticky top-0 z-10 relative" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
         <button
           onClick={() => setShowHomeModal(true)}
           className="text-muted hover:text-stone-900 transition-colors mr-3 text-base shrink-0"
@@ -34,7 +34,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
         >
           🏠
         </button>
-        <Link href={base} className="text-brand font-black text-sm tracking-widest uppercase shrink-0">
+        <Link href={base} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 text-brand font-black text-sm tracking-widest uppercase shrink-0">
           {groupName}
         </Link>
         <div className="hidden md:flex flex-1 items-center justify-evenly px-4 flex-wrap gap-y-1">
