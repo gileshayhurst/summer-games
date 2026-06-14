@@ -37,7 +37,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
         <Link href={base} className="text-brand font-black text-sm tracking-widest uppercase shrink-0">
           {groupName}
         </Link>
-        <div className="flex-1 flex items-center justify-evenly px-4 flex-wrap gap-y-1">
+        <div className="hidden md:flex flex-1 items-center justify-evenly px-4 flex-wrap gap-y-1">
           {navItems.map(({ href, label }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/')
             return (
@@ -55,6 +55,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
             )
           })}
         </div>
+        <div className="flex-1 md:hidden" />
         <Link
           href={`${base}/admin`}
           className="text-muted hover:text-stone-900 transition-colors mr-2 text-base shrink-0"
@@ -64,7 +65,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
         </Link>
         <Link
           href={`${base}/log`}
-          className="shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
+          className="hidden md:inline-flex shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
         >
           LOG GAME →
         </Link>
