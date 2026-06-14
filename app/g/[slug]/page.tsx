@@ -80,12 +80,12 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
       { data: spikeballPlayers },
     ] = await Promise.all([
       supabase.from('users').select('id, name, created_at').eq('group_id', groupId).order('name'),
-      supabase.from('pong_game_players').select('game_id, player_id, side, pong_games ( id, cups_left, played_at )').eq('group_id', groupId),
-      supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games ( id, points_differential, played_at )').eq('group_id', groupId),
+      supabase.from('pong_game_players').select('game_id, player_id, side, pong_games!inner ( id, cups_left, played_at )').eq('group_id', groupId).eq('pong_games.approved', true),
+      supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('beer_die_games.approved', true),
       supabase.from('beer_die_sinks').select('id, game_id, player_id, type').eq('group_id', groupId),
-      supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games ( id, played_at )').eq('group_id', groupId),
-      supabase.from('cornhole_game_players').select('game_id, player_id, side, cornhole_games ( id, points_differential, played_at )').eq('group_id', groupId),
-      supabase.from('spikeball_game_players').select('game_id, player_id, side, spikeball_games ( id, points_differential, played_at )').eq('group_id', groupId),
+      supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games!inner ( id, played_at )').eq('group_id', groupId).eq('hearts_games.approved', true),
+      supabase.from('cornhole_game_players').select('game_id, player_id, side, cornhole_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('cornhole_games.approved', true),
+      supabase.from('spikeball_game_players').select('game_id, player_id, side, spikeball_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('spikeball_games.approved', true),
     ])
 
     const u = (users ?? []) as User[]

@@ -26,7 +26,11 @@ export default function BottomNav({ slug }: { slug: string }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(storageKey)
-      if (stored) setPinned(JSON.parse(stored))
+      if (stored) {
+        const parsed: string[] = JSON.parse(stored)
+        const valid = parsed.filter((s) => ALL_GAMES.some((g) => g.slug === s))
+        if (valid.length > 0) setPinned(valid)
+      }
     } catch {}
   }, [storageKey])
 
@@ -56,7 +60,7 @@ export default function BottomNav({ slug }: { slug: string }) {
   return (
     <>
       {/* Bottom bar — mobile only */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-warm z-10 flex items-center h-14">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-warm z-10 flex items-center h-14" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {pinnedGames[0] ? (
           <Link href={`${base}/${pinnedGames[0].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[0].slug)}>
             <span className="text-base leading-none">{pinnedGames[0].icon}</span>

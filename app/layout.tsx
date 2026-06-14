@@ -6,6 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
   themeColor: '#1A4731',
+  viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
