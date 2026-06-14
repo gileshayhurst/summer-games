@@ -1,13 +1,16 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const viewport: Viewport = {
+  themeColor: '#1A4731',
+}
+
 export const metadata: Metadata = {
   title: 'Summer Games',
   description: 'Track your friend group\'s game results',
-  themeColor: '#1A4731',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
