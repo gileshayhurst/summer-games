@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -51,6 +51,7 @@ export default function BottomNav({ slug }: { slug: string }) {
 
   const isFull = pinned.length >= MAX_PINS
   const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug))
+  const touchStartY = useRef(0)
 
   const tabClass = (gameSlug: string) =>
     `flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
@@ -111,7 +112,11 @@ export default function BottomNav({ slug }: { slug: string }) {
 
       {/* More sheet */}
       {showMore && (
-        <div className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl">
+        <div
+          className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl"
+          onTouchStart={(e) => { touchStartY.current = e.touches[0].clientY }}
+          onTouchEnd={(e) => { if (e.changedTouches[0].clientY - touchStartY.current > 50) setShowMore(false) }}
+        >
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-8 h-1 bg-warm rounded-full" />
           </div>
