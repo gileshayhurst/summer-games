@@ -24,7 +24,7 @@ export default async function GroupLayout({
   return (
     <GroupProvider group={{ id: group.id, slug: group.slug, name: group.name }}>
       <GroupNav slug={group.slug} groupName={group.name} />
-      <main className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8">{children}</main>
       <BottomNav slug={group.slug} />
     </GroupProvider>
   )

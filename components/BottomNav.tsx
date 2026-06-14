@@ -100,45 +100,49 @@ export default function BottomNav({ slug }: { slug: string }) {
   return (
     <>
       {/* Bottom bar — mobile only */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-warm z-10 flex items-center h-14" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {pinnedGames[0] ? (
-          <Link href={`${base}/${pinnedGames[0].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[0].slug)}>
-            <span className="text-base leading-none">{pinnedGames[0].icon}</span>
-            <span>{pinnedGames[0].label}</span>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-warm z-10">
+        <div className="flex items-center h-16">
+          {pinnedGames[0] ? (
+            <Link href={`${base}/${pinnedGames[0].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[0].slug)}>
+              <span className="text-lg leading-none">{pinnedGames[0].icon}</span>
+              <span>{pinnedGames[0].label}</span>
+            </Link>
+          ) : <div className="flex-1" />}
+
+          {pinnedGames[1] ? (
+            <Link href={`${base}/${pinnedGames[1].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[1].slug)}>
+              <span className="text-lg leading-none">{pinnedGames[1].icon}</span>
+              <span>{pinnedGames[1].label}</span>
+            </Link>
+          ) : <div className="flex-1" />}
+
+          <Link
+            href={`${base}/log`}
+            onClick={() => setShowMore(false)}
+            className="flex-1 flex items-center justify-center"
+          >
+            <span className="bg-win text-white text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
           </Link>
-        ) : <div className="flex-1" />}
 
-        {pinnedGames[1] ? (
-          <Link href={`${base}/${pinnedGames[1].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[1].slug)}>
-            <span className="text-base leading-none">{pinnedGames[1].icon}</span>
-            <span>{pinnedGames[1].label}</span>
-          </Link>
-        ) : <div className="flex-1" />}
+          {pinnedGames[2] ? (
+            <Link href={`${base}/${pinnedGames[2].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[2].slug)}>
+              <span className="text-lg leading-none">{pinnedGames[2].icon}</span>
+              <span>{pinnedGames[2].label}</span>
+            </Link>
+          ) : <div className="flex-1" />}
 
-        <Link
-          href={`${base}/log`}
-          onClick={() => setShowMore(false)}
-          className="flex-1 flex items-center justify-center"
-        >
-          <span className="bg-win text-white text-[9px] font-black px-3 py-1.5 rounded-full tracking-wider uppercase">LOG+</span>
-        </Link>
-
-        {pinnedGames[2] ? (
-          <Link href={`${base}/${pinnedGames[2].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[2].slug)}>
-            <span className="text-base leading-none">{pinnedGames[2].icon}</span>
-            <span>{pinnedGames[2].label}</span>
-          </Link>
-        ) : <div className="flex-1" />}
-
-        <button
-          onClick={() => setShowMore(s => !s)}
-          className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
-            showMore ? 'text-win' : 'text-muted'
-          }`}
-        >
-          <span className="text-base leading-none">···</span>
-          <span>More</span>
-        </button>
+          <button
+            onClick={() => setShowMore(s => !s)}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
+              showMore ? 'text-win' : 'text-muted'
+            }`}
+          >
+            <span className="text-lg leading-none">···</span>
+            <span>More</span>
+          </button>
+        </div>
+        {/* Safe area spacer — grows the bar below the tabs on iPhone */}
+        <div aria-hidden="true" style={{ height: 'env(safe-area-inset-bottom)' }} />
       </nav>
 
       {/* More sheet backdrop */}
@@ -153,7 +157,8 @@ export default function BottomNav({ slug }: { slug: string }) {
       {showMore && (
         <div
           ref={sheetRef}
-          className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl will-change-transform"
+          className="md:hidden fixed left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl will-change-transform"
+          style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom))' }}
         >
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-8 h-1 bg-warm rounded-full" />
