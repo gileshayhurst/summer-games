@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export default function GroupNav({ slug, groupName }: { slug: string; groupName: string }) {
+export default function GroupNav({ slug, groupName, isExample = false }: { slug: string; groupName: string; isExample?: boolean }) {
   const base = `/g/${slug}`
   const pathname = usePathname()
   const [showHomeModal, setShowHomeModal] = useState(false)
@@ -56,19 +56,23 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
           })}
         </div>
         <div className="flex-1 md:hidden" />
-        <Link
-          href={`${base}/admin`}
-          className="text-muted hover:text-stone-900 transition-colors mr-2 text-base shrink-0"
-          aria-label="Admin settings"
-        >
-          ⚙️
-        </Link>
-        <Link
-          href={`${base}/log`}
-          className="hidden md:inline-flex shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
-        >
-          LOG GAME →
-        </Link>
+        {!isExample && (
+          <Link
+            href={`${base}/admin`}
+            className="text-muted hover:text-stone-900 transition-colors mr-2 text-base shrink-0"
+            aria-label="Admin settings"
+          >
+            ⚙️
+          </Link>
+        )}
+        {!isExample && (
+          <Link
+            href={`${base}/log`}
+            className="hidden md:inline-flex shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
+          >
+            LOG GAME →
+          </Link>
+        )}
       </nav>
 
       {showHomeModal && (

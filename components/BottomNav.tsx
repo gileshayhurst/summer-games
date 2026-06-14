@@ -15,7 +15,7 @@ const ALL_GAMES = [
 const DEFAULT_PINS = ['pong', 'beer-die', 'hearts']
 const MAX_PINS = 3
 
-export default function BottomNav({ slug }: { slug: string }) {
+export default function BottomNav({ slug, isExample = false }: { slug: string; isExample?: boolean }) {
   const base = `/g/${slug}`
   const pathname = usePathname()
   const storageKey = `sg-pinned-${slug}`
@@ -116,13 +116,17 @@ export default function BottomNav({ slug }: { slug: string }) {
             </Link>
           ) : <div className="flex-1" />}
 
-          <Link
-            href={`${base}/log`}
-            onClick={() => setShowMore(false)}
-            className="flex-1 flex items-center justify-center"
-          >
-            <span className="bg-win text-white text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
-          </Link>
+          {isExample ? (
+            <div className="flex-1" />
+          ) : (
+            <Link
+              href={`${base}/log`}
+              onClick={() => setShowMore(false)}
+              className="flex-1 flex items-center justify-center"
+            >
+              <span className="bg-win text-white text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
+            </Link>
+          )}
 
           {pinnedGames[2] ? (
             <Link href={`${base}/${pinnedGames[2].slug}`} onClick={() => setShowMore(false)} className={tabClass(pinnedGames[2].slug)}>
