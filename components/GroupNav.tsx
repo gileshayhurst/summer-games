@@ -26,7 +26,7 @@ export default function GroupNav({ slug, groupName }: { slug: string; groupName:
 
   return (
     <>
-      <nav className="bg-card border-b border-warm px-4 py-3 flex items-center sticky top-0 z-10">
+      <nav className="bg-card border-b border-warm px-4 pb-3 flex items-center sticky top-0 z-10" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
         <button
           onClick={() => setShowHomeModal(true)}
           className="text-muted hover:text-stone-900 transition-colors mr-3 text-base shrink-0"
