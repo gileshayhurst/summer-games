@@ -53,23 +53,42 @@ export default function BottomNav({ slug }: { slug: string }) {
   const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug))
   const sheetRef = useRef<HTMLDivElement>(null)
 
-  // Lock body scroll when sheet is open + swipe-down to dismiss
+  // Lock body scroll when sheet is open; drag-to-dismiss with snap
   useEffect(() => {
     if (!showMore) return
     document.body.style.overflow = 'hidden'
     const sheet = sheetRef.current
+    if (!sheet) return
     let startY = 0
-    const onStart = (e: TouchEvent) => { startY = e.touches[0].clientY }
-    const onMove = (e: TouchEvent) => { if (e.touches[0].clientY > startY) e.preventDefault() }
-    const onEnd = (e: TouchEvent) => { if (e.changedTouches[0].clientY - startY > 50) setShowMore(false) }
-    sheet?.addEventListener('touchstart', onStart, { passive: true })
-    sheet?.addEventListener('touchmove', onMove, { passive: false })
-    sheet?.addEventListener('touchend', onEnd, { passive: true })
+    let delta = 0
+    const onStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY
+      delta = 0
+      sheet.style.transition = 'none'
+    }
+    const onMove = (e: TouchEvent) => {
+      delta = Math.max(0, e.touches[0].clientY - startY)
+      sheet.style.transform = `translateY(${delta}px)`
+      e.preventDefault()
+    }
+    const onEnd = () => {
+      const height = sheet.offsetHeight
+      sheet.style.transition = 'transform 0.25s ease'
+      if (delta > height / 2) {
+        sheet.style.transform = `translateY(${height}px)`
+        setTimeout(() => setShowMore(false), 250)
+      } else {
+        sheet.style.transform = 'translateY(0)'
+      }
+    }
+    sheet.addEventListener('touchstart', onStart, { passive: true })
+    sheet.addEventListener('touchmove', onMove, { passive: false })
+    sheet.addEventListener('touchend', onEnd, { passive: true })
     return () => {
       document.body.style.overflow = ''
-      sheet?.removeEventListener('touchstart', onStart)
-      sheet?.removeEventListener('touchmove', onMove)
-      sheet?.removeEventListener('touchend', onEnd)
+      sheet.removeEventListener('touchstart', onStart)
+      sheet.removeEventListener('touchmove', onMove)
+      sheet.removeEventListener('touchend', onEnd)
     }
   }, [showMore])
 
@@ -134,7 +153,7 @@ export default function BottomNav({ slug }: { slug: string }) {
       {showMore && (
         <div
           ref={sheetRef}
-          className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl"
+          className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-card rounded-t-2xl border-t border-warm shadow-xl will-change-transform"
         >
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-8 h-1 bg-warm rounded-full" />
