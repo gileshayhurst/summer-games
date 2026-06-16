@@ -31,9 +31,9 @@ export default function LandingPage() {
             className="bg-win text-white font-black px-8 py-3 rounded-full hover:bg-orange-400 transition-colors text-base tracking-wider uppercase">
             Create Your Group →
           </Link>
-          <Link href="/g/summer-games"
+          <Link href="/g/example"
             className="text-muted font-bold px-8 py-3 rounded-full border-2 border-warm hover:bg-card transition-colors text-base tracking-wide uppercase">
-            See an Example (Press home in top left to return)
+            See an Example
           </Link>
         </div>
         <div className="relative">

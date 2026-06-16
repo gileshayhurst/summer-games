@@ -1,0 +1,38 @@
+import Leaderboard from '@/components/Leaderboard'
+import RecentGames from '@/components/RecentGames'
+import Link from 'next/link'
+import SpikeballIcon from '@/components/icons/SpikeballIcon'
+import { exampleSpikeballLeaderboard, exampleSpikeballRecent } from '../data'
+
+const columns = [
+  { key: 'name', label: 'Player' },
+  { key: 'wins', label: 'W' },
+  { key: 'losses', label: 'W' },
+  { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%` },
+  { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v) },
+]
+
+export default function ExampleSpikeballPage() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-black uppercase tracking-tight mb-1"><SpikeballIcon className="inline w-9 h-9 mr-1 align-middle" /> Spikeball</h1>
+        <p className="text-muted text-sm">Ranked by win rate</p>
+      </div>
+      <Leaderboard entries={exampleSpikeballLeaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-card border border-warm rounded-xl p-5 text-center">
+          <p className="text-sm font-bold text-stone-900 mb-1">Want head-to-head stats and partner records?</p>
+          <p className="text-sm text-muted mb-3">Create your own group to track your crew&apos;s game history.</p>
+          <Link href="/create" className="inline-block bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
+            Create Your Group →
+          </Link>
+        </div>
+        <div>
+          <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
+          <RecentGames games={exampleSpikeballRecent as any[]} />
+        </div>
+      </div>
+    </div>
+  )
+}
