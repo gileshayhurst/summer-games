@@ -1,6 +1,7 @@
 import CornholeIcon from './CornholeIcon'
 import SpikeballIcon from './SpikeballIcon'
 import PoolIcon from './PoolIcon'
+import PokerIcon from './PokerIcon'
 
 const emojiMap: Record<string, string> = {
   pong: '🏓',
@@ -12,5 +13,6 @@ export default function GameIcon({ type, className }: { type: string; className?
   if (type === 'cornhole') return <CornholeIcon className={className} />
   if (type === 'spikeball') return <SpikeballIcon className={className} />
   if (type === 'pool') return <PoolIcon className={className} />
+  if (type === 'poker') return <PokerIcon className={className} />
   return <span className={className}>{emojiMap[type] ?? '🎮'}</span>
 }
