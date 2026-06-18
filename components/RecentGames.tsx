@@ -22,6 +22,10 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
     title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.balls_differential} ball${g.balls_differential !== 1 ? 's' : ''}`,
   }
+  if (g.type === 'poker') return {
+    title: `Poker — ${g.results.map(r => r.name).join(', ')}`,
+    detail: `${g.results.length} player${g.results.length !== 1 ? 's' : ''}`,
+  }
   return {
     title: `Hearts — ${g.players.join(', ')}`,
     detail: `${g.loser} lost`,

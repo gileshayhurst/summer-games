@@ -210,4 +210,32 @@ export type RecentPoolGame = {
   balls_differential: number
 }
 
-export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame
+export type PokerGame = {
+  id: string
+  played_at: string
+}
+
+export type PokerGamePlayer = {
+  game_id: string
+  player_id: string
+  amount_cents: number
+  poker_games: PokerGame
+}
+
+export type PokerLeaderboardEntry = {
+  player_id: string
+  name: string
+  games_played: number
+  total_profit_cents: number
+  win_sessions: number
+  win_rate: number
+}
+
+export type RecentPokerGame = {
+  type: 'poker'
+  id: string
+  played_at: string
+  results: { name: string; amount_cents: number }[]
+}
+
+export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame | RecentPokerGame
