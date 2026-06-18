@@ -179,4 +179,35 @@ export type RecentHeartsGame = {
   loser: string
 }
 
-export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame
+export type PoolGame = {
+  id: string
+  balls_differential: number
+  played_at: string
+}
+
+export type PoolGamePlayer = {
+  game_id: string
+  player_id: string
+  side: 'winner' | 'loser'
+  pool_games: PoolGame
+}
+
+export type PoolLeaderboardEntry = {
+  player_id: string
+  name: string
+  wins: number
+  losses: number
+  win_rate: number
+  balls_differential: number
+}
+
+export type RecentPoolGame = {
+  type: 'pool'
+  id: string
+  played_at: string
+  winners: string[]
+  losers: string[]
+  balls_differential: number
+}
+
+export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame
