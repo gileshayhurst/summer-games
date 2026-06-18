@@ -5,7 +5,10 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
-  themeColor: '#1A4731',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#1A4731' },
+    { media: '(prefers-color-scheme: dark)', color: '#1c1917' },
+  ],
   viewportFit: 'cover',
 }
 
@@ -24,7 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-bg text-stone-900 min-h-screen`}>
+      <body className={`${inter.className} bg-bg min-h-screen`}>
         {children}
       </body>
     </html>

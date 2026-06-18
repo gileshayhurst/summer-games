@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-bg: #fffbf0;
+  --color-card: #fff7ed;
+  --color-win: #f97316;
+  --color-loss: #ef4444;
+  --color-gold: #eab308;
+  --color-brand: #c2410c;
+  --color-muted: #78716c;
+  --color-warm: #f0e0b8;
+  --color-forest: #1A4731;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1917;
+    --color-card: #292524;
+    --color-muted: #a8a29e;
+    --color-warm: #44403c;
+  }
+
+  body {
+    color: #fafaf9;
+  }
+
+  /* Flip stone text and bg classes that are hardcoded in components */
+  .text-stone-900 { color: #fafaf9; }
+  .text-stone-700 { color: #e7e5e4; }
+  .text-stone-600 { color: #d6d3d1; }
+  .bg-stone-100  { background-color: #3c3836; }
+  .bg-stone-200  { background-color: #44403c; }
+  .hover\:bg-stone-200:hover { background-color: #57534e; }
+  .hover\:bg-amber-50:hover  { background-color: #312e2b; }
+  .bg-amber-50   { background-color: #292524; }
+  .bg-amber-100  { background-color: #3a2e1c; }
+  .text-amber-700 { color: #fbbf24; }
+  .bg-blue-100   { background-color: #1e2e3d; }
+  .text-blue-700  { color: #60a5fa; }
+  .bg-green-100  { background-color: #1a2e22; }
+  .text-green-700 { color: #4ade80; }
+  .bg-orange-100 { background-color: #3a1f0d; }
+  .text-orange-700 { color: #fb923c; }
+  .bg-pink-100   { background-color: #3a1a2a; }
+  .text-pink-700  { color: #f472b6; }
+  .bg-purple-100 { background-color: #2e1a3a; }
+  .text-purple-700 { color: #c084fc; }
+}
