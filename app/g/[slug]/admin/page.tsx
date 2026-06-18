@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import AdminPanel from '@/components/admin/AdminPanel'
+import SuggestionsList from '@/components/admin/SuggestionsList'
 import { notFound } from 'next/navigation'
 import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame } from '@/app/admin/page'
 import { User } from '@/lib/types'
@@ -87,6 +88,7 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     <div>
       <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
       <p className="text-muted text-sm mb-8">Edit or delete logged games.</p>
+      <SuggestionsList initial={suggestions} />
       <AdminPanel
         pongGames={assemblePong(pongGamesRaw ?? [])}
         beerDieGames={assembleBeerDie(beerDieGamesRaw ?? [])}
@@ -97,27 +99,6 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
         players={(users ?? []) as User[]}
         groupPin={group.pin}
       />
-      {suggestions.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-sm font-black uppercase tracking-widest text-muted mb-4">
-            Suggestions & Feedback
-            <span className="ml-2 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded-full">{suggestions.length}</span>
-          </h2>
-          <div className="space-y-3">
-            {suggestions.map(s => (
-              <div key={s.id} className="bg-card rounded-xl border border-warm px-4 py-3 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-stone-900">{s.name ?? 'Anonymous'}</span>
-                  <span className="text-xs text-muted">{new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                {s.email && <p className="text-xs text-muted">{s.email}</p>}
-                {s.game_suggestion && <p className="text-sm text-stone-700"><span className="font-bold">Game:</span> {s.game_suggestion}</p>}
-                {s.feedback && <p className="text-sm text-stone-700"><span className="font-bold">Feedback:</span> {s.feedback}</p>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
