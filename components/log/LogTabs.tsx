@@ -18,7 +18,7 @@ const tabs: { id: Tab; label: ReactNode }[] = [
   { id: 'hearts', label: '♥ Hearts' },
   { id: 'cornhole', label: <><GameIcon type="cornhole" className="inline w-4 h-4 mr-1 align-middle" /> Cornhole</> },
   { id: 'spikeball', label: <><GameIcon type="spikeball" className="inline w-4 h-4 mr-1 align-middle" /> Spikeball</> },
-  { id: 'pool', label: '🎱 Pool' },
+  { id: 'pool', label: <><GameIcon type="pool" className="inline w-4 h-4 mr-1 align-middle" /> Pool</> },
 ]
 
 export default function LogTabs({ players }: { players: User[] }) {
