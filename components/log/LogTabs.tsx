@@ -8,9 +8,10 @@ import HeartsForm from './HeartsForm'
 import CornholeForm from './CornholeForm'
 import SpikeballForm from './SpikeballForm'
 import PoolForm from './PoolForm'
+import PokerForm from './PokerForm'
 import GameIcon from '../icons/GameIcon'
 
-type Tab = 'pong' | 'beer-die' | 'hearts' | 'cornhole' | 'spikeball' | 'pool'
+type Tab = 'pong' | 'beer-die' | 'hearts' | 'cornhole' | 'spikeball' | 'pool' | 'poker'
 
 const tabs: { id: Tab; label: ReactNode }[] = [
   { id: 'pong', label: '🏓 Pong' },
@@ -19,6 +20,7 @@ const tabs: { id: Tab; label: ReactNode }[] = [
   { id: 'cornhole', label: <><GameIcon type="cornhole" className="inline w-4 h-4 mr-1 align-middle" /> Cornhole</> },
   { id: 'spikeball', label: <><GameIcon type="spikeball" className="inline w-4 h-4 mr-1 align-middle" /> Spikeball</> },
   { id: 'pool', label: <><GameIcon type="pool" className="inline w-4 h-4 mr-1 align-middle" /> Pool</> },
+  { id: 'poker', label: <><GameIcon type="poker" className="inline w-4 h-4 mr-1 align-middle" /> Poker</> },
 ]
 
 export default function LogTabs({ players }: { players: User[] }) {
@@ -42,6 +44,7 @@ export default function LogTabs({ players }: { players: User[] }) {
       {active === 'cornhole' && <CornholeForm players={players} />}
       {active === 'spikeball' && <SpikeballForm players={players} />}
       {active === 'pool' && <PoolForm players={players} />}
+      {active === 'poker' && <PokerForm players={players} />}
     </div>
   )
 }
