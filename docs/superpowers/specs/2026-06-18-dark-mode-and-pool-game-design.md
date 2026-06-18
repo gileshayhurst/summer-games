@@ -119,7 +119,7 @@ type PoolLeaderboardEntry = {
   wins: number
   losses: number
   win_rate: number
-  ball_differential: number
+  balls_differential: number
 }
 
 type RecentPoolGame = {
@@ -136,7 +136,22 @@ type RecentPoolGame = {
 
 ### Stats
 
-`lib/stats.ts` gets a `getPoolLeaderboard` function following the same pattern as `getCornholeLeaderboard` — aggregate wins, losses, win rate, and ball differential from the DB.
+`lib/stats.ts` gets a `getPoolLeaderboard` function following the same pattern as `getCornholeLeaderboard` — aggregate wins, losses, win rate, and balls differential from the DB.
+
+### Admin panel
+
+`app/admin/page.tsx` defines an `AdminPoolGame` type (mirroring `AdminCornholeGame`) and fetches pool games from Supabase, passing them to `AdminPanel`.
+
+`components/admin/AdminPanel.tsx` updated to:
+- Import `EditPoolGame` and `AdminPoolGame`
+- Add `poolGames: AdminPoolGame[]` to props
+- Extend the `AllGame` union with `kind: 'pool'`
+- Add pool case to `apiPath`, `gameSummary`, `badgeLabel`, and `badgeColor`
+- Render `<EditPoolGame>` when editing a pool game row
+
+### Recent games API
+
+`app/api/recent/route.ts` updated to fetch `pool_games` alongside the existing games and map them to `RecentPoolGame` entries in the combined sorted list.
 
 ---
 
