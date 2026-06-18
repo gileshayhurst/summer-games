@@ -7,6 +7,7 @@ import {
   exampleCornholeLeaderboard,
   exampleSpikeballLeaderboard,
   exampleHeartsLeaderboard,
+  examplePoolLeaderboard,
   exampleRecentAll,
 } from './data'
 
@@ -18,6 +19,7 @@ const GAME_CARDS = [
   { key: 'hearts', slug: 'hearts', icon: '♥', name: 'Hearts' },
   { key: 'cornhole', slug: 'cornhole', icon: '🌽', name: 'Cornhole' },
   { key: 'spikeball', slug: 'spikeball', icon: '🏐', name: 'Spikeball' },
+  { key: 'pool', slug: 'pool', icon: '🎱', name: 'Pool' },
 ]
 
 function toLeader(entry: any, isHearts = false): GameLeader {
@@ -35,6 +37,7 @@ const leaders: Record<string, GameLeader> = {
   hearts: toLeader((exampleHeartsLeaderboard as any[])[0], true),
   cornhole: toLeader((exampleCornholeLeaderboard as any[])[0]),
   spikeball: toLeader((exampleSpikeballLeaderboard as any[])[0]),
+  pool: toLeader((examplePoolLeaderboard as any[])[0]),
 }
 
 export default function ExampleHomePage() {
@@ -45,7 +48,7 @@ export default function ExampleHomePage() {
         <h1 className="text-4xl font-black tracking-tight text-stone-900 uppercase">{EXAMPLE_GROUP_NAME}</h1>
         <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
         {GAME_CARDS.map(({ key, slug, icon, name }) => {
           const leader = leaders[key] ?? null
           return (
