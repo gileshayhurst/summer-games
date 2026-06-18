@@ -4,8 +4,11 @@ import {
   computeBeerDieLeaderboard,
   computeBeerDieHeadToHead,
   computeHeartsLeaderboard,
+  computePoolLeaderboard,
+  computePoolHeadToHead,
+  computePoolPartnerRecord,
 } from '../../lib/stats'
-import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer } from '../../lib/types'
+import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer } from '../../lib/types'
 
 const users: User[] = [
   { id: 'u1', name: 'Giles', created_at: '2026-01-01' },
@@ -138,5 +141,89 @@ describe('computeHeartsLeaderboard', () => {
 
   it('excludes players with 0 games', () => {
     expect(computeHeartsLeaderboard(users, [])).toHaveLength(0)
+  })
+})
+
+// ── Pool ──────────────────────────────────────────────────────────────────────
+
+const pg2 = (id: string, balls: number) => ({ id, balls_differential: balls, played_at: '2026-06-01T12:00:00Z' })
+
+describe('computePoolLeaderboard', () => {
+  const gamePlayers: PoolGamePlayer[] = [
+    // g1: Giles+Sherm beat Rob+Ant by 3
+    { game_id: 'g1', player_id: 'u1', side: 'winner', pool_games: pg2('g1', 3) },
+    { game_id: 'g1', player_id: 'u2', side: 'winner', pool_games: pg2('g1', 3) },
+    { game_id: 'g1', player_id: 'u3', side: 'loser',  pool_games: pg2('g1', 3) },
+    { game_id: 'g1', player_id: 'u4', side: 'loser',  pool_games: pg2('g1', 3) },
+    // g2: Rob+Ant beat Giles+Sherm by 1
+    { game_id: 'g2', player_id: 'u3', side: 'winner', pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u4', side: 'winner', pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u1', side: 'loser',  pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u2', side: 'loser',  pool_games: pg2('g2', 1) },
+    // g3: Giles+Sherm beat Rob+Ant by 2
+    { game_id: 'g3', player_id: 'u1', side: 'winner', pool_games: pg2('g3', 2) },
+    { game_id: 'g3', player_id: 'u2', side: 'winner', pool_games: pg2('g3', 2) },
+    { game_id: 'g3', player_id: 'u3', side: 'loser',  pool_games: pg2('g3', 2) },
+    { game_id: 'g3', player_id: 'u4', side: 'loser',  pool_games: pg2('g3', 2) },
+  ]
+
+  it('ranks by win rate descending', () => {
+    const result = computePoolLeaderboard(users, gamePlayers)
+    expect(result[0].name).toBe('Giles')
+    expect(result[0].wins).toBe(2)
+    expect(result[0].losses).toBe(1)
+    expect(result[0].balls_differential).toBe(4) // +3+2-1
+  })
+
+  it('excludes players with 0 games', () => {
+    expect(computePoolLeaderboard(users, [])).toHaveLength(0)
+  })
+})
+
+describe('computePoolHeadToHead', () => {
+  const gamePlayers: PoolGamePlayer[] = [
+    // g1: Giles beats Rob
+    { game_id: 'g1', player_id: 'u1', side: 'winner', pool_games: pg2('g1', 3) },
+    { game_id: 'g1', player_id: 'u3', side: 'loser',  pool_games: pg2('g1', 3) },
+    // g2: Rob beats Giles
+    { game_id: 'g2', player_id: 'u3', side: 'winner', pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u1', side: 'loser',  pool_games: pg2('g2', 1) },
+    // g3: Giles+Rob on same team — should NOT count as h2h
+    { game_id: 'g3', player_id: 'u1', side: 'winner', pool_games: pg2('g3', 2) },
+    { game_id: 'g3', player_id: 'u3', side: 'winner', pool_games: pg2('g3', 2) },
+    { game_id: 'g3', player_id: 'u2', side: 'loser',  pool_games: pg2('g3', 2) },
+  ]
+
+  it('counts wins and losses between opponents', () => {
+    const r = computePoolHeadToHead('u1', 'u3', gamePlayers)
+    expect(r.wins).toBe(1)
+    expect(r.losses).toBe(1)
+  })
+
+  it('ignores games where they were teammates', () => {
+    const r = computePoolHeadToHead('u1', 'u3', gamePlayers.slice(4))
+    expect(r.wins).toBe(0)
+    expect(r.losses).toBe(0)
+  })
+})
+
+describe('computePoolPartnerRecord', () => {
+  const gamePlayers: PoolGamePlayer[] = [
+    // g1: Giles+Sherm beat Rob+Ant
+    { game_id: 'g1', player_id: 'u1', side: 'winner', pool_games: pg2('g1', 2) },
+    { game_id: 'g1', player_id: 'u2', side: 'winner', pool_games: pg2('g1', 2) },
+    { game_id: 'g1', player_id: 'u3', side: 'loser',  pool_games: pg2('g1', 2) },
+    { game_id: 'g1', player_id: 'u4', side: 'loser',  pool_games: pg2('g1', 2) },
+    // g2: Giles+Sherm lose
+    { game_id: 'g2', player_id: 'u3', side: 'winner', pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u4', side: 'winner', pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u1', side: 'loser',  pool_games: pg2('g2', 1) },
+    { game_id: 'g2', player_id: 'u2', side: 'loser',  pool_games: pg2('g2', 1) },
+  ]
+
+  it('counts wins and losses when partnered together', () => {
+    const r = computePoolPartnerRecord('u1', 'u2', gamePlayers)
+    expect(r.wins).toBe(1)
+    expect(r.losses).toBe(1)
   })
 })
