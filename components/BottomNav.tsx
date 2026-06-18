@@ -9,6 +9,7 @@ const ALL_GAMES = [
   { slug: 'hearts', label: 'Hearts', icon: '♥' },
   { slug: 'cornhole', label: 'Cornhole', icon: '🌽' },
   { slug: 'spikeball', label: 'Spikeball', icon: '🏐' },
+  { slug: 'pool', label: 'Pool', icon: '🎱' },
   { slug: 'players', label: 'Players', icon: '👥' },
 ]
 
