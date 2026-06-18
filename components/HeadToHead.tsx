@@ -6,7 +6,7 @@ import { useGroup } from '@/lib/group-context'
 type Props = {
   players: User[]
   currentPlayerId?: string
-  game: 'pong' | 'beer-die' | 'cornhole' | 'spikeball'
+  game: 'pong' | 'beer-die' | 'cornhole' | 'spikeball' | 'pool'
 }
 
 export default function HeadToHead({ players, currentPlayerId, game }: Props) {
