@@ -4,7 +4,7 @@ import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import AdminPanel from '@/components/admin/AdminPanel'
 import SuggestionsList from '@/components/admin/SuggestionsList'
 import { notFound } from 'next/navigation'
-import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame } from '@/app/admin/page'
+import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
 import { User } from '@/lib/types'
 
 export default async function GroupAdminPage({ params }: { params: { slug: string } }) {
@@ -25,6 +25,8 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     { data: heartsPlayers },
     { data: poolGamesRaw },
     { data: poolPlayers },
+    { data: pokerGamesRaw },
+    { data: pokerPlayers },
     { data: users },
     { data: suggestionsRaw },
   ] = await Promise.all([
@@ -40,6 +42,8 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     supabase.from('hearts_game_players').select('game_id, player_id, lost').eq('group_id', group.id),
     supabase.from('pool_games').select('id, balls_differential, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('pool_game_players').select('game_id, player_id, side').eq('group_id', group.id),
+    supabase.from('poker_games').select('id, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
+    supabase.from('poker_game_players').select('game_id, player_id, amount_cents').eq('group_id', group.id),
     supabase.from('users').select('id, name, created_at').eq('group_id', group.id).order('name'),
     params.slug === 'summer-games'
       ? supabase.from('suggestions').select('id, name, email, game_suggestion, feedback, created_at').order('created_at', { ascending: false })
@@ -82,6 +86,15 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
       return { id: g.id, balls_differential: g.balls_differential, played_at: g.played_at, winner_ids: gp.filter((p: any) => p.side === 'winner').map((p: any) => p.player_id), loser_ids: gp.filter((p: any) => p.side === 'loser').map((p: any) => p.player_id) }
     })
 
+  const assemblePoker = (raw: any[]): AdminPokerGame[] =>
+    raw.map((g: any) => ({
+      id: g.id,
+      played_at: g.played_at,
+      player_amounts: (pokerPlayers ?? [])
+        .filter((p: any) => p.game_id === g.id)
+        .map((p: any) => ({ player_id: p.player_id, amount_cents: p.amount_cents })),
+    }))
+
   const suggestions = (suggestionsRaw ?? []) as { id: string; name: string | null; email: string | null; game_suggestion: string | null; feedback: string | null; created_at: string }[]
 
   return (
@@ -96,6 +109,7 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
         spikeballGames={assembleSpikeball(spikeballGamesRaw ?? [])}
         heartsGames={assembleHearts(heartsGamesRaw ?? [])}
         poolGames={assemblePool(poolGamesRaw ?? [])}
+        pokerGames={assemblePoker(pokerGamesRaw ?? [])}
         players={(users ?? []) as User[]}
         groupPin={group.pin}
       />

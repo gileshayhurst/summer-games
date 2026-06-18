@@ -50,6 +50,12 @@ export type AdminPoolGame = {
   played_at: string
 }
 
+export type AdminPokerGame = {
+  id: string
+  played_at: string
+  player_amounts: { player_id: string; amount_cents: number }[]
+}
+
 export type Suggestion = {
   id: string
   name: string | null
@@ -75,6 +81,8 @@ async function getData() {
       { data: heartsPlayers },
       { data: poolGamesRaw },
       { data: poolPlayers },
+      { data: pokerGamesRaw },
+      { data: pokerPlayers },
       { data: users },
       { data: suggestionsRaw },
     ] = await Promise.all([
@@ -90,6 +98,8 @@ async function getData() {
       supabase.from('hearts_game_players').select('game_id, player_id, lost'),
       supabase.from('pool_games').select('id, balls_differential, played_at').order('played_at', { ascending: false }),
       supabase.from('pool_game_players').select('game_id, player_id, side'),
+      supabase.from('poker_games').select('id, played_at').order('played_at', { ascending: false }),
+      supabase.from('poker_game_players').select('game_id, player_id, amount_cents'),
       supabase.from('users').select('id, name, created_at').order('name'),
       supabase.from('suggestions').select('id, name, game_suggestion, feedback, email, created_at').order('created_at', { ascending: false }),
     ])
@@ -124,18 +134,26 @@ async function getData() {
       return { id: g.id, balls_differential: g.balls_differential, played_at: g.played_at, winner_ids: gp.filter((p: any) => p.side === 'winner').map((p: any) => p.player_id), loser_ids: gp.filter((p: any) => p.side === 'loser').map((p: any) => p.player_id) }
     })
 
+    const pokerGames: AdminPokerGame[] = (pokerGamesRaw ?? []).map((g: any) => ({
+      id: g.id,
+      played_at: g.played_at,
+      player_amounts: (pokerPlayers ?? [])
+        .filter((p: any) => p.game_id === g.id)
+        .map((p: any) => ({ player_id: p.player_id, amount_cents: p.amount_cents })),
+    }))
+
     return {
-      pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames,
+      pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
       players: (users ?? []) as User[],
       suggestions: (suggestionsRaw ?? []) as Suggestion[],
     }
   } catch {
-    return { pongGames: [], beerDieGames: [], cornholeGames: [], spikeballGames: [], heartsGames: [], poolGames: [], players: [], suggestions: [] }
+    return { pongGames: [], beerDieGames: [], cornholeGames: [], spikeballGames: [], heartsGames: [], poolGames: [], pokerGames: [], players: [], suggestions: [] }
   }
 }
 
 export default async function AdminPage() {
-  const { pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, players, suggestions } = await getData()
+  const { pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, suggestions } = await getData()
   return (
     <div>
       <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
@@ -147,6 +165,7 @@ export default async function AdminPage() {
         spikeballGames={spikeballGames}
         heartsGames={heartsGames}
         poolGames={poolGames}
+        pokerGames={pokerGames}
         players={players}
         groupPin="1111"
       />

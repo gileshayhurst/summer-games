@@ -1,13 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { User } from '@/lib/types'
-import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame } from '@/app/admin/page'
+import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
 import EditPongGame from './EditPongGame'
 import EditBeerDieGame from './EditBeerDieGame'
 import EditCornholeGame from './EditCornholeGame'
 import EditSpikeballGame from './EditSpikeballGame'
 import EditHeartsGame from './EditHeartsGame'
 import EditPoolGame from './EditPoolGame'
+import EditPokerGame from './EditPokerGame'
 
 type AllGame =
   | { kind: 'pong'; played_at: string; data: AdminPongGame }
@@ -16,6 +17,7 @@ type AllGame =
   | { kind: 'spikeball'; played_at: string; data: AdminSpikeballGame }
   | { kind: 'hearts'; played_at: string; data: AdminHeartsGame }
   | { kind: 'pool'; played_at: string; data: AdminPoolGame }
+  | { kind: 'poker'; played_at: string; data: AdminPokerGame }
 
 type Props = {
   pongGames: AdminPongGame[]
@@ -24,12 +26,13 @@ type Props = {
   spikeballGames: AdminSpikeballGame[]
   heartsGames: AdminHeartsGame[]
   poolGames: AdminPoolGame[]
+  pokerGames: AdminPokerGame[]
   players: User[]
   groupPin: string
 }
 
 export default function AdminPanel({
-  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, players, groupPin,
+  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, groupPin,
 }: Props) {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
@@ -63,6 +66,7 @@ export default function AdminPanel({
     ...spikeballGames.map(g => ({ kind: 'spikeball' as const, played_at: g.played_at, data: g })),
     ...heartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
     ...poolGames.map(g => ({ kind: 'pool' as const, played_at: g.played_at, data: g })),
+    ...pokerGames.map(g => ({ kind: 'poker' as const, played_at: g.played_at, data: g })),
   ].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
 
   const apiPath = (kind: string, id: string) => {
@@ -71,6 +75,7 @@ export default function AdminPanel({
     if (kind === 'cornhole') return `/api/cornhole/${id}`
     if (kind === 'spikeball') return `/api/spikeball/${id}`
     if (kind === 'pool') return `/api/pool/${id}`
+    if (kind === 'poker') return `/api/poker/${id}`
     return `/api/hearts/${id}`
   }
 
@@ -105,6 +110,16 @@ export default function AdminPanel({
       const d = g.data as AdminPoolGame
       return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.balls_differential} balls`
     }
+    if (g.kind === 'poker') {
+      const d = g.data as AdminPokerGame
+      return d.player_amounts
+        .sort((a, b) => b.amount_cents - a.amount_cents)
+        .map(pa => {
+          const abs = (Math.abs(pa.amount_cents) / 100).toFixed(2)
+          return `${name(pa.player_id)} ${pa.amount_cents >= 0 ? '+' : '-'}$${abs}`
+        })
+        .join(', ')
+    }
     const d = g.data as AdminHeartsGame
     const loserName = name(d.game_players.find(p => p.lost)?.player_id ?? '')
     const others = d.game_players.filter(p => !p.lost).map(p => name(p.player_id)).join(', ')
@@ -117,6 +132,7 @@ export default function AdminPanel({
     if (kind === 'cornhole') return 'CORN'
     if (kind === 'spikeball') return 'SPIKE'
     if (kind === 'pool') return 'POOL'
+    if (kind === 'poker') return 'POKER'
     return 'HEARTS'
   }
 
@@ -126,6 +142,7 @@ export default function AdminPanel({
     if (kind === 'cornhole') return 'bg-green-100 text-green-700'
     if (kind === 'spikeball') return 'bg-orange-100 text-orange-700'
     if (kind === 'pool') return 'bg-purple-100 text-purple-700'
+    if (kind === 'poker') return 'bg-teal-100 text-teal-700'
     return 'bg-pink-100 text-pink-700'
   }
 
@@ -222,6 +239,9 @@ export default function AdminPanel({
         )}
         {isEditing && g.kind === 'pool' && (
           <EditPoolGame game={g.data as AdminPoolGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
+        {isEditing && g.kind === 'poker' && (
+          <EditPokerGame game={g.data as AdminPokerGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
       </div>
     )
