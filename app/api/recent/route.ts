@@ -11,6 +11,7 @@ export async function GET() {
       { data: beerDieGames },
       { data: heartsGames },
       { data: poolGames },
+      { data: pokerGames },
     ] = await Promise.all([
       supabase
         .from('pong_games')
@@ -33,6 +34,12 @@ export async function GET() {
       supabase
         .from('pool_games')
         .select(`id, balls_differential, played_at, pool_game_players ( side, users ( id, name ) )`)
+        .eq('approved', true)
+        .order('played_at', { ascending: false })
+        .limit(10),
+      supabase
+        .from('poker_games')
+        .select(`id, played_at, poker_game_players ( player_id, amount_cents, users ( id, name ) )`)
         .eq('approved', true)
         .order('played_at', { ascending: false })
         .limit(10),
@@ -81,6 +88,15 @@ export async function GET() {
           .filter((p: any) => p.side === 'loser')
           .map((p: any) => p.users?.name ?? 'Unknown'),
         balls_differential: g.balls_differential,
+      })),
+      ...(pokerGames ?? []).map((g: any) => ({
+        type: 'poker' as const,
+        id: g.id,
+        played_at: g.played_at,
+        results: (g.poker_game_players ?? []).map((p: any) => ({
+          name: p.users?.name ?? 'Unknown',
+          amount_cents: p.amount_cents,
+        })),
       })),
     ]
 
