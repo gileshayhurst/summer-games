@@ -8,10 +8,11 @@ import {
   exampleSpikeballLeaderboard,
   exampleHeartsLeaderboard,
   examplePoolLeaderboard,
+  examplePokerLeaderboard,
   exampleRecentAll,
 } from './data'
 
-type GameLeader = { name: string; wins: number; losses: number; winRatePct: number } | null
+type GameLeader = { name: string; wins: number; losses: number; winRatePct: number; statLine?: string } | null
 
 const GAME_CARDS = [
   { key: 'pong', slug: 'pong', icon: '🏓', name: 'Pong' },
@@ -20,6 +21,7 @@ const GAME_CARDS = [
   { key: 'cornhole', slug: 'cornhole', icon: '🌽', name: 'Cornhole' },
   { key: 'spikeball', slug: 'spikeball', icon: '🏐', name: 'Spikeball' },
   { key: 'pool', slug: 'pool', icon: '🎱', name: 'Pool' },
+  { key: 'poker', slug: 'poker', icon: '♠', name: 'Poker' },
 ]
 
 function toLeader(entry: any, isHearts = false): GameLeader {
@@ -38,6 +40,7 @@ const leaders: Record<string, GameLeader> = {
   cornhole: toLeader((exampleCornholeLeaderboard as any[])[0]),
   spikeball: toLeader((exampleSpikeballLeaderboard as any[])[0]),
   pool: toLeader((examplePoolLeaderboard as any[])[0]),
+  poker: toLeader((examplePokerLeaderboard as any[])[0]),
 }
 
 export default function ExampleHomePage() {
@@ -61,7 +64,7 @@ export default function ExampleHomePage() {
               <div className="text-[10px] font-black uppercase tracking-widest text-stone-900 mb-2">{name}</div>
               <div className="text-sm font-black text-stone-900 truncate">{leader?.name ?? '—'}</div>
               <div className={`text-[10px] font-bold ${leader ? 'text-muted' : 'text-stone-300'}`}>
-                {leader ? `${leader.wins}W · ${leader.losses}L · ${leader.winRatePct}%` : 'No games yet'}
+                {leader ? (leader.statLine ?? `${leader.wins}W · ${leader.losses}L · ${leader.winRatePct}%`) : 'No games yet'}
               </div>
             </Link>
           )
