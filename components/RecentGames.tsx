@@ -22,9 +22,13 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
     title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.balls_differential} ball${g.balls_differential !== 1 ? 's' : ''}`,
   }
-  if (g.type === 'poker') return {
-    title: `Poker — ${g.results.map(r => r.name).join(', ')}`,
-    detail: `${g.results.length} player${g.results.length !== 1 ? 's' : ''}`,
+  if (g.type === 'poker') {
+    const sorted = [...g.results].sort((a, b) => b.amount_cents - a.amount_cents)
+    const title = sorted.map(r => {
+      const abs = (Math.abs(r.amount_cents) / 100).toFixed(2)
+      return `${r.name} ${r.amount_cents >= 0 ? '+' : '-'}$${abs}`
+    }).join(', ')
+    return { title, detail: `${g.results.length} players` }
   }
   return {
     title: `Hearts — ${g.players.join(', ')}`,
