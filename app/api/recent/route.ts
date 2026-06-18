@@ -6,7 +6,12 @@ export async function GET() {
   try {
     const supabase = createServerClient()
 
-    const [{ data: pongGames }, { data: beerDieGames }, { data: heartsGames }] = await Promise.all([
+    const [
+      { data: pongGames },
+      { data: beerDieGames },
+      { data: heartsGames },
+      { data: poolGames },
+    ] = await Promise.all([
       supabase
         .from('pong_games')
         .select(`id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )`)
@@ -22,6 +27,12 @@ export async function GET() {
       supabase
         .from('hearts_games')
         .select(`id, played_at, hearts_game_players ( lost, users ( id, name ) )`)
+        .eq('approved', true)
+        .order('played_at', { ascending: false })
+        .limit(10),
+      supabase
+        .from('pool_games')
+        .select(`id, balls_differential, played_at, pool_game_players ( side, users ( id, name ) )`)
         .eq('approved', true)
         .order('played_at', { ascending: false })
         .limit(10),
@@ -58,6 +69,18 @@ export async function GET() {
         played_at: g.played_at,
         players: (g.hearts_game_players ?? []).map((p: any) => p.users?.name ?? 'Unknown'),
         loser: (g.hearts_game_players ?? []).find((p: any) => p.lost)?.users?.name ?? '',
+      })),
+      ...(poolGames ?? []).map((g: any) => ({
+        type: 'pool' as const,
+        id: g.id,
+        played_at: g.played_at,
+        winners: (g.pool_game_players ?? [])
+          .filter((p: any) => p.side === 'winner')
+          .map((p: any) => p.users?.name ?? 'Unknown'),
+        losers: (g.pool_game_players ?? [])
+          .filter((p: any) => p.side === 'loser')
+          .map((p: any) => p.users?.name ?? 'Unknown'),
+        balls_differential: g.balls_differential,
       })),
     ]
 
