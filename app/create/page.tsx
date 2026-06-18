@@ -83,7 +83,7 @@ export default function CreatePage() {
             />
           </div>
           <div>
-            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Players</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Players <span className="normal-case font-normal">(You can add more players later)</span></label>
             <div className="space-y-2">
               {players.map((p, i) => (
                 <input
