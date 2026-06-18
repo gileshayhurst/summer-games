@@ -22,6 +22,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
     { href: `${base}/cornhole`, label: 'Cornhole' },
     { href: `${base}/spikeball`, label: 'Spikeball' },
     { href: `${base}/pool`, label: 'Pool' },
+    { href: `${base}/poker`, label: 'Poker' },
     { href: `${base}/players`, label: 'Players' },
   ]
 

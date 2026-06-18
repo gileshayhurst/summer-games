@@ -10,6 +10,7 @@ const ALL_GAMES = [
   { slug: 'cornhole', label: 'Cornhole', icon: '🌽' },
   { slug: 'spikeball', label: 'Spikeball', icon: '🏐' },
   { slug: 'pool', label: 'Pool', icon: '🎱' },
+  { slug: 'poker', label: 'Poker', icon: '♠' },
   { slug: 'players', label: 'Players', icon: '👥' },
 ]
 
