@@ -473,6 +473,10 @@ export const examplePoolLeaderboard = [] as const
 
 export const examplePoolRecent = [] as const
 
+export const examplePokerLeaderboard = [] as const
+
+export const examplePokerRecent = [] as const
+
 export const exampleRecentAll: RecentGame[] = [
   {
     "type": "hearts",
