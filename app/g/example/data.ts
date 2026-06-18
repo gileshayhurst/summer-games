@@ -469,6 +469,10 @@ export const exampleHeartsRecent = [
   }
 ] as const
 
+export const examplePoolLeaderboard = [] as const
+
+export const examplePoolRecent = [] as const
+
 export const exampleRecentAll: RecentGame[] = [
   {
     "type": "hearts",
