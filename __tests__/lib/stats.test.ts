@@ -7,8 +7,9 @@ import {
   computePoolLeaderboard,
   computePoolHeadToHead,
   computePoolPartnerRecord,
+  computePokerLeaderboard,
 } from '../../lib/stats'
-import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer } from '../../lib/types'
+import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
 const users: User[] = [
   { id: 'u1', name: 'Giles', created_at: '2026-01-01' },
@@ -225,5 +226,47 @@ describe('computePoolPartnerRecord', () => {
     const r = computePoolPartnerRecord('u1', 'u2', gamePlayers)
     expect(r.wins).toBe(1)
     expect(r.losses).toBe(1)
+  })
+})
+
+// ── Poker ─────────────────────────────────────────────────────────────────────
+
+const pk = (id: string) => ({ id, played_at: '2026-06-18T12:00:00Z' })
+
+describe('computePokerLeaderboard', () => {
+  const gamePlayers: PokerGamePlayer[] = [
+    // g1: Giles +$40, Sherm -$20, Rob -$20
+    { game_id: 'g1', player_id: 'u1', amount_cents: 4000,  poker_games: pk('g1') },
+    { game_id: 'g1', player_id: 'u2', amount_cents: -2000, poker_games: pk('g1') },
+    { game_id: 'g1', player_id: 'u3', amount_cents: -2000, poker_games: pk('g1') },
+    // g2: Sherm +$60, Giles -$30, Rob -$30
+    { game_id: 'g2', player_id: 'u2', amount_cents: 6000,  poker_games: pk('g2') },
+    { game_id: 'g2', player_id: 'u1', amount_cents: -3000, poker_games: pk('g2') },
+    { game_id: 'g2', player_id: 'u3', amount_cents: -3000, poker_games: pk('g2') },
+  ]
+  // Sherm: 6000-2000 = +4000 (+$40)
+  // Giles: 4000-3000 = +1000 (+$10)
+  // Rob:  -2000-3000 = -5000 (-$50)
+
+  it('ranks by total_profit_cents descending', () => {
+    const result = computePokerLeaderboard(users, gamePlayers)
+    expect(result[0].name).toBe('Sherm')
+    expect(result[0].total_profit_cents).toBe(4000)
+    expect(result[1].name).toBe('Giles')
+    expect(result[1].total_profit_cents).toBe(1000)
+    expect(result[2].name).toBe('Rob')
+    expect(result[2].total_profit_cents).toBe(-5000)
+  })
+
+  it('counts games_played and win_sessions correctly', () => {
+    const result = computePokerLeaderboard(users, gamePlayers)
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.games_played).toBe(2)
+    expect(giles.win_sessions).toBe(1)
+    expect(giles.win_rate).toBeCloseTo(0.5)
+  })
+
+  it('excludes players with 0 games', () => {
+    expect(computePokerLeaderboard(users, [])).toHaveLength(0)
   })
 })

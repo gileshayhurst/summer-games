@@ -3,6 +3,7 @@ import {
   CornholeGamePlayer, CornholeLeaderboardEntry,
   SpikeballGamePlayer, SpikeballLeaderboardEntry,
   PoolGamePlayer, PoolLeaderboardEntry,
+  PokerGamePlayer, PokerLeaderboardEntry,
   PongLeaderboardEntry, BeerDieLeaderboardEntry, HeartsLeaderboardEntry,
   HeadToHeadResult,
 } from './types'
@@ -334,4 +335,32 @@ export function computePoolPartnerRecord(player1Id: string, player2Id: string, g
     else if (g.losers.has(player1Id) && g.losers.has(player2Id)) losses++
   }
   return { wins, losses }
+}
+
+export function computePokerLeaderboard(
+  users: User[],
+  gamePlayers: PokerGamePlayer[]
+): PokerLeaderboardEntry[] {
+  const stats = new Map(users.map(u => [u.id, { games_played: 0, total_profit_cents: 0, win_sessions: 0 }]))
+  for (const gp of gamePlayers) {
+    const s = stats.get(gp.player_id)
+    if (!s) continue
+    s.games_played++
+    s.total_profit_cents += gp.amount_cents
+    if (gp.amount_cents > 0) s.win_sessions++
+  }
+  return users
+    .map(u => {
+      const s = stats.get(u.id)!
+      return {
+        player_id: u.id,
+        name: u.name,
+        games_played: s.games_played,
+        total_profit_cents: s.total_profit_cents,
+        win_sessions: s.win_sessions,
+        win_rate: s.games_played > 0 ? s.win_sessions / s.games_played : 0,
+      }
+    })
+    .filter(e => e.games_played > 0 && isVisible(e.name))
+    .sort((a, b) => b.total_profit_cents - a.total_profit_cents)
 }
