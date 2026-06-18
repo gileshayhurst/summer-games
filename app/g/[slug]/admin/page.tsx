@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import AdminPanel from '@/components/admin/AdminPanel'
 import { notFound } from 'next/navigation'
-import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame } from '@/app/admin/page'
+import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame } from '@/app/admin/page'
 import { User } from '@/lib/types'
 
 export default async function GroupAdminPage({ params }: { params: { slug: string } }) {
@@ -22,6 +22,8 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     { data: spikeballPlayers },
     { data: heartsGamesRaw },
     { data: heartsPlayers },
+    { data: poolGamesRaw },
+    { data: poolPlayers },
     { data: users },
   ] = await Promise.all([
     supabase.from('pong_games').select('id, cups_left, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
@@ -34,6 +36,8 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     supabase.from('spikeball_game_players').select('game_id, player_id, side').eq('group_id', group.id),
     supabase.from('hearts_games').select('id, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
     supabase.from('hearts_game_players').select('game_id, player_id, lost').eq('group_id', group.id),
+    supabase.from('pool_games').select('id, balls_differential, played_at').eq('group_id', group.id).order('played_at', { ascending: false }),
+    supabase.from('pool_game_players').select('game_id, player_id, side').eq('group_id', group.id),
     supabase.from('users').select('id, name, created_at').eq('group_id', group.id).order('name'),
   ])
 
@@ -67,6 +71,12 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
       game_players: (heartsPlayers ?? []).filter((p: any) => p.game_id === g.id).map((p: any) => ({ player_id: p.player_id, lost: p.lost })),
     }))
 
+  const assemblePool = (raw: any[]): AdminPoolGame[] =>
+    raw.map((g: any) => {
+      const gp = (poolPlayers ?? []).filter((p: any) => p.game_id === g.id)
+      return { id: g.id, balls_differential: g.balls_differential, played_at: g.played_at, winner_ids: gp.filter((p: any) => p.side === 'winner').map((p: any) => p.player_id), loser_ids: gp.filter((p: any) => p.side === 'loser').map((p: any) => p.player_id) }
+    })
+
   return (
     <div>
       <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
@@ -77,6 +87,7 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
         cornholeGames={assembleCornhole(cornholeGamesRaw ?? [])}
         spikeballGames={assembleSpikeball(spikeballGamesRaw ?? [])}
         heartsGames={assembleHearts(heartsGamesRaw ?? [])}
+        poolGames={assemblePool(poolGamesRaw ?? [])}
         players={(users ?? []) as User[]}
         groupPin={group.pin}
       />
