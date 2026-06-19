@@ -31,10 +31,10 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
       <nav className="bg-card border-b border-warm px-4 pb-3 flex items-center sticky top-0 z-10 relative" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
         <button
           onClick={() => setShowHomeModal(true)}
-          className="text-muted hover:text-stone-900 transition-colors mr-3 text-base shrink-0"
+          className="hover:opacity-70 transition-opacity mr-3 shrink-0"
           aria-label="Go to home screen"
         >
-          🏠
+          <img src="/icon.svg" alt="Garage League" className="h-7 w-auto" />
         </button>
         <Link href={base} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 text-brand font-black text-sm tracking-widest uppercase shrink-0">
           {groupName}
