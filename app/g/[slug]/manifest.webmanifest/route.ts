@@ -6,8 +6,8 @@ export async function GET(
 ) {
   const group = await getGroupBySlug(params.slug)
   const manifest = {
-    name: group ? `${group.name} — Summer Games` : 'Summer Games',
-    short_name: group?.name ?? 'Summer Games',
+    name: group ? `${group.name} — Garage League` : 'Garage League',
+    short_name: group?.name ?? 'Garage League',
     start_url: `/g/${params.slug}`,
     display: 'standalone',
     theme_color: '#1A4731',

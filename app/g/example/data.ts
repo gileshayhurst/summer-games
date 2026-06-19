@@ -1,6 +1,6 @@
 import type { RecentGame } from '@/lib/types'
 
-export const EXAMPLE_GROUP_NAME = 'Summer Games'
+export const EXAMPLE_GROUP_NAME = 'Garage League'
 
 export const examplePlayers: string[] = [
   "Adrian",

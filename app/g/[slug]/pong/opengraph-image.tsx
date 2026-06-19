@@ -6,7 +6,7 @@ export const contentType = 'image/png'
 
 export default async function OgImage({ params }: { params: { slug: string } }) {
   const group = await getGroupBySlug(params.slug)
-  const groupName = group?.name ?? 'Summer Games'
+  const groupName = group?.name ?? 'Garage League'
 
   return new ImageResponse(
     (

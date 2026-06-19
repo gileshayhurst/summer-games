@@ -5,7 +5,7 @@ import { EXAMPLE_GROUP_NAME } from './data'
 
 export const metadata: Metadata = {
   title: `${EXAMPLE_GROUP_NAME} — Example`,
-  description: 'See how Summer Games looks for your crew',
+  description: 'See how Garage League looks for your crew',
 }
 
 export default function ExampleLayout({ children }: { children: React.ReactNode }) {

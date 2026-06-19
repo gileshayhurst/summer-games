@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Summer Games',
+  title: 'Garage League',
   description: 'Track your friend group\'s game results',
   appleWebApp: {
     capable: true,

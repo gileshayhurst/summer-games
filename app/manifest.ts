@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Summer Games',
-    short_name: 'Summer Games',
+    name: 'Garage League',
+    short_name: 'Garage League',
     start_url: '/',
     display: 'standalone',
     theme_color: '#1A4731',

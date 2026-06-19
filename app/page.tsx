@@ -6,7 +6,10 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-bg">
       <header className="px-6 py-4 flex items-center justify-between border-b border-warm bg-card">
-        <span className="text-brand font-black text-sm tracking-widest uppercase">Summer Games</span>
+        <div className="flex items-center gap-2">
+          <img src="/icon.svg" alt="" className="h-7 w-auto" />
+          <span className="text-brand font-black text-sm tracking-widest uppercase">Garage League</span>
+        </div>
         <Link href="/create"
           className="bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
           Create Your Group →
