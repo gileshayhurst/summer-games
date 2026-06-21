@@ -46,10 +46,10 @@ export default async function GroupPokerPage({ params }: { params: { slug: strin
 
   const columns = [
     { key: 'name', label: 'Player' },
-    { key: 'games_played', label: 'Games' },
-    { key: 'total_profit_cents', label: 'Total Profit', colorize: true, format: (v: number | string) => formatCents(Number(v)) },
-    { key: 'win_sessions', label: 'Wins' },
-    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%` },
+    { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
+    { key: 'total_profit_cents', label: 'Total Profit', colorize: true, format: (v: number | string) => formatCents(Number(v)), sortDirection: 'desc' as const },
+    { key: 'win_sessions', label: 'Wins', sortDirection: 'desc' as const },
+    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
   ]
 
   return (
@@ -58,7 +58,7 @@ export default async function GroupPokerPage({ params }: { params: { slug: strin
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♠ Poker</h1>
         <p className="text-muted text-sm">Ranked by total profit</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="total_profit_cents" />
       <div>
         <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
         <RecentGames games={recentGames} />
