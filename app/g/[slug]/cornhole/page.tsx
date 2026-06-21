@@ -38,10 +38,10 @@ export default async function GroupCornholePage({ params }: { params: { slug: st
 
   const columns = [
     { key: 'name', label: 'Player' },
-    { key: 'wins', label: 'W' },
-    { key: 'losses', label: 'L' },
-    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%` },
-    { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v) },
+    { key: 'wins', label: 'W', sortDirection: 'desc' as const },
+    { key: 'losses', label: 'L', sortDirection: 'asc' as const },
+    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
+    { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v), sortDirection: 'desc' as const },
   ]
 
   return (
@@ -50,7 +50,7 @@ export default async function GroupCornholePage({ params }: { params: { slug: st
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1"><CornholeIcon className="inline w-9 h-9 mr-1 align-middle" /> Cornhole</h1>
         <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <HeadToHead players={(users ?? []) as User[]} game="cornhole" />
