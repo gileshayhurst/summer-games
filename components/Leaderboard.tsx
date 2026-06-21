@@ -47,7 +47,8 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
           <select
             value={sortKey}
             onChange={e => setSortKey(e.target.value)}
-            className="text-xs border border-warm rounded-lg px-2 py-1 bg-card text-stone-900 font-bold focus:outline-none"
+            className="text-xs border border-warm rounded-lg px-2 py-1 bg-card text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-400"
+            aria-label="Sort leaderboard by"
           >
             {sortOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
