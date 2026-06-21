@@ -31,9 +31,9 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
 
   const columns = [
     { key: 'name', label: 'Player' },
-    { key: 'games_played', label: 'Games' },
-    { key: 'losses', label: 'Losses' },
-    { key: 'loss_rate', label: 'Loss%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%` },
+    { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
+    { key: 'losses', label: 'Losses', sortDirection: 'asc' as const },
+    { key: 'loss_rate', label: 'Loss%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'asc' as const },
   ]
 
   return (
@@ -42,7 +42,7 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♥ Hearts</h1>
         <p className="text-muted text-sm">Ranked by lowest loss rate</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="loss_rate" />
       <div>
         <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
         <RecentGames games={recentGames} />
