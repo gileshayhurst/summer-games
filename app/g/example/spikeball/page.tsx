@@ -6,10 +6,10 @@ import { exampleSpikeballLeaderboard, exampleSpikeballRecent } from '../data'
 
 const columns = [
   { key: 'name', label: 'Player' },
-  { key: 'wins', label: 'W' },
-  { key: 'losses', label: 'W' },
-  { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%` },
-  { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v) },
+  { key: 'wins', label: 'W', sortDirection: 'desc' as const },
+  { key: 'losses', label: 'L', sortDirection: 'asc' as const },
+  { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
+  { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v), sortDirection: 'desc' as const },
 ]
 
 export default function ExampleSpikeballPage() {
@@ -19,7 +19,7 @@ export default function ExampleSpikeballPage() {
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1"><SpikeballIcon className="inline w-9 h-9 mr-1 align-middle" /> Spikeball</h1>
         <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
-      <Leaderboard entries={exampleSpikeballLeaderboard as unknown as Record<string, string | number>[]} columns={columns} />
+      <Leaderboard entries={exampleSpikeballLeaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-card border border-warm rounded-xl p-5 text-center">
           <p className="text-sm font-bold text-stone-900 mb-1">Want head-to-head stats and partner records?</p>
