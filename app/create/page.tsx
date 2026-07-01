@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 
 function toSlug(name: string): string {
@@ -9,7 +8,6 @@ function toSlug(name: string): string {
 }
 
 export default function CreatePage() {
-  const router = useRouter()
   const { user, loading } = useAuth()
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
@@ -38,15 +36,20 @@ export default function CreatePage() {
     if (!name.trim()) return setError('Group name required')
     if (filledPlayers.length < 1) return setError('Add at least 1 player')
     setLoadingSubmit(true)
-    const res = await fetch('/api/groups', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), slug, players: filledPlayers, visibility }),
-    })
-    const data = await res.json()
-    setLoadingSubmit(false)
-    if (!res.ok) return setError(data.error)
-    setCreated({ slug: data.slug, joinCode: data.join_code })
+    try {
+      const res = await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), slug, players: filledPlayers, visibility }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      setCreated({ slug: data.slug, joinCode: data.join_code })
+    } catch {
+      setError('Failed to create group. Check your connection and try again.')
+    } finally {
+      setLoadingSubmit(false)
+    }
   }
 
   if (!loading && !user) {
