@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
   icons: {
     apple: '/icons/apple-touch-icon.png',
   },
