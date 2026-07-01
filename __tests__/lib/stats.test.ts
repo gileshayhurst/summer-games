@@ -236,6 +236,19 @@ describe('computeHeartsLeaderboard', () => {
   it('excludes players with 0 games', () => {
     expect(computeHeartsLeaderboard(users, [])).toHaveLength(0)
   })
+
+  it('computes current_streak and max_streak based on not losing', () => {
+    // Giles (u1): g1 lost=true (loss), g2 lost=false (win) → current streak 1, max streak 1
+    const result = computeHeartsLeaderboard(users, gamePlayers)
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.current_streak).toBe(1)
+    expect(giles.max_streak).toBe(1)
+
+    // Sherm (u2): g1 lost=false (win), g2 lost=true (loss), g3 lost=true (loss) → current streak 0, max streak 1
+    const sherm = result.find(e => e.name === 'Sherm')!
+    expect(sherm.current_streak).toBe(0)
+    expect(sherm.max_streak).toBe(1)
+  })
 })
 
 // ── Pool ──────────────────────────────────────────────────────────────────────

@@ -139,6 +139,8 @@ export type HeartsLeaderboardEntry = {
   games_played: number
   losses: number
   loss_rate: number
+  current_streak: number
+  max_streak: number
 }
 
 export type HeadToHeadResult = {

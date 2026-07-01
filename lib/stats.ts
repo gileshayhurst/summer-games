@@ -178,23 +178,33 @@ export function computeHeartsLeaderboard(
   gamePlayers: HeartsGamePlayer[]
 ): HeartsLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { played: 0, losses: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
 
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     s.played++
     if (gp.lost) s.losses++
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    // Hearts has no side/winner field either — it only tracks whether each player lost that round,
+    // so "not losing" is the win condition for streak purposes
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: !gp.lost, played_at: gp.hearts_games.played_at })
   }
 
   return users
     .map(u => {
       const s = stats.get(u.id)!
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
         games_played: s.played,
         losses: s.losses,
         loss_rate: s.played > 0 ? s.losses / s.played : 0,
+        current_streak: current,
+        max_streak: max,
       }
     })
     .filter(e => e.games_played > 0 && isVisible(e.name))
