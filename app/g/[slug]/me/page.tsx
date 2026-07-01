@@ -193,7 +193,7 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
               <StatCard label="Pt Diff" value={beerDieEntry.point_differential > 0 ? `+${beerDieEntry.point_differential}` : String(beerDieEntry.point_differential)} />
               <StatCard label="Sinks" value={String(beerDieEntry.sinks)} />
               <StatCard label="Self Sinks" value={String(beerDieEntry.self_sinks)} />
-              <StatCard label="Streak" value={beerDieEntry.win_streak >= 3 ? `🔥${beerDieEntry.win_streak}` : String(beerDieEntry.win_streak)} />
+              <StatCard label="Streak" value={beerDieEntry.current_streak >= 3 ? `🔥${beerDieEntry.current_streak}` : String(beerDieEntry.current_streak)} />
             </div>
           ) : <p className="text-muted text-sm">No games yet</p>}
         </GameCard>

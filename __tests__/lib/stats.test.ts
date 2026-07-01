@@ -133,7 +133,7 @@ describe('computeBeerDieLeaderboard', () => {
   })
 })
 
-describe('computeBeerDieLeaderboard — win_streak', () => {
+describe('computeBeerDieLeaderboard — streaks', () => {
   const bdg = (id: string, at: string) => ({ id, points_differential: 5, played_at: at })
 
   const mkGP = (gameId: string, playerId: string, side: 'winner' | 'loser', at: string) => ({
@@ -143,13 +143,13 @@ describe('computeBeerDieLeaderboard — win_streak', () => {
     beer_die_games: bdg(gameId, at),
   })
 
-  it('returns 0 win_streak for a player with no games', () => {
+  it('returns empty for a group with no games', () => {
     const result = computeBeerDieLeaderboard(users, [], [])
     expect(result).toHaveLength(0)
   })
 
-  it('counts consecutive wins at the end of game history', () => {
-    // u1: loss (g1), win (g2), win (g3), win (g4) → streak 3
+  it('counts consecutive wins at the end of game history as current_streak', () => {
+    // u1: loss (g1), win (g2), win (g3), win (g4) → current streak 3, max streak 3
     const gamePlayers = [
       mkGP('g1', 'u1', 'loser',  '2026-05-01T12:00:00Z'),
       mkGP('g1', 'u2', 'winner', '2026-05-01T12:00:00Z'),
@@ -162,19 +162,23 @@ describe('computeBeerDieLeaderboard — win_streak', () => {
     ]
     const result = computeBeerDieLeaderboard(users, gamePlayers, [])
     const u1 = result.find(e => e.player_id === 'u1')!
-    expect(u1.win_streak).toBe(3)
+    expect(u1.current_streak).toBe(3)
+    expect(u1.max_streak).toBe(3)
   })
 
-  it('returns 0 win_streak when most recent game was a loss', () => {
+  it('returns 0 current_streak when most recent game was a loss, but keeps the historical max_streak', () => {
     const gamePlayers = [
       mkGP('g1', 'u1', 'winner', '2026-05-01T12:00:00Z'),
       mkGP('g1', 'u2', 'loser',  '2026-05-01T12:00:00Z'),
-      mkGP('g2', 'u1', 'loser',  '2026-05-02T12:00:00Z'),
-      mkGP('g2', 'u2', 'winner', '2026-05-02T12:00:00Z'),
+      mkGP('g2', 'u1', 'winner', '2026-05-02T12:00:00Z'),
+      mkGP('g2', 'u2', 'loser',  '2026-05-02T12:00:00Z'),
+      mkGP('g3', 'u1', 'loser',  '2026-05-03T12:00:00Z'),
+      mkGP('g3', 'u2', 'winner', '2026-05-03T12:00:00Z'),
     ]
     const result = computeBeerDieLeaderboard(users, gamePlayers, [])
     const u1 = result.find(e => e.player_id === 'u1')!
-    expect(u1.win_streak).toBe(0)
+    expect(u1.current_streak).toBe(0)
+    expect(u1.max_streak).toBe(2)
   })
 
   it('counts a single win as a streak of 1', () => {
@@ -184,7 +188,8 @@ describe('computeBeerDieLeaderboard — win_streak', () => {
     ]
     const result = computeBeerDieLeaderboard(users, gamePlayers, [])
     const u1 = result.find(e => e.player_id === 'u1')!
-    expect(u1.win_streak).toBe(1)
+    expect(u1.current_streak).toBe(1)
+    expect(u1.max_streak).toBe(1)
   })
 })
 

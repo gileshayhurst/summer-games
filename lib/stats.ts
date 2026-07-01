@@ -79,12 +79,16 @@ export function computeBeerDieLeaderboard(
   sinks: BeerDieSink[] = []
 ): BeerDieLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0, sinks: 0, self_sinks: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
 
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.point_diff += gp.beer_die_games.points_differential }
     else { s.losses++; s.point_diff -= gp.beer_die_games.points_differential }
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.side === 'winner', played_at: gp.beer_die_games.played_at })
   }
 
   for (const sink of sinks) {
@@ -94,27 +98,12 @@ export function computeBeerDieLeaderboard(
     else if (sink.type === 'self_sink') s.self_sinks++
   }
 
-  // Compute win streaks: sort each player's games newest-first, count leading wins
-  const gamesByPlayer = new Map<string, { side: string; played_at: string }[]>()
-  for (const gp of gamePlayers) {
-    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
-    gamesByPlayer.get(gp.player_id)!.push({ side: gp.side, played_at: gp.beer_die_games.played_at })
-  }
-  const winStreaks = new Map<string, number>()
-  for (const [playerId, games] of gamesByPlayer) {
-    games.sort((a, b) => b.played_at.localeCompare(a.played_at))
-    let streak = 0
-    for (const g of games) {
-      if (g.side === 'winner') streak++
-      else break
-    }
-    winStreaks.set(playerId, streak)
-  }
-
   return users
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
@@ -124,7 +113,8 @@ export function computeBeerDieLeaderboard(
         point_differential: s.point_diff,
         sinks: s.sinks,
         self_sinks: s.self_sinks,
-        win_streak: winStreaks.get(u.id) ?? 0,
+        current_streak: current,
+        max_streak: max,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))

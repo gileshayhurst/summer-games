@@ -81,7 +81,7 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
               <StatCard label="Pt Diff" value={beerDie.point_differential > 0 ? `+${beerDie.point_differential}` : String(beerDie.point_differential)} />
               <StatCard label="Sinks" value={String(beerDie.sinks)} />
               <StatCard label="Self Sinks" value={String(beerDie.self_sinks)} />
-              <StatCard label="Streak" value={beerDie.win_streak >= 3 ? `🔥${beerDie.win_streak}` : String(beerDie.win_streak)} />
+              <StatCard label="Streak" value={beerDie.current_streak >= 3 ? `🔥${beerDie.current_streak}` : String(beerDie.current_streak)} />
             </div>
             <div className="max-w-xs">
               <HeadToHead players={(users ?? []) as User[]} currentPlayerId={player.id} game="beer-die" />
