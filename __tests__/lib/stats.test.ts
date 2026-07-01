@@ -272,6 +272,31 @@ describe('computePoolLeaderboard', () => {
   it('excludes players with 0 games', () => {
     expect(computePoolLeaderboard(users, [])).toHaveLength(0)
   })
+
+  it('computes current_streak and max_streak using distinct game dates', () => {
+    const mkPoolGP = (gameId: string, playerId: string, side: 'winner' | 'loser', at: string) => ({
+      game_id: gameId,
+      player_id: playerId,
+      side,
+      pool_games: { id: gameId, balls_differential: 2, played_at: at },
+    })
+    // u1: win (g1, oldest), win (g2), loss (g3), win (g4, newest)
+    // → current_streak = 1 (just g4), max_streak = 2 (g1+g2)
+    const gamePlayers = [
+      mkPoolGP('g1', 'u1', 'winner', '2026-06-01T12:00:00Z'),
+      mkPoolGP('g1', 'u2', 'loser',  '2026-06-01T12:00:00Z'),
+      mkPoolGP('g2', 'u1', 'winner', '2026-06-02T12:00:00Z'),
+      mkPoolGP('g2', 'u2', 'loser',  '2026-06-02T12:00:00Z'),
+      mkPoolGP('g3', 'u1', 'loser',  '2026-06-03T12:00:00Z'),
+      mkPoolGP('g3', 'u2', 'winner', '2026-06-03T12:00:00Z'),
+      mkPoolGP('g4', 'u1', 'winner', '2026-06-04T12:00:00Z'),
+      mkPoolGP('g4', 'u2', 'loser',  '2026-06-04T12:00:00Z'),
+    ]
+    const result = computePoolLeaderboard(users, gamePlayers)
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.current_streak).toBe(1)
+    expect(u1.max_streak).toBe(2)
+  })
 })
 
 describe('computePoolHeadToHead', () => {

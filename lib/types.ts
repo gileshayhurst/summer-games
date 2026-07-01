@@ -118,6 +118,8 @@ export type CornholeLeaderboardEntry = {
   losses: number
   win_rate: number
   point_differential: number
+  current_streak: number
+  max_streak: number
 }
 
 export type SpikeballLeaderboardEntry = {
@@ -127,6 +129,8 @@ export type SpikeballLeaderboardEntry = {
   losses: number
   win_rate: number
   point_differential: number
+  current_streak: number
+  max_streak: number
 }
 
 export type HeartsLeaderboardEntry = {
@@ -206,6 +210,8 @@ export type PoolLeaderboardEntry = {
   losses: number
   win_rate: number
   balls_differential: number
+  current_streak: number
+  max_streak: number
 }
 
 export type RecentPoolGame = {

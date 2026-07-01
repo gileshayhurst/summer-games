@@ -219,17 +219,27 @@ export function computeCornholeLeaderboard(
   gamePlayers: CornholeGamePlayer[]
 ): CornholeLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.point_diff += gp.cornhole_games.points_differential }
     else { s.losses++; s.point_diff -= gp.cornhole_games.points_differential }
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.side === 'winner', played_at: gp.cornhole_games.played_at })
   }
   return users
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      return { player_id: u.id, name: u.name, wins: s.wins, losses: s.losses, win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff }
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
+      return {
+        player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
+        win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff,
+        current_streak: current, max_streak: max,
+      }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
     .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
@@ -270,17 +280,27 @@ export function computeSpikeballLeaderboard(
   gamePlayers: SpikeballGamePlayer[]
 ): SpikeballLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, point_diff: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.point_diff += gp.spikeball_games.points_differential }
     else { s.losses++; s.point_diff -= gp.spikeball_games.points_differential }
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.side === 'winner', played_at: gp.spikeball_games.played_at })
   }
   return users
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      return { player_id: u.id, name: u.name, wins: s.wins, losses: s.losses, win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff }
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
+      return {
+        player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
+        win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff,
+        current_streak: current, max_streak: max,
+      }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
     .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
@@ -321,17 +341,27 @@ export function computePoolLeaderboard(
   gamePlayers: PoolGamePlayer[]
 ): PoolLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, balls_diff: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.balls_diff += gp.pool_games.balls_differential }
     else { s.losses++; s.balls_diff -= gp.pool_games.balls_differential }
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.side === 'winner', played_at: gp.pool_games.played_at })
   }
   return users
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      return { player_id: u.id, name: u.name, wins: s.wins, losses: s.losses, win_rate: total > 0 ? s.wins / total : 0, balls_differential: s.balls_diff }
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
+      return {
+        player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
+        win_rate: total > 0 ? s.wins / total : 0, balls_differential: s.balls_diff,
+        current_streak: current, max_streak: max,
+      }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
     .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
