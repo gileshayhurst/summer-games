@@ -7,7 +7,7 @@ import {
   computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard,
   computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard,
 } from '@/lib/stats'
-import { getLeaderboardRank } from '@/lib/dashboard'
+import { getLeaderboardRank, mergeRecentActivity, formatSideResult, formatHeartsResult, formatPokerResult, ActivityItem } from '@/lib/dashboard'
 import {
   User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
   CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer,
@@ -120,6 +120,51 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
   const poolEntry = poolLB.find(e => e.player_id === playerId)
   const pokerEntry = pokerLB.find(e => e.player_id === playerId)
 
+  const activity = mergeRecentActivity([
+    ...pong.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'pong',
+      id: gp.game_id,
+      played_at: gp.pong_games.played_at,
+      result: formatSideResult(gp.side, `${gp.pong_games.cups_left} cup${gp.pong_games.cups_left !== 1 ? 's' : ''} left`),
+    })),
+    ...beerDie.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'beer-die',
+      id: gp.game_id,
+      played_at: gp.beer_die_games.played_at,
+      result: formatSideResult(gp.side, `${gp.beer_die_games.points_differential} pt${gp.beer_die_games.points_differential !== 1 ? 's' : ''}`),
+    })),
+    ...cornhole.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'cornhole',
+      id: gp.game_id,
+      played_at: gp.cornhole_games.played_at,
+      result: formatSideResult(gp.side, `${gp.cornhole_games.points_differential} pt${gp.cornhole_games.points_differential !== 1 ? 's' : ''}`),
+    })),
+    ...spikeball.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'spikeball',
+      id: gp.game_id,
+      played_at: gp.spikeball_games.played_at,
+      result: formatSideResult(gp.side, `${gp.spikeball_games.points_differential} pt${gp.spikeball_games.points_differential !== 1 ? 's' : ''}`),
+    })),
+    ...pool.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'pool',
+      id: gp.game_id,
+      played_at: gp.pool_games.played_at,
+      result: formatSideResult(gp.side, `${gp.pool_games.balls_differential} ball${gp.pool_games.balls_differential !== 1 ? 's' : ''}`),
+    })),
+    ...hearts.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'hearts',
+      id: gp.game_id,
+      played_at: gp.hearts_games.played_at,
+      result: formatHeartsResult(gp.lost),
+    })),
+    ...poker.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'poker',
+      id: gp.game_id,
+      played_at: gp.poker_games.played_at,
+      result: formatPokerResult(gp.amount_cents),
+    })),
+  ])
+
   return (
     <div className="space-y-8">
       <div>
@@ -202,6 +247,25 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
             </div>
           ) : <p className="text-muted text-sm">No games yet</p>}
         </GameCard>
+      </div>
+
+      <div>
+        <h2 className="text-xs font-black uppercase tracking-widest text-muted mb-4">Recent Activity</h2>
+        {activity.length === 0 ? (
+          <p className="text-muted text-sm">No games yet — go log one!</p>
+        ) : (
+          <div className="space-y-2">
+            {activity.map(a => (
+              <div key={`${a.type}-${a.id}`} className="bg-card rounded-xl px-4 py-3 flex items-center gap-4 border border-warm">
+                <GameIcon type={a.type} className="w-6 h-6 shrink-0" />
+                <p className="flex-1 text-sm font-bold text-stone-900">{a.result}</p>
+                <span className="text-xs text-muted shrink-0">
+                  {new Date(a.played_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <Link
