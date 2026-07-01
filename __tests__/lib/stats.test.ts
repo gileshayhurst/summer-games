@@ -78,6 +78,14 @@ describe('computePongLeaderboard', () => {
   it('excludes players with 0 games', () => {
     expect(computePongLeaderboard(users, [])).toHaveLength(0)
   })
+
+  it('computes current_streak and max_streak', () => {
+    // u1 (Giles): g1 win, g2 loss, g3 win → current streak 1, max streak 1
+    const result = computePongLeaderboard(users, gamePlayers)
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.current_streak).toBe(1)
+    expect(giles.max_streak).toBe(1)
+  })
 })
 
 describe('computePongHeadToHead', () => {

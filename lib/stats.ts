@@ -29,18 +29,24 @@ export function computePongLeaderboard(
   gamePlayers: PongGamePlayer[]
 ): PongLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, cup_diff: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
 
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     if (gp.side === 'winner') { s.wins++; s.cup_diff += gp.pong_games.cups_left }
     else { s.losses++; s.cup_diff -= gp.pong_games.cups_left }
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.side === 'winner', played_at: gp.pong_games.played_at })
   }
 
   return users
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
@@ -48,6 +54,8 @@ export function computePongLeaderboard(
         losses: s.losses,
         win_rate: total > 0 ? s.wins / total : 0,
         cup_differential: s.cup_diff,
+        current_streak: current,
+        max_streak: max,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))

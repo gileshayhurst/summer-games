@@ -87,6 +87,8 @@ export type PongLeaderboardEntry = {
   losses: number
   win_rate: number
   cup_differential: number
+  current_streak: number
+  max_streak: number
 }
 
 export type BeerDieSink = {
