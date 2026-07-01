@@ -86,9 +86,13 @@ export async function POST(
 
     resolvedPlayerId = playerId
   } else if (playerName?.trim()) {
+    const trimmed = playerName.trim()
+    if (trimmed.length > 100) {
+      return NextResponse.json({ error: 'Player name must be 100 characters or fewer' }, { status: 400 })
+    }
     const { data: newPlayer, error: playerErr } = await supabase
       .from('users')
-      .insert({ name: playerName.trim(), group_id: group.id })
+      .insert({ name: trimmed, group_id: group.id })
       .select()
       .single()
     if (playerErr) return NextResponse.json({ error: playerErr.message }, { status: 500 })
