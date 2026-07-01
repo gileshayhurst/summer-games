@@ -86,9 +86,18 @@ export async function requireMembership(slug: string): Promise<MembershipResult>
     if (!isLegacy) notFound()
     if (!user) redirect(`/signin?next=/g/${slug}`)
 
+    // First person to ever join a legacy group claims ownership — the
+    // group's URL was the only access control before auth existed, so
+    // whoever gets there first inherits admin rights, same as before.
+    const { count } = await supabase
+      .from('group_members')
+      .select('id', { count: 'exact', head: true })
+      .eq('group_id', group.id)
+    const role = count ? 'member' : 'owner'
+
     const { data: inserted } = await supabase
       .from('group_members')
-      .insert({ group_id: group.id, user_id: user.id, role: 'member', player_id: null })
+      .insert({ group_id: group.id, user_id: user.id, role, player_id: null })
       .select('*')
       .single()
     if (!inserted) notFound()

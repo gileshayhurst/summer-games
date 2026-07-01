@@ -23,8 +23,10 @@ type Group = {
 function mockSupabaseServer(opts: {
   group: Group | null
   member?: { id: string; role: string; player_id: string | null } | null
+  existingMemberCount?: number
   insertedMember?: { id: string; role: string; player_id: string | null } | null
   insertError?: boolean
+  insertedRole?: string
 }) {
   return {
     from: (table: string) => {
@@ -33,14 +35,26 @@ function mockSupabaseServer(opts: {
       }
       if (table === 'group_members') {
         return {
-          select: () => ({ eq: () => ({ eq: () => ({ single: async () => ({ data: opts.member ?? null }) }) }) }),
-          insert: () => ({
-            select: () => ({
-              single: async () => opts.insertError
-                ? { data: null, error: { message: 'insert failed' } }
-                : { data: opts.insertedMember ?? null, error: null },
-            }),
-          }),
+          select: (_cols?: string, selectOpts?: { head?: boolean }) => {
+            if (selectOpts?.head) {
+              const builder: any = {
+                eq: () => builder,
+                then: (resolve: any) => resolve({ count: opts.existingMemberCount ?? 0, data: null, error: null }),
+              }
+              return builder
+            }
+            return { eq: () => ({ eq: () => ({ single: async () => ({ data: opts.member ?? null }) }) }) }
+          },
+          insert: (row: { role: string }) => {
+            opts.insertedRole = row.role
+            return {
+              select: () => ({
+                single: async () => opts.insertError
+                  ? { data: null, error: { message: 'insert failed' } }
+                  : { data: opts.insertedMember ?? null, error: null },
+              }),
+            }
+          },
         }
       }
       throw new Error(`unexpected table ${table}`)
@@ -88,6 +102,7 @@ describe('requireMembership — legacy private groups (owner_id null)', () => {
       mockSupabaseServer({
         group: legacyPrivateGroup,
         member: null,
+        existingMemberCount: 3,
         insertedMember: { id: 'm1', role: 'member', player_id: null },
       })
     )
@@ -96,6 +111,38 @@ describe('requireMembership — legacy private groups (owner_id null)', () => {
 
     expect(notFound).not.toHaveBeenCalled()
     expect(result.member).toEqual({ id: 'm1', role: 'member', player_id: null })
+  })
+
+  it('promotes the first person to ever join a legacy group to owner', async () => {
+    mockUser = { id: 'user-1' }
+    const opts = {
+      group: legacyPrivateGroup,
+      member: null,
+      existingMemberCount: 0,
+      insertedMember: { id: 'm1', role: 'owner', player_id: null },
+    }
+    supabaseServerMock.createServerClient.mockReturnValue(mockSupabaseServer(opts))
+
+    const result = await requireMembership('summer-games')
+
+    expect(notFound).not.toHaveBeenCalled()
+    expect((opts as any).insertedRole).toBe('owner')
+    expect(result.member).toEqual({ id: 'm1', role: 'owner', player_id: null })
+  })
+
+  it('does not re-promote later joiners once the group already has a member', async () => {
+    mockUser = { id: 'user-2' }
+    const opts = {
+      group: legacyPrivateGroup,
+      member: null,
+      existingMemberCount: 1,
+      insertedMember: { id: 'm2', role: 'member', player_id: null },
+    }
+    supabaseServerMock.createServerClient.mockReturnValue(mockSupabaseServer(opts))
+
+    await requireMembership('summer-games')
+
+    expect((opts as any).insertedRole).toBe('member')
   })
 })
 
