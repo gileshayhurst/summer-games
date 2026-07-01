@@ -6,6 +6,7 @@ import { RecentGame, User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, Heart
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard } from '@/lib/stats'
 import { notFound } from 'next/navigation'
+import { requireMembership } from '@/lib/auth'
 
 type GameLeader = { name: string; wins: number; losses: number; winRatePct: number; statLine?: string } | null
 
@@ -168,6 +169,8 @@ export default async function GroupHomePage({ params }: { params: { slug: string
   const group = await getGroupBySlug(params.slug)
   if (!group) notFound()
 
+  const { member, isPublic } = await requireMembership(params.slug)
+
   const [games, leaders] = await Promise.all([
     getRecentGames(group.id),
     getGameLeaders(group.id),
@@ -177,6 +180,28 @@ export default async function GroupHomePage({ params }: { params: { slug: string
 
   return (
     <div className="space-y-10">
+      {!member && isPublic && (
+        <div className="bg-amber-50 border border-warm rounded-xl p-4 flex items-center justify-between mb-6">
+          <p className="text-sm font-bold text-stone-900">Sign in and join to log games.</p>
+          <a
+            href={`/g/${params.slug}/join-prompt`}
+            className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
+          >
+            Join →
+          </a>
+        </div>
+      )}
+      {member && !member.player_id && (
+        <div className="bg-amber-50 border border-warm rounded-xl p-4 flex items-center justify-between mb-6">
+          <p className="text-sm font-bold text-stone-900">You haven&apos;t claimed a player yet.</p>
+          <a
+            href={`/g/${params.slug}/claim`}
+            className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
+          >
+            Claim →
+          </a>
+        </div>
+      )}
       <div>
         <h1 className="text-4xl font-black tracking-tight text-stone-900 uppercase">{group.name}</h1>
         <p className="text-muted mt-2 italic font-bold">The unofficial official scoreboard.</p>
