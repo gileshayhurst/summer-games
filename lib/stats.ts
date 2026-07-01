@@ -10,6 +10,20 @@ import {
 
 const isVisible = (name: string) => !name.toLowerCase().startsWith('random')
 
+export function computeStreaks(resultsOldestFirst: boolean[]): { current: number; max: number } {
+  let running = 0
+  let max = 0
+  for (const isWin of resultsOldestFirst) {
+    if (isWin) {
+      running++
+      max = Math.max(max, running)
+    } else {
+      running = 0
+    }
+  }
+  return { current: running, max }
+}
+
 export function computePongLeaderboard(
   users: User[],
   gamePlayers: PongGamePlayer[]

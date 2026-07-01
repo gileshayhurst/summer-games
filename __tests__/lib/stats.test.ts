@@ -8,8 +8,33 @@ import {
   computePoolHeadToHead,
   computePoolPartnerRecord,
   computePokerLeaderboard,
+  computeStreaks,
 } from '../../lib/stats'
 import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
+
+describe('computeStreaks', () => {
+  it('returns 0/0 for no games', () => {
+    expect(computeStreaks([])).toEqual({ current: 0, max: 0 })
+  })
+
+  it('returns the full length when every game is a win', () => {
+    expect(computeStreaks([true, true, true])).toEqual({ current: 3, max: 3 })
+  })
+
+  it('returns 0/0 when every game is a loss', () => {
+    expect(computeStreaks([false, false])).toEqual({ current: 0, max: 0 })
+  })
+
+  it('current streak only counts the trailing run; max looks at the whole history', () => {
+    // oldest → newest: W W W L W  →  current streak is 1 (just the last game),
+    // max streak is 3 (the run at the start)
+    expect(computeStreaks([true, true, true, false, true])).toEqual({ current: 1, max: 3 })
+  })
+
+  it('current streak equals max streak when the trailing run is the longest', () => {
+    expect(computeStreaks([false, true, true])).toEqual({ current: 2, max: 2 })
+  })
+})
 
 const users: User[] = [
   { id: 'u1', name: 'Giles', created_at: '2026-01-01' },
