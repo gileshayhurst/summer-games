@@ -1,10 +1,12 @@
 'use client'
 import { createContext, useContext } from 'react'
+import type { GroupMember } from './types'
 
 type GroupContextValue = {
   id: string
   slug: string
   name: string
+  membership: GroupMember | null
 }
 
 export const GroupContext = createContext<GroupContextValue | null>(null)

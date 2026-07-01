@@ -1,6 +1,5 @@
-import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { getGroupBySlug } from '@/lib/supabase-server'
+import { requireMembership } from '@/lib/auth'
 import GroupProvider from '@/components/GroupProvider'
 import GroupNav from '@/components/GroupNav'
 import BottomNav from '@/components/BottomNav'
@@ -18,13 +17,12 @@ export default async function GroupLayout({
   children: React.ReactNode
   params: { slug: string }
 }) {
-  const group = await getGroupBySlug(params.slug)
-  if (!group) notFound()
+  const { group, member } = await requireMembership(params.slug)
 
   return (
-    <GroupProvider group={{ id: group.id, slug: group.slug, name: group.name }}>
+    <GroupProvider group={{ id: group.id, slug: group.slug, name: group.name }} membership={member}>
       <GroupNav slug={group.slug} groupName={group.name} />
-      <main className="max-w-5xl mx-auto px-4 py-8 pb-28 md:pb-8">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">{children}</main>
       <BottomNav slug={group.slug} />
     </GroupProvider>
   )
