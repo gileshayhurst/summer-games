@@ -46,12 +46,12 @@ describe('mergeRecentActivity', () => {
 })
 
 describe('formatSideResult', () => {
-  it('prefixes Won for winners', () => {
-    expect(formatSideResult('winner', ', 3 cups left')).toBe('Won, 3 cups left')
+  it('prefixes Won, for winners', () => {
+    expect(formatSideResult('winner', '3 cups left')).toBe('Won, 3 cups left')
   })
 
-  it('prefixes Lost for losers', () => {
-    expect(formatSideResult('loser', 'by 5 pts')).toBe('Lost by 5 pts')
+  it('prefixes Lost, for losers', () => {
+    expect(formatSideResult('loser', '5 pts')).toBe('Lost, 5 pts')
   })
 })
 

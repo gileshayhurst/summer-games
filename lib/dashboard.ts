@@ -20,9 +20,8 @@ export function mergeRecentActivity(items: ActivityItem[], limit = 10): Activity
     .slice(0, limit)
 }
 
-export function formatSideResult(side: 'winner' | 'loser', trailing: string): string {
-  const prefix = side === 'winner' ? 'Won' : 'Lost'
-  return trailing.startsWith(' ') || trailing.startsWith(',') ? `${prefix}${trailing}` : `${prefix} ${trailing}`
+export function formatSideResult(side: 'winner' | 'loser', detail: string): string {
+  return `${side === 'winner' ? 'Won' : 'Lost'}, ${detail}`
 }
 
 export function formatHeartsResult(lost: boolean): string {
