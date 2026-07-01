@@ -11,7 +11,7 @@ export default function JoinByCodeButton() {
     e.preventDefault()
     const trimmed = code.trim()
     if (!trimmed) return
-    router.push(`/join/${trimmed.toUpperCase()}`)
+    router.push(`/join/${encodeURIComponent(trimmed.toUpperCase())}`)
   }
 
   if (!expanded) {
