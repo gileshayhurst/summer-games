@@ -7,7 +7,7 @@ import {
   computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard,
   computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard,
 } from '@/lib/stats'
-import { getLeaderboardRank, mergeRecentActivity, formatSideResult, formatHeartsResult, formatPokerResult, ActivityItem } from '@/lib/dashboard'
+import { getLeaderboardRank, mergeRecentActivity, formatSideResult, formatHeartsResult, formatPokerResult, formatStreak, sortCardsByPlayed, ActivityItem } from '@/lib/dashboard'
 import {
   User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
   CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer,
@@ -173,83 +173,134 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <GameCard gameType="pong" name="Pong" rank={getLeaderboardRank(pongLB, playerId)}>
-          {pongEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Wins" value={String(pongEntry.wins)} />
-              <StatCard label="Losses" value={String(pongEntry.losses)} />
-              <StatCard label="Win%" value={`${(pongEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Cup Diff" value={pongEntry.cup_differential > 0 ? `+${pongEntry.cup_differential}` : String(pongEntry.cup_differential)} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="beer-die" name="Beer Die" rank={getLeaderboardRank(beerDieLB, playerId)}>
-          {beerDieEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Wins" value={String(beerDieEntry.wins)} />
-              <StatCard label="Losses" value={String(beerDieEntry.losses)} />
-              <StatCard label="Win%" value={`${(beerDieEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Pt Diff" value={beerDieEntry.point_differential > 0 ? `+${beerDieEntry.point_differential}` : String(beerDieEntry.point_differential)} />
-              <StatCard label="Sinks" value={String(beerDieEntry.sinks)} />
-              <StatCard label="Self Sinks" value={String(beerDieEntry.self_sinks)} />
-              <StatCard label="Streak" value={beerDieEntry.current_streak >= 3 ? `🔥${beerDieEntry.current_streak}` : String(beerDieEntry.current_streak)} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="cornhole" name="Cornhole" rank={getLeaderboardRank(cornholeLB, playerId)}>
-          {cornholeEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Wins" value={String(cornholeEntry.wins)} />
-              <StatCard label="Losses" value={String(cornholeEntry.losses)} />
-              <StatCard label="Win%" value={`${(cornholeEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Pt Diff" value={cornholeEntry.point_differential > 0 ? `+${cornholeEntry.point_differential}` : String(cornholeEntry.point_differential)} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="spikeball" name="Spikeball" rank={getLeaderboardRank(spikeballLB, playerId)}>
-          {spikeballEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Wins" value={String(spikeballEntry.wins)} />
-              <StatCard label="Losses" value={String(spikeballEntry.losses)} />
-              <StatCard label="Win%" value={`${(spikeballEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Pt Diff" value={spikeballEntry.point_differential > 0 ? `+${spikeballEntry.point_differential}` : String(spikeballEntry.point_differential)} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="pool" name="Pool" rank={getLeaderboardRank(poolLB, playerId)}>
-          {poolEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Wins" value={String(poolEntry.wins)} />
-              <StatCard label="Losses" value={String(poolEntry.losses)} />
-              <StatCard label="Win%" value={`${(poolEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Ball Diff" value={poolEntry.balls_differential > 0 ? `+${poolEntry.balls_differential}` : String(poolEntry.balls_differential)} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="poker" name="Poker" rank={getLeaderboardRank(pokerLB, playerId)}>
-          {pokerEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Games" value={String(pokerEntry.games_played)} />
-              <StatCard label="Win%" value={`${(pokerEntry.win_rate * 100).toFixed(1)}%`} />
-              <StatCard label="Profit" value={`${pokerEntry.total_profit_cents >= 0 ? '+' : '-'}$${(Math.abs(pokerEntry.total_profit_cents) / 100).toFixed(2)}`} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
-
-        <GameCard gameType="hearts" name="Hearts" rank={getLeaderboardRank(heartsLB, playerId)}>
-          {heartsEntry ? (
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard label="Games" value={String(heartsEntry.games_played)} />
-              <StatCard label="Losses" value={String(heartsEntry.losses)} />
-              <StatCard label="Loss%" value={`${(heartsEntry.loss_rate * 100).toFixed(1)}%`} />
-            </div>
-          ) : <p className="text-muted text-sm">No games yet</p>}
-        </GameCard>
+        {sortCardsByPlayed([
+          {
+            key: 'pong',
+            hasPlayed: !!pongEntry,
+            node: (
+              <GameCard key="pong" gameType="pong" name="Pong" rank={getLeaderboardRank(pongLB, playerId)}>
+                {pongEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Wins" value={String(pongEntry.wins)} />
+                    <StatCard label="Losses" value={String(pongEntry.losses)} />
+                    <StatCard label="Win%" value={`${(pongEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Cup Diff" value={pongEntry.cup_differential > 0 ? `+${pongEntry.cup_differential}` : String(pongEntry.cup_differential)} />
+                    <StatCard label="Streak" value={formatStreak(pongEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(pongEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'beer-die',
+            hasPlayed: !!beerDieEntry,
+            node: (
+              <GameCard key="beer-die" gameType="beer-die" name="Beer Die" rank={getLeaderboardRank(beerDieLB, playerId)}>
+                {beerDieEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Wins" value={String(beerDieEntry.wins)} />
+                    <StatCard label="Losses" value={String(beerDieEntry.losses)} />
+                    <StatCard label="Win%" value={`${(beerDieEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Pt Diff" value={beerDieEntry.point_differential > 0 ? `+${beerDieEntry.point_differential}` : String(beerDieEntry.point_differential)} />
+                    <StatCard label="Sinks" value={String(beerDieEntry.sinks)} />
+                    <StatCard label="Self Sinks" value={String(beerDieEntry.self_sinks)} />
+                    <StatCard label="Streak" value={formatStreak(beerDieEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(beerDieEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'cornhole',
+            hasPlayed: !!cornholeEntry,
+            node: (
+              <GameCard key="cornhole" gameType="cornhole" name="Cornhole" rank={getLeaderboardRank(cornholeLB, playerId)}>
+                {cornholeEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Wins" value={String(cornholeEntry.wins)} />
+                    <StatCard label="Losses" value={String(cornholeEntry.losses)} />
+                    <StatCard label="Win%" value={`${(cornholeEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Pt Diff" value={cornholeEntry.point_differential > 0 ? `+${cornholeEntry.point_differential}` : String(cornholeEntry.point_differential)} />
+                    <StatCard label="Streak" value={formatStreak(cornholeEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(cornholeEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'spikeball',
+            hasPlayed: !!spikeballEntry,
+            node: (
+              <GameCard key="spikeball" gameType="spikeball" name="Spikeball" rank={getLeaderboardRank(spikeballLB, playerId)}>
+                {spikeballEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Wins" value={String(spikeballEntry.wins)} />
+                    <StatCard label="Losses" value={String(spikeballEntry.losses)} />
+                    <StatCard label="Win%" value={`${(spikeballEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Pt Diff" value={spikeballEntry.point_differential > 0 ? `+${spikeballEntry.point_differential}` : String(spikeballEntry.point_differential)} />
+                    <StatCard label="Streak" value={formatStreak(spikeballEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(spikeballEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'pool',
+            hasPlayed: !!poolEntry,
+            node: (
+              <GameCard key="pool" gameType="pool" name="Pool" rank={getLeaderboardRank(poolLB, playerId)}>
+                {poolEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Wins" value={String(poolEntry.wins)} />
+                    <StatCard label="Losses" value={String(poolEntry.losses)} />
+                    <StatCard label="Win%" value={`${(poolEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Ball Diff" value={poolEntry.balls_differential > 0 ? `+${poolEntry.balls_differential}` : String(poolEntry.balls_differential)} />
+                    <StatCard label="Streak" value={formatStreak(poolEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(poolEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'poker',
+            hasPlayed: !!pokerEntry,
+            node: (
+              <GameCard key="poker" gameType="poker" name="Poker" rank={getLeaderboardRank(pokerLB, playerId)}>
+                {pokerEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Games" value={String(pokerEntry.games_played)} />
+                    <StatCard label="Win%" value={`${(pokerEntry.win_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Profit" value={`${pokerEntry.total_profit_cents >= 0 ? '+' : '-'}$${(Math.abs(pokerEntry.total_profit_cents) / 100).toFixed(2)}`} />
+                    <StatCard label="Streak" value={formatStreak(pokerEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(pokerEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+          {
+            key: 'hearts',
+            hasPlayed: !!heartsEntry,
+            node: (
+              <GameCard key="hearts" gameType="hearts" name="Hearts" rank={getLeaderboardRank(heartsLB, playerId)}>
+                {heartsEntry ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatCard label="Games" value={String(heartsEntry.games_played)} />
+                    <StatCard label="Losses" value={String(heartsEntry.losses)} />
+                    <StatCard label="Loss%" value={`${(heartsEntry.loss_rate * 100).toFixed(1)}%`} />
+                    <StatCard label="Streak" value={formatStreak(heartsEntry.current_streak)} />
+                    <StatCard label="Max Streak" value={formatStreak(heartsEntry.max_streak)} />
+                  </div>
+                ) : <p className="text-muted text-sm">No games yet</p>}
+              </GameCard>
+            ),
+          },
+        ]).map(c => c.node)}
       </div>
 
       <div>
