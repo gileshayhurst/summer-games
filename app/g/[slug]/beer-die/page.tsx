@@ -41,8 +41,8 @@ export default async function GroupBeerDiePage({ params }: { params: { slug: str
     { key: 'name', label: 'Player' },
     { key: 'wins', label: 'W', sortDirection: 'desc' as const },
     { key: 'losses', label: 'L', sortDirection: 'asc' as const },
-    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
-    { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v), sortDirection: 'desc' as const },
+    { key: 'win_rate', label: 'Win%', format: 'percent', sortDirection: 'desc' as const },
+    { key: 'point_differential', label: 'Pt Diff', colorize: true, format: 'signed', sortDirection: 'desc' as const },
     { key: 'sinks', label: 'Sinks', sortDirection: 'desc' as const },
     { key: 'self_sinks', label: 'Self Sinks', sortDirection: 'asc' as const },
   ]

@@ -7,7 +7,7 @@ const columns = [
   { key: 'name', label: 'Player' },
   { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
   { key: 'losses', label: 'Losses', sortDirection: 'asc' as const },
-  { key: 'loss_rate', label: 'Loss%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'asc' as const },
+  { key: 'loss_rate', label: 'Loss%', format: 'percent', sortDirection: 'asc' as const },
 ]
 
 export default function ExampleHeartsPage() {
