@@ -408,6 +408,7 @@ export function computePokerLeaderboard(
     if (!s) continue
     s.games_played++
     s.total_profit_cents += gp.amount_cents
+    // Poker has no side/winner field — profit is the outcome, so a "win" is a profitable session
     if (gp.amount_cents > 0) s.win_sessions++
 
     if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
