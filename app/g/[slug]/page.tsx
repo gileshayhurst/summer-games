@@ -7,6 +7,7 @@ import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard } from '@/lib/stats'
 import { notFound } from 'next/navigation'
 import { requireMembership } from '@/lib/auth'
+import InstallPrompt from '@/components/InstallPrompt'
 
 type GameLeader = { name: string; wins: number; losses: number; winRatePct: number; statLine?: string } | null
 
@@ -180,6 +181,7 @@ export default async function GroupHomePage({ params }: { params: { slug: string
 
   return (
     <div className="space-y-10">
+      <InstallPrompt />
       {!member && isPublic && (
         <div className="bg-amber-50 border border-warm rounded-xl p-4 flex items-center justify-between mb-6">
           <p className="text-sm font-bold text-stone-900">Sign in and join to log games.</p>
