@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import CurvedArrow from '@/components/CurvedArrow'
 import SuggestionForm from '@/components/SuggestionForm'
+import JoinByCodeButton from '@/components/JoinByCodeButton'
 
 export default function LandingPage() {
   return (
@@ -17,14 +18,14 @@ export default function LandingPage() {
       </header>
       <main className="max-w-2xl mx-auto px-6 py-20 text-center">
         <div className="inline-block bg-amber-100 text-brand text-xs font-black px-4 py-1.5 rounded-full tracking-widest uppercase mb-6">
-          Free · No login required
+          Free
         </div>
         <h1 className="text-5xl font-black uppercase tracking-tight leading-none text-stone-900 mb-4">
           Track Your Group&apos;s<br />
           <span className="text-win">Wins &amp; Losses.</span>
         </h1>
         <p className="text-lg text-muted mb-3 leading-relaxed">
-          Leaderboards for Pong, Beer Die, Cards, and more — shared with your whole crew. No app, no login.
+          Leaderboards for Pong, Beer Die, Cards, and more — shared with your whole crew.
         </p>
         <p className="text-base font-bold italic text-brand mb-12">
           The unofficial official scoreboard.
@@ -34,13 +35,10 @@ export default function LandingPage() {
             className="bg-win text-white font-black px-8 py-3 rounded-full hover:bg-orange-400 transition-colors text-base tracking-wider uppercase">
             Create Your Group →
           </Link>
+          <JoinByCodeButton />
           <Link href="/discover"
             className="text-muted font-bold px-8 py-3 rounded-full border-2 border-warm hover:bg-card transition-colors text-base tracking-wide uppercase">
-            Browse Groups
-          </Link>
-          <Link href="/g/example"
-            className="text-muted font-bold px-8 py-3 rounded-full border-2 border-warm hover:bg-card transition-colors text-base tracking-wide uppercase">
-            See an Example
+            Browse Public Groups
           </Link>
         </div>
         <div className="relative">
@@ -58,7 +56,7 @@ export default function LandingPage() {
             <div className="bg-card rounded-xl p-5 border border-warm">
               <div className="text-2xl mb-2">🔗</div>
               <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Shareable</h3>
-              <p className="text-muted text-sm">Public link your whole group can add to home screen to view as an app! No login necessary.</p>
+              <p className="text-muted text-sm">Public link your whole group can add to home screen to view as an app!</p>
             </div>
           </div>
           <div className="mt-16">
