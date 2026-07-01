@@ -24,6 +24,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
     { href: `${base}/pool`, label: 'Pool' },
     { href: `${base}/poker`, label: 'Poker' },
     { href: `${base}/players`, label: 'Players' },
+    ...(isExample ? [] : [{ href: `${base}/me`, label: 'Me' }]),
   ]
 
   return (

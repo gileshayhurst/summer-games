@@ -12,6 +12,7 @@ const ALL_GAMES = [
   { slug: 'pool', label: 'Pool', icon: '🎱' },
   { slug: 'poker', label: 'Poker', icon: '♠' },
   { slug: 'players', label: 'Players', icon: '👥' },
+  { slug: 'me', label: 'Me', icon: '👤' },
 ]
 
 const DEFAULT_PINS = ['pong', 'beer-die', 'poker']
@@ -52,7 +53,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
   }
 
   const isFull = pinned.length >= MAX_PINS
-  const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug))
+  const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug) && (!isExample || g.slug !== 'me'))
   const sheetRef = useRef<HTMLDivElement>(null)
 
   // Lock body scroll when sheet is open; drag-to-dismiss with snap
@@ -174,7 +175,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
             {isFull && (
               <p className="text-[11px] text-win font-bold mb-2">Bar full — unpin one to add another</p>
             )}
-            {ALL_GAMES.map(game => {
+            {ALL_GAMES.filter(g => !isExample || g.slug !== 'me').map(game => {
               const isPinned = pinned.includes(game.slug)
               const canPin = !isPinned && !isFull
               return (
