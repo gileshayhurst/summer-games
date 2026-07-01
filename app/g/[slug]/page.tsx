@@ -186,7 +186,7 @@ export default async function GroupHomePage({ params }: { params: { slug: string
         <div className="bg-amber-50 border border-warm rounded-xl p-4 flex items-center justify-between mb-6">
           <p className="text-sm font-bold text-stone-900">Sign in and join to log games.</p>
           <a
-            href={`/g/${params.slug}/join-prompt`}
+            href={`/join/${group.join_code}`}
             className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
           >
             Join →
