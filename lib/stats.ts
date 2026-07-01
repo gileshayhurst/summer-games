@@ -80,6 +80,23 @@ export function computeBeerDieLeaderboard(
     else if (sink.type === 'self_sink') s.self_sinks++
   }
 
+  // Compute win streaks: sort each player's games newest-first, count leading wins
+  const gamesByPlayer = new Map<string, { side: string; played_at: string }[]>()
+  for (const gp of gamePlayers) {
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ side: gp.side, played_at: gp.beer_die_games.played_at })
+  }
+  const winStreaks = new Map<string, number>()
+  for (const [playerId, games] of gamesByPlayer) {
+    games.sort((a, b) => b.played_at.localeCompare(a.played_at))
+    let streak = 0
+    for (const g of games) {
+      if (g.side === 'winner') streak++
+      else break
+    }
+    winStreaks.set(playerId, streak)
+  }
+
   return users
     .map(u => {
       const s = stats.get(u.id)!
@@ -93,6 +110,7 @@ export function computeBeerDieLeaderboard(
         point_differential: s.point_diff,
         sinks: s.sinks,
         self_sinks: s.self_sinks,
+        win_streak: winStreaks.get(u.id) ?? 0,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
