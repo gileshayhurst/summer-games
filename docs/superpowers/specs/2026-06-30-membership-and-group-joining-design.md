@@ -15,7 +15,7 @@ The app currently has no user identity. Groups are public URLs gated by a shared
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| Identity provider | Sign in with Apple (Supabase Auth) | Supabase is already the backend; Apple is required on iOS if any social login is offered |
+| Identity provider | Sign in with Google (Supabase Auth) | Supabase is already the backend; Google OAuth requires no paid developer account and is simpler to configure than Google |
 | Privacy enforcement | App-layer guards (service-role client) | Fastest path to ship; easy to audit; existing routes mostly reused |
 | Public group semantics | Viewable by anyone, joinable only by code/link | Prevents random strangers from logging games into public groups |
 | Private group semantics | Invisible to non-members; code/link required to join | 404 returned (not 401) so group existence is not leaked |
@@ -34,7 +34,7 @@ The app currently has no user identity. Groups are public URLs gated by a shared
 | column | type | notes |
 |---|---|---|
 | `id` | uuid PK | = Supabase auth user id |
-| `display_name` | text | editable; seeded from Apple display name |
+| `display_name` | text | editable; seeded from Google display name |
 | `avatar_url` | text nullable | future use |
 | `created_at` | timestamptz | |
 
@@ -71,7 +71,7 @@ The `pin` column is retained but no longer used for authentication.
 
 ## Auth Setup
 
-- Enable the Apple provider in Supabase Auth.
+- Enable the Google provider in Supabase Auth.
 - Install `@supabase/ssr` (replaces direct `createClient` calls on the browser side).
 - **Server client:** reads the session from request cookies; used for identity checks. Still uses service-role key for actual DB queries.
 - **Browser client:** stores session in cookies; used for sign-in, sign-out, and passing the session to server routes.
@@ -97,7 +97,7 @@ Every server page under `/g/[slug]/` and every API route under `/api/` that touc
 
 ### Sign-in screen
 - Shown when an unauthenticated user attempts an authenticated action (join, log, create).
-- Single "Continue with Apple" button.
+- Single "Continue with Google" button.
 - Redirects back to the originating page after sign-in.
 
 ### Directory (`/discover`)
@@ -116,7 +116,7 @@ Every server page under `/g/[slug]/` and every API route under `/api/` that touc
 
 ### Join flow (`/join/[code]`)
 1. User arrives via deep link or types the 6-char code at a join screen.
-2. If not signed in → Apple sign-in, then continue.
+2. If not signed in → Google sign-in, then continue.
 3. Validate code → show group name + member count ("Joining Rob's Crew — 8 members").
 4. **Claim or create player:**
    - List of unclaimed players in the group (claimed players greyed out and labelled).
