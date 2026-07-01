@@ -87,12 +87,12 @@ describe('mergeRecentActivity', () => {
 })
 
 describe('formatSideResult', () => {
-  it('prefixes Won for winners', () => {
-    expect(formatSideResult('winner', ', 3 cups left')).toBe('Won, 3 cups left')
+  it('prefixes Won, for winners', () => {
+    expect(formatSideResult('winner', '3 cups left')).toBe('Won, 3 cups left')
   })
 
-  it('prefixes Lost for losers', () => {
-    expect(formatSideResult('loser', 'by 5 pts')).toBe('Lost by 5 pts')
+  it('prefixes Lost, for losers', () => {
+    expect(formatSideResult('loser', '5 pts')).toBe('Lost, 5 pts')
   })
 })
 
@@ -149,8 +149,8 @@ export function mergeRecentActivity(items: ActivityItem[], limit = 10): Activity
     .slice(0, limit)
 }
 
-export function formatSideResult(side: 'winner' | 'loser', trailing: string): string {
-  return `${side === 'winner' ? 'Won' : 'Lost'} ${trailing}`
+export function formatSideResult(side: 'winner' | 'loser', detail: string): string {
+  return `${side === 'winner' ? 'Won' : 'Lost'}, ${detail}`
 }
 
 export function formatHeartsResult(lost: boolean): string {
@@ -709,31 +709,31 @@ Insert this block right after the `pokerEntry`/`heartsEntry` declarations (after
       type: 'pong',
       id: gp.game_id,
       played_at: gp.pong_games.played_at,
-      result: formatSideResult(gp.side, `, ${gp.pong_games.cups_left} cup${gp.pong_games.cups_left !== 1 ? 's' : ''} left`),
+      result: formatSideResult(gp.side, `${gp.pong_games.cups_left} cup${gp.pong_games.cups_left !== 1 ? 's' : ''} left`),
     })),
     ...beerDie.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'beer-die',
       id: gp.game_id,
       played_at: gp.beer_die_games.played_at,
-      result: formatSideResult(gp.side, `by ${gp.beer_die_games.points_differential} pt${gp.beer_die_games.points_differential !== 1 ? 's' : ''}`),
+      result: formatSideResult(gp.side, `${gp.beer_die_games.points_differential} pt${gp.beer_die_games.points_differential !== 1 ? 's' : ''}`),
     })),
     ...cornhole.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'cornhole',
       id: gp.game_id,
       played_at: gp.cornhole_games.played_at,
-      result: formatSideResult(gp.side, `by ${gp.cornhole_games.points_differential} pt${gp.cornhole_games.points_differential !== 1 ? 's' : ''}`),
+      result: formatSideResult(gp.side, `${gp.cornhole_games.points_differential} pt${gp.cornhole_games.points_differential !== 1 ? 's' : ''}`),
     })),
     ...spikeball.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'spikeball',
       id: gp.game_id,
       played_at: gp.spikeball_games.played_at,
-      result: formatSideResult(gp.side, `by ${gp.spikeball_games.points_differential} pt${gp.spikeball_games.points_differential !== 1 ? 's' : ''}`),
+      result: formatSideResult(gp.side, `${gp.spikeball_games.points_differential} pt${gp.spikeball_games.points_differential !== 1 ? 's' : ''}`),
     })),
     ...pool.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'pool',
       id: gp.game_id,
       played_at: gp.pool_games.played_at,
-      result: formatSideResult(gp.side, `by ${gp.pool_games.balls_differential} ball${gp.pool_games.balls_differential !== 1 ? 's' : ''}`),
+      result: formatSideResult(gp.side, `${gp.pool_games.balls_differential} ball${gp.pool_games.balls_differential !== 1 ? 's' : ''}`),
     })),
     ...hearts.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'hearts',
