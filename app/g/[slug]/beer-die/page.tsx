@@ -43,7 +43,14 @@ export default async function GroupBeerDiePage({ params }: { params: { slug: str
     { key: 'losses', label: 'L', sortDirection: 'asc' as const },
     { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
     { key: 'point_differential', label: 'Pt Diff', colorize: true, format: (v: number | string) => Number(v) > 0 ? `+${v}` : String(v), sortDirection: 'desc' as const },
+    { key: 'sinks', label: 'Sinks', sortDirection: 'desc' as const },
+    { key: 'self_sinks', label: 'Self Sinks', sortDirection: 'asc' as const },
   ]
+
+  const entries = leaderboard.map(e => ({
+    ...e,
+    name: e.win_streak >= 3 ? `${e.name} 🔥${e.win_streak}` : e.name,
+  }))
 
   return (
     <div className="space-y-8">
@@ -51,7 +58,7 @@ export default async function GroupBeerDiePage({ params }: { params: { slug: str
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">🎲 Beer Die</h1>
         <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
+      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <HeadToHead players={(users ?? []) as User[]} game="beer-die" />
