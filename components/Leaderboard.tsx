@@ -5,9 +5,18 @@ import { useState, useMemo } from 'react'
 type Column = {
   key: string
   label: string
-  format?: (v: number | string) => string
+  format?: string
   colorize?: boolean
   sortDirection?: 'asc' | 'desc'
+}
+
+function applyFormat(format: Column['format'], v: number | string): string {
+  if (!format) return String(v)
+  const n = Number(v)
+  if (format === 'percent') return `${(n * 100).toFixed(1)}%`
+  if (format === 'signed') return n > 0 ? `+${v}` : String(v)
+  if (format === 'cents') return n >= 0 ? `+$${(n / 100).toFixed(2)}` : `-$${(Math.abs(n) / 100).toFixed(2)}`
+  return String(v)
 }
 
 type Props = {
@@ -76,7 +85,7 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
                 </td>
                 {columns.map(c => {
                   const val = entry[c.key]
-                  const display = c.format ? c.format(val as number) : val
+                  const display = c.format ? applyFormat(c.format, val as number) : val
                   let color = 'text-stone-900 font-bold'
                   if (c.colorize) {
                     color = typeof val === 'number' && val > 0

@@ -47,9 +47,9 @@ export default async function GroupPokerPage({ params }: { params: { slug: strin
   const columns = [
     { key: 'name', label: 'Player' },
     { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
-    { key: 'total_profit_cents', label: 'Total Profit', colorize: true, format: (v: number | string) => formatCents(Number(v)), sortDirection: 'desc' as const },
+    { key: 'total_profit_cents', label: 'Total Profit', colorize: true, format: 'cents' as const, sortDirection: 'desc' as const },
     { key: 'win_sessions', label: 'Wins', sortDirection: 'desc' as const },
-    { key: 'win_rate', label: 'Win%', format: (v: number | string) => `${(Number(v) * 100).toFixed(1)}%`, sortDirection: 'desc' as const },
+    { key: 'win_rate', label: 'Win%', format: 'percent' as const, sortDirection: 'desc' as const },
   ]
 
   return (

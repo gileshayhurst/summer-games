@@ -18,7 +18,7 @@ export async function getGroupBySlug(slug: string): Promise<Group | null> {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('groups')
-    .select('id, slug, name, pin, premium, created_at')
+    .select('id, slug, name, pin, premium, created_at, visibility, join_code, owner_id')
     .eq('slug', slug)
     .single()
   return data ?? null
