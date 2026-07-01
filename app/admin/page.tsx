@@ -167,7 +167,6 @@ export default async function AdminPage() {
         poolGames={poolGames}
         pokerGames={pokerGames}
         players={players}
-        groupPin="1111"
       />
       {suggestions.length > 0 && (
         <div className="mt-12">

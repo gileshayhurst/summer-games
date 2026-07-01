@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { User } from '@/lib/types'
 import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
 import EditPongGame from './EditPongGame'
@@ -9,6 +9,8 @@ import EditSpikeballGame from './EditSpikeballGame'
 import EditHeartsGame from './EditHeartsGame'
 import EditPoolGame from './EditPoolGame'
 import EditPokerGame from './EditPokerGame'
+import MembersTab from './MembersTab'
+import GroupSettingsTab from './GroupSettingsTab'
 
 type AllGame =
   | { kind: 'pong'; played_at: string; data: AdminPongGame }
@@ -19,6 +21,15 @@ type AllGame =
   | { kind: 'pool'; played_at: string; data: AdminPoolGame }
   | { kind: 'poker'; played_at: string; data: AdminPokerGame }
 
+type MemberRow = {
+  id: string
+  user_id: string
+  role: string
+  player_id: string | null
+  profiles: { display_name: string } | null
+  users: { name: string } | null
+}
+
 type Props = {
   pongGames: AdminPongGame[]
   beerDieGames: AdminBeerDieGame[]
@@ -28,33 +39,27 @@ type Props = {
   poolGames: AdminPoolGame[]
   pokerGames: AdminPokerGame[]
   players: User[]
-  groupPin: string
+  members?: MemberRow[]
+  groupId?: string
+  groupSlug?: string
+  visibility?: string
+  joinCode?: string
+  currentUserRole?: string
 }
 
+type Tab = 'games' | 'members' | 'settings'
+
 export default function AdminPanel({
-  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, groupPin,
+  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
+  players, members = [], groupId = '', groupSlug = '', visibility = 'private', joinCode = '', currentUserRole = 'member',
 }: Props) {
-  const [authed, setAuthed] = useState(false)
-  const [pin, setPin] = useState('')
-  const [pinError, setPinError] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>('games')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
-  useEffect(() => {
-    if (sessionStorage.getItem('admin_authed') === '1') setAuthed(true)
-  }, [])
-
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (pin === groupPin) {
-      sessionStorage.setItem('admin_authed', '1')
-      setAuthed(true)
-    } else {
-      setPinError(true)
-      setPin('')
-    }
-  }
+  // Only show tabs if we're in a group context
+  const isGroupContext = !!groupId
 
   const nameMap = new Map(players.map(p => [p.id, p.name]))
   const name = (id: string) => nameMap.get(id) ?? id
@@ -146,29 +151,6 @@ export default function AdminPanel({
     return 'bg-pink-100 text-pink-700'
   }
 
-  if (!authed) {
-    return (
-      <form onSubmit={handlePinSubmit} className="max-w-xs space-y-4">
-        <div>
-          <label className="text-xs text-muted uppercase tracking-wide block mb-2">Enter PIN</label>
-          <input
-            type="password"
-            value={pin}
-            onChange={e => { setPin(e.target.value); setPinError(false) }}
-            className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
-            placeholder="••••"
-            autoFocus
-          />
-        </div>
-        {pinError && <p className="text-loss text-sm">Incorrect PIN</p>}
-        <button type="submit"
-          className="bg-win text-white font-black px-6 py-2 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors">
-          Unlock →
-        </button>
-      </form>
-    )
-  }
-
   const GameRow = ({ g }: { g: AllGame }) => {
     const id = g.data.id
     const isEditing = editingId === id
@@ -247,10 +229,53 @@ export default function AdminPanel({
     )
   }
 
+  if (!isGroupContext) {
+    // Global admin page - show just games
+    return (
+      <div className="space-y-2">
+        {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
+        {allGames.map(g => <GameRow key={g.data.id} g={g} />)}
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-2">
-      {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
-      {allGames.map(g => <GameRow key={g.data.id} g={g} />)}
+    <div>
+      <div className="flex gap-1 mb-6 border-b border-warm">
+        {(['games', 'members', 'settings'] as Tab[]).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-xs font-black uppercase tracking-widest border-b-2 transition-colors ${
+              activeTab === tab
+                ? 'border-win text-stone-900'
+                : 'border-transparent text-muted hover:text-stone-900'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'members' && (
+        <MembersTab initial={members} groupId={groupId} currentUserRole={currentUserRole} />
+      )}
+
+      {activeTab === 'settings' && (
+        <GroupSettingsTab
+          groupId={groupId}
+          initialVisibility={visibility}
+          initialJoinCode={joinCode}
+          groupSlug={groupSlug}
+        />
+      )}
+
+      {activeTab === 'games' && (
+        <div className="space-y-2">
+          {allGames.length === 0 && <p className="text-muted text-sm">No games logged yet.</p>}
+          {allGames.map(g => <GameRow key={g.data.id} g={g} />)}
+        </div>
+      )}
     </div>
   )
 }
