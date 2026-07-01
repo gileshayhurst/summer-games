@@ -14,7 +14,7 @@ const ALL_GAMES = [
   { slug: 'players', label: 'Players', icon: '👥' },
 ]
 
-const DEFAULT_PINS = ['pong', 'beer-die', 'hearts']
+const DEFAULT_PINS = ['pong', 'beer-die', 'poker']
 const MAX_PINS = 3
 
 export default function BottomNav({ slug, isExample = false }: { slug: string; isExample?: boolean }) {
