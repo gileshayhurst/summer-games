@@ -1,6 +1,6 @@
 import { createServerClient as createSSRClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { createServerClient } from './supabase-server'
 import type { GroupMember, GroupMemberRole } from './types'
 
@@ -53,6 +53,10 @@ export async function getCurrentUser() {
 // - Returns group + membership for members
 // - Returns group + null member for public groups (non-members can view)
 // - Returns 404 for private groups when not a member
+// - Exception: "legacy" groups (owner_id null — created before the auth
+//   system existed) never had a join flow, so the URL itself was the only
+//   access control. Unauthenticated visitors get sent to sign in instead of
+//   404, and signed-in visitors are auto-enrolled as members on first visit.
 export async function requireMembership(slug: string): Promise<MembershipResult> {
   const supabase = createServerClient()
   const user = await getCurrentUser()
@@ -65,6 +69,8 @@ export async function requireMembership(slug: string): Promise<MembershipResult>
 
   if (!group) notFound()
 
+  const isLegacy = group.owner_id === null
+
   let member: GroupMember | null = null
   if (user) {
     const { data } = await supabase
@@ -76,7 +82,18 @@ export async function requireMembership(slug: string): Promise<MembershipResult>
     member = (data as GroupMember) ?? null
   }
 
-  if (group.visibility === 'private' && !member) notFound()
+  if (group.visibility === 'private' && !member) {
+    if (!isLegacy) notFound()
+    if (!user) redirect(`/signin?next=/g/${slug}`)
+
+    const { data: inserted } = await supabase
+      .from('group_members')
+      .insert({ group_id: group.id, user_id: user.id, role: 'member', player_id: null })
+      .select('*')
+      .single()
+    if (!inserted) notFound()
+    member = inserted as GroupMember
+  }
 
   return { group, member, isPublic: group.visibility === 'public' }
 }
