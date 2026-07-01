@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { computePokerLeaderboard } from '@/lib/stats'
 import { PokerGamePlayer, User } from '@/lib/types'
+import { getMemberForAPI } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const group_id = new URL(req.url).searchParams.get('group_id')
@@ -26,6 +27,10 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(player_amounts) || player_amounts.length < 2)
     return NextResponse.json({ error: 'At least 2 players required' }, { status: 400 })
   if (!group_id) return NextResponse.json({ error: 'group_id required' }, { status: 400 })
+
+  const member = await getMemberForAPI(group_id)
+  if (!member) return NextResponse.json({ error: 'Must be a group member to log games' }, { status: 403 })
+
   for (const pa of player_amounts) {
     if (typeof pa.player_id !== 'string' || typeof pa.amount_cents !== 'number')
       return NextResponse.json({ error: 'Each player must have player_id and amount_cents' }, { status: 400 })

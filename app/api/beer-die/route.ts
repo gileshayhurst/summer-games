@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeBeerDieLeaderboard } from '@/lib/stats'
 import { BeerDieGamePlayer, BeerDieSink, User } from '@/lib/types'
+import { getMemberForAPI } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const group_id = new URL(req.url).searchParams.get('group_id')
@@ -29,6 +30,9 @@ export async function POST(req: NextRequest) {
   if (typeof points_differential !== 'number' || points_differential < 1)
     return NextResponse.json({ error: 'points_differential must be >= 1' }, { status: 400 })
   if (!group_id) return NextResponse.json({ error: 'group_id required' }, { status: 400 })
+
+  const member = await getMemberForAPI(group_id)
+  if (!member) return NextResponse.json({ error: 'Must be a group member to log games' }, { status: 403 })
 
   const supabase = createServerClient()
   const { data, error } = await supabase

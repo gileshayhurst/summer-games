@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { computePongLeaderboard } from '@/lib/stats'
 import { PongGamePlayer, User } from '@/lib/types'
+import { getMemberForAPI } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const group_id = new URL(req.url).searchParams.get('group_id')
@@ -24,6 +25,9 @@ export async function POST(req: NextRequest) {
   if (typeof cups_left !== 'number' || cups_left < 0)
     return NextResponse.json({ error: 'cups_left must be >= 0' }, { status: 400 })
   if (!group_id) return NextResponse.json({ error: 'group_id required' }, { status: 400 })
+
+  const member = await getMemberForAPI(group_id)
+  if (!member) return NextResponse.json({ error: 'Must be a group member to log games' }, { status: 403 })
 
   const supabase = createServerClient()
   const { data: game, error: gameErr } = await supabase
