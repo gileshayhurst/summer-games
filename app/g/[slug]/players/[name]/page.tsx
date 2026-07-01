@@ -3,6 +3,7 @@ import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderb
 import HeadToHead from '@/components/HeadToHead'
 import { User, PongGamePlayer, BeerDieGamePlayer, HeartsGamePlayer, BeerDieSink } from '@/lib/types'
 import { notFound } from 'next/navigation'
+import StatCard from '@/components/StatCard'
 
 export default async function GroupPlayerPage({ params }: { params: { slug: string; name: string } }) {
   const name = decodeURIComponent(params.name)
@@ -29,13 +30,6 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
   const beerDie = beerDieLB.find(e => e.player_id === player.id)
   const hearts = heartsLB.find(e => e.player_id === player.id)
 
-  const Stat = ({ label, value }: { label: string; value: string }) => (
-    <div className="bg-card rounded-xl p-3 text-center border border-warm">
-      <p className="text-lg font-black text-stone-900">{value}</p>
-      <p className="text-xs text-muted uppercase tracking-widest mt-1">{label}</p>
-    </div>
-  )
-
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-black uppercase tracking-tight">{name}</h1>
@@ -44,10 +38,10 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
         {pong ? (
           <div className="space-y-4">
             <div className="grid grid-cols-4 gap-3">
-              <Stat label="Wins" value={String(pong.wins)} />
-              <Stat label="Losses" value={String(pong.losses)} />
-              <Stat label="Win%" value={`${(pong.win_rate * 100).toFixed(1)}%`} />
-              <Stat label="Cup Diff" value={pong.cup_differential > 0 ? `+${pong.cup_differential}` : String(pong.cup_differential)} />
+              <StatCard label="Wins" value={String(pong.wins)} />
+              <StatCard label="Losses" value={String(pong.losses)} />
+              <StatCard label="Win%" value={`${(pong.win_rate * 100).toFixed(1)}%`} />
+              <StatCard label="Cup Diff" value={pong.cup_differential > 0 ? `+${pong.cup_differential}` : String(pong.cup_differential)} />
             </div>
             <div className="max-w-xs">
               <HeadToHead players={(users ?? []) as User[]} currentPlayerId={player.id} game="pong" />
@@ -60,10 +54,10 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
         {beerDie ? (
           <div className="space-y-4">
             <div className="grid grid-cols-4 gap-3">
-              <Stat label="Wins" value={String(beerDie.wins)} />
-              <Stat label="Losses" value={String(beerDie.losses)} />
-              <Stat label="Win%" value={`${(beerDie.win_rate * 100).toFixed(1)}%`} />
-              <Stat label="Pt Diff" value={beerDie.point_differential > 0 ? `+${beerDie.point_differential}` : String(beerDie.point_differential)} />
+              <StatCard label="Wins" value={String(beerDie.wins)} />
+              <StatCard label="Losses" value={String(beerDie.losses)} />
+              <StatCard label="Win%" value={`${(beerDie.win_rate * 100).toFixed(1)}%`} />
+              <StatCard label="Pt Diff" value={beerDie.point_differential > 0 ? `+${beerDie.point_differential}` : String(beerDie.point_differential)} />
             </div>
             <div className="max-w-xs">
               <HeadToHead players={(users ?? []) as User[]} currentPlayerId={player.id} game="beer-die" />
@@ -75,9 +69,9 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
         <h2 className="text-xs font-black uppercase tracking-widest text-muted mb-4">♥ Hearts</h2>
         {hearts ? (
           <div className="grid grid-cols-3 gap-3 max-w-xs">
-            <Stat label="Games" value={String(hearts.games_played)} />
-            <Stat label="Losses" value={String(hearts.losses)} />
-            <Stat label="Loss%" value={`${(hearts.loss_rate * 100).toFixed(1)}%`} />
+            <StatCard label="Games" value={String(hearts.games_played)} />
+            <StatCard label="Losses" value={String(hearts.losses)} />
+            <StatCard label="Loss%" value={`${(hearts.loss_rate * 100).toFixed(1)}%`} />
           </div>
         ) : <p className="text-muted text-sm">No hearts games yet</p>}
       </section>
