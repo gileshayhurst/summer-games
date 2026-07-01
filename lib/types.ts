@@ -242,6 +242,8 @@ export type PokerLeaderboardEntry = {
   total_profit_cents: number
   win_sessions: number
   win_rate: number
+  current_streak: number
+  max_streak: number
 }
 
 export type RecentPokerGame = {

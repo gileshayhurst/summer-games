@@ -402,16 +402,22 @@ export function computePokerLeaderboard(
   gamePlayers: PokerGamePlayer[]
 ): PokerLeaderboardEntry[] {
   const stats = new Map(users.map(u => [u.id, { games_played: 0, total_profit_cents: 0, win_sessions: 0 }]))
+  const gamesByPlayer = new Map<string, { isWin: boolean; played_at: string }[]>()
   for (const gp of gamePlayers) {
     const s = stats.get(gp.player_id)
     if (!s) continue
     s.games_played++
     s.total_profit_cents += gp.amount_cents
     if (gp.amount_cents > 0) s.win_sessions++
+
+    if (!gamesByPlayer.has(gp.player_id)) gamesByPlayer.set(gp.player_id, [])
+    gamesByPlayer.get(gp.player_id)!.push({ isWin: gp.amount_cents > 0, played_at: gp.poker_games.played_at })
   }
   return users
     .map(u => {
       const s = stats.get(u.id)!
+      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
+      const { current, max } = computeStreaks(games.map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
@@ -419,6 +425,8 @@ export function computePokerLeaderboard(
         total_profit_cents: s.total_profit_cents,
         win_sessions: s.win_sessions,
         win_rate: s.games_played > 0 ? s.win_sessions / s.games_played : 0,
+        current_streak: current,
+        max_streak: max,
       }
     })
     .filter(e => e.games_played > 0 && isVisible(e.name))

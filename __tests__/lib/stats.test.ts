@@ -387,4 +387,25 @@ describe('computePokerLeaderboard', () => {
   it('excludes players with 0 games', () => {
     expect(computePokerLeaderboard(users, [])).toHaveLength(0)
   })
+
+  it('computes current_streak and max_streak based on profitable sessions, using distinct game dates', () => {
+    const mkPokerGP = (gameId: string, playerId: string, amountCents: number, at: string) => ({
+      game_id: gameId,
+      player_id: playerId,
+      amount_cents: amountCents,
+      poker_games: { id: gameId, played_at: at },
+    })
+    // u1 (Giles): +$10 (win, g1, oldest), +$20 (win, g2), -$5 (loss, g3), +$15 (win, g4, newest)
+    // → current_streak = 1 (just g4), max_streak = 2 (g1+g2)
+    const gamePlayers = [
+      mkPokerGP('g1', 'u1', 1000,  '2026-07-01T12:00:00Z'),
+      mkPokerGP('g2', 'u1', 2000,  '2026-07-02T12:00:00Z'),
+      mkPokerGP('g3', 'u1', -500,  '2026-07-03T12:00:00Z'),
+      mkPokerGP('g4', 'u1', 1500,  '2026-07-04T12:00:00Z'),
+    ]
+    const result = computePokerLeaderboard(users, gamePlayers)
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.current_streak).toBe(1)
+    expect(u1.max_streak).toBe(2)
+  })
 })
