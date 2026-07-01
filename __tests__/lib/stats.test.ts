@@ -108,6 +108,61 @@ describe('computeBeerDieLeaderboard', () => {
   })
 })
 
+describe('computeBeerDieLeaderboard — win_streak', () => {
+  const bdg = (id: string, at: string) => ({ id, points_differential: 5, played_at: at })
+
+  const mkGP = (gameId: string, playerId: string, side: 'winner' | 'loser', at: string) => ({
+    game_id: gameId,
+    player_id: playerId,
+    side,
+    beer_die_games: bdg(gameId, at),
+  })
+
+  it('returns 0 win_streak for a player with no games', () => {
+    const result = computeBeerDieLeaderboard(users, [], [])
+    expect(result).toHaveLength(0)
+  })
+
+  it('counts consecutive wins at the end of game history', () => {
+    // u1: loss (g1), win (g2), win (g3), win (g4) → streak 3
+    const gamePlayers = [
+      mkGP('g1', 'u1', 'loser',  '2026-05-01T12:00:00Z'),
+      mkGP('g1', 'u2', 'winner', '2026-05-01T12:00:00Z'),
+      mkGP('g2', 'u1', 'winner', '2026-05-02T12:00:00Z'),
+      mkGP('g2', 'u2', 'loser',  '2026-05-02T12:00:00Z'),
+      mkGP('g3', 'u1', 'winner', '2026-05-03T12:00:00Z'),
+      mkGP('g3', 'u2', 'loser',  '2026-05-03T12:00:00Z'),
+      mkGP('g4', 'u1', 'winner', '2026-05-04T12:00:00Z'),
+      mkGP('g4', 'u2', 'loser',  '2026-05-04T12:00:00Z'),
+    ]
+    const result = computeBeerDieLeaderboard(users, gamePlayers, [])
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.win_streak).toBe(3)
+  })
+
+  it('returns 0 win_streak when most recent game was a loss', () => {
+    const gamePlayers = [
+      mkGP('g1', 'u1', 'winner', '2026-05-01T12:00:00Z'),
+      mkGP('g1', 'u2', 'loser',  '2026-05-01T12:00:00Z'),
+      mkGP('g2', 'u1', 'loser',  '2026-05-02T12:00:00Z'),
+      mkGP('g2', 'u2', 'winner', '2026-05-02T12:00:00Z'),
+    ]
+    const result = computeBeerDieLeaderboard(users, gamePlayers, [])
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.win_streak).toBe(0)
+  })
+
+  it('counts a single win as a streak of 1', () => {
+    const gamePlayers = [
+      mkGP('g1', 'u1', 'winner', '2026-05-01T12:00:00Z'),
+      mkGP('g1', 'u2', 'loser',  '2026-05-01T12:00:00Z'),
+    ]
+    const result = computeBeerDieLeaderboard(users, gamePlayers, [])
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.win_streak).toBe(1)
+  })
+})
+
 describe('computeBeerDieHeadToHead', () => {
   const games: BeerDieGame[] = [
     { id: 'g1', winner1_id: 'u1', winner2_id: 'u2', loser1_id: 'u3', loser2_id: 'u4', points_differential: 5, played_at: '2026-05-01T12:00:00Z' },
