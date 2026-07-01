@@ -5,6 +5,9 @@ export type Group = {
   pin: string
   premium: boolean
   created_at: string
+  visibility: 'public' | 'private'
+  join_code: string
+  owner_id: string | null
 }
 
 export type User = {
@@ -239,3 +242,26 @@ export type RecentPokerGame = {
 }
 
 export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame | RecentPokerGame
+
+export type Profile = {
+  id: string
+  display_name: string
+  avatar_url: string | null
+  created_at: string
+}
+
+export type GroupMemberRole = 'owner' | 'admin' | 'member'
+
+export type GroupMember = {
+  id: string
+  group_id: string
+  user_id: string
+  role: GroupMemberRole
+  player_id: string | null
+  joined_at: string
+}
+
+export type MemberWithProfile = GroupMember & {
+  profiles: { display_name: string; avatar_url: string | null }
+  users: { name: string } | null
+}
