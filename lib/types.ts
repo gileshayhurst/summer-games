@@ -105,6 +105,7 @@ export type BeerDieLeaderboardEntry = {
   point_differential: number
   sinks: number
   self_sinks: number
+  win_streak: number
 }
 
 export type CornholeLeaderboardEntry = {
