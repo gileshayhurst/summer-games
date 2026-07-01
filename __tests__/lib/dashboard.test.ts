@@ -4,6 +4,8 @@ import {
   formatSideResult,
   formatHeartsResult,
   formatPokerResult,
+  formatStreak,
+  sortCardsByPlayed,
   ActivityItem,
 } from '../../lib/dashboard'
 
@@ -72,5 +74,38 @@ describe('formatPokerResult', () => {
 
   it('formats a loss with a minus sign', () => {
     expect(formatPokerResult(-320)).toBe('-$3.20')
+  })
+})
+
+describe('formatStreak', () => {
+  it('returns the plain number below 3', () => {
+    expect(formatStreak(0)).toBe('0')
+    expect(formatStreak(2)).toBe('2')
+  })
+
+  it('prefixes a fire emoji at 3 or above', () => {
+    expect(formatStreak(3)).toBe('🔥3')
+    expect(formatStreak(7)).toBe('🔥7')
+  })
+})
+
+describe('sortCardsByPlayed', () => {
+  it('moves cards with hasPlayed: false to the end, preserving relative order otherwise', () => {
+    const cards = [
+      { key: 'pong', hasPlayed: true },
+      { key: 'beer-die', hasPlayed: false },
+      { key: 'cornhole', hasPlayed: true },
+      { key: 'spikeball', hasPlayed: false },
+      { key: 'pool', hasPlayed: true },
+    ]
+    const result = sortCardsByPlayed(cards)
+    expect(result.map(c => c.key)).toEqual(['pong', 'cornhole', 'pool', 'beer-die', 'spikeball'])
+  })
+
+  it('does not mutate the input array', () => {
+    const cards = [{ key: 'a', hasPlayed: false }, { key: 'b', hasPlayed: true }]
+    const original = [...cards]
+    sortCardsByPlayed(cards)
+    expect(cards).toEqual(original)
   })
 })

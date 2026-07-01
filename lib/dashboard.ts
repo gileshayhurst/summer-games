@@ -32,3 +32,11 @@ export function formatPokerResult(amountCents: number): string {
   const dollars = (Math.abs(amountCents) / 100).toFixed(2)
   return amountCents >= 0 ? `+$${dollars}` : `-$${dollars}`
 }
+
+export function formatStreak(value: number): string {
+  return value >= 3 ? `🔥${value}` : String(value)
+}
+
+export function sortCardsByPlayed<T extends { hasPlayed: boolean }>(cards: T[]): T[] {
+  return [...cards].sort((a, b) => Number(b.hasPlayed) - Number(a.hasPlayed))
+}
