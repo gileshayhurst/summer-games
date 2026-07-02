@@ -54,6 +54,14 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
 
   const isFull = pinned.length >= MAX_PINS
   const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug) && (!isExample || g.slug !== 'me'))
+  // ALL_GAMES is ordered for the pin bar (My Stats first, so it defaults to the leftmost slot).
+  // The "All Games" sheet lists actual games first, then utility entries (Players, My Stats),
+  // since neither of those is a "game" and shouldn't sit above the list under that heading.
+  const sheetGames = [
+    ...ALL_GAMES.filter(g => g.slug !== 'me' && g.slug !== 'players'),
+    ...ALL_GAMES.filter(g => g.slug === 'players'),
+    ...ALL_GAMES.filter(g => g.slug === 'me'),
+  ]
   const sheetRef = useRef<HTMLDivElement>(null)
 
   // Lock body scroll when sheet is open; drag-to-dismiss with snap
@@ -175,7 +183,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
             {isFull && (
               <p className="text-[11px] text-win font-bold mb-2">Bar full — unpin one to add another</p>
             )}
-            {ALL_GAMES.filter(g => !isExample || g.slug !== 'me').map(game => {
+            {sheetGames.filter(g => !isExample || g.slug !== 'me').map(game => {
               const isPinned = pinned.includes(game.slug)
               const canPin = !isPinned && !isFull
               return (
