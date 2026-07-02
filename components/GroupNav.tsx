@@ -24,8 +24,9 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
     { href: `${base}/pool`, label: 'Pool' },
     { href: `${base}/poker`, label: 'Poker' },
     { href: `${base}/players`, label: 'Players' },
-    ...(isExample ? [] : [{ href: `${base}/me`, label: 'Me' }]),
   ]
+  const myStatsHref = `${base}/me`
+  const isMyStatsActive = pathname === myStatsHref || pathname.startsWith(myStatsHref + '/')
 
   return (
     <>
@@ -40,6 +41,16 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
         <Link href={base} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 text-brand font-black text-sm tracking-widest uppercase shrink-0">
           {groupName}
         </Link>
+        {!isExample && (
+          <Link
+            href={myStatsHref}
+            className={`hidden md:inline-block ml-4 text-xs font-black uppercase tracking-widest transition-colors shrink-0 ${
+              isMyStatsActive ? 'text-win border-b-2 border-win pb-0.5' : 'text-muted hover:text-stone-900'
+            }`}
+          >
+            My Stats
+          </Link>
+        )}
         <div className="hidden md:flex flex-1 items-center justify-evenly px-4 flex-wrap gap-y-1">
           {navItems.map(({ href, label }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/')
