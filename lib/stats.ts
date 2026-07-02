@@ -472,9 +472,9 @@ export function computePokerLeaderboard(
     .sort((a, b) => b.total_profit_cents - a.total_profit_cents)
 }
 
-export function topStreaks(
-  entries: { name: string; current_streak: number }[],
-  winsOf: (e: any) => number
+export function topStreaks<E extends { name: string; current_streak: number }>(
+  entries: E[],
+  winsOf: (e: E) => number
 ): { name: string; streak: number }[] {
   return entries
     .filter(e => e.current_streak >= 3)

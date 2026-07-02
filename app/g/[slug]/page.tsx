@@ -4,12 +4,19 @@ import Link from 'next/link'
 import RecentGames from '@/components/RecentGames'
 import { RecentGame, User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer, CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
-import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard } from '@/lib/stats'
+import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard, topStreaks } from '@/lib/stats'
 import { notFound } from 'next/navigation'
 import { requireMembership } from '@/lib/auth'
 import InstallPrompt from '@/components/InstallPrompt'
 
-type GameLeader = { name: string; wins: number; losses: number; winRatePct: number; statLine?: string } | null
+type GameLeader = {
+  name: string
+  wins: number
+  losses: number
+  winRatePct: number
+  statLine?: string
+  hotStreaks: { name: string; streak: number }[]
+} | null
 
 async function getRecentGames(groupId: string): Promise<RecentGame[]> {
   try {
@@ -115,30 +122,36 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
 
     const u = (users ?? []) as User[]
 
-    const pongTop = computePongLeaderboard(u, (pongPlayers ?? []) as unknown as PongGamePlayer[])[0]
-    const beerDieTop = computeBeerDieLeaderboard(u, (beerDiePlayers ?? []) as unknown as BeerDieGamePlayer[], (beerDieSinks ?? []) as BeerDieSink[])[0]
-    const heartsTop = computeHeartsLeaderboard(u, (heartsPlayers ?? []) as unknown as HeartsGamePlayer[])[0]
-    const cornholeTop = computeCornholeLeaderboard(u, (cornholePlayers ?? []) as unknown as CornholeGamePlayer[])[0]
-    const spikeballTop = computeSpikeballLeaderboard(u, (spikeballPlayers ?? []) as unknown as SpikeballGamePlayer[])[0]
-    const poolTop = computePoolLeaderboard(u, (poolPlayers ?? []) as unknown as PoolGamePlayer[])[0]
-    const pokerTop = computePokerLeaderboard(u, (pokerPlayers ?? []) as unknown as PokerGamePlayer[])[0]
+    const pongLB       = computePongLeaderboard(u, (pongPlayers ?? []) as unknown as PongGamePlayer[])
+    const beerDieLB    = computeBeerDieLeaderboard(u, (beerDiePlayers ?? []) as unknown as BeerDieGamePlayer[], (beerDieSinks ?? []) as BeerDieSink[])
+    const heartsLB     = computeHeartsLeaderboard(u, (heartsPlayers ?? []) as unknown as HeartsGamePlayer[])
+    const cornholeLB   = computeCornholeLeaderboard(u, (cornholePlayers ?? []) as unknown as CornholeGamePlayer[])
+    const spikeballLB  = computeSpikeballLeaderboard(u, (spikeballPlayers ?? []) as unknown as SpikeballGamePlayer[])
+    const poolLB       = computePoolLeaderboard(u, (poolPlayers ?? []) as unknown as PoolGamePlayer[])
+    const pokerLB      = computePokerLeaderboard(u, (pokerPlayers ?? []) as unknown as PokerGamePlayer[])
 
-    const toLeader = (entry: any, isHearts = false): GameLeader => {
+    const byWins             = (e: { wins: number }) => e.wins
+    const byWinSessions      = (e: { win_sessions: number }) => e.win_sessions
+    const byGamesMinusLosses = (e: { games_played: number; losses: number }) => e.games_played - e.losses
+
+    const toLeader = (entry: any, hs: { name: string; streak: number }[], isHearts = false): GameLeader => {
       if (!entry) return null
       if (isHearts) {
         const wins = entry.games_played - entry.losses
-        return { name: entry.name, wins, losses: entry.losses, winRatePct: Math.round((1 - entry.loss_rate) * 100) }
+        return { name: entry.name, wins, losses: entry.losses, winRatePct: Math.round((1 - entry.loss_rate) * 100), hotStreaks: hs }
       }
-      return { name: entry.name, wins: entry.wins, losses: entry.losses, winRatePct: Math.round(entry.win_rate * 100) }
+      return { name: entry.name, wins: entry.wins, losses: entry.losses, winRatePct: Math.round(entry.win_rate * 100), hotStreaks: hs }
     }
 
+    const pokerTop = pokerLB[0]
+
     return {
-      pong: toLeader(pongTop),
-      'beer-die': toLeader(beerDieTop),
-      hearts: toLeader(heartsTop, true),
-      cornhole: toLeader(cornholeTop),
-      spikeball: toLeader(spikeballTop),
-      pool: toLeader(poolTop),
+      pong:       toLeader(pongLB[0],      topStreaks(pongLB,      byWins)),
+      'beer-die': toLeader(beerDieLB[0],   topStreaks(beerDieLB,   byWins)),
+      hearts:     toLeader(heartsLB[0],    topStreaks(heartsLB,    byGamesMinusLosses), true),
+      cornhole:   toLeader(cornholeLB[0],  topStreaks(cornholeLB,  byWins)),
+      spikeball:  toLeader(spikeballLB[0], topStreaks(spikeballLB, byWins)),
+      pool:       toLeader(poolLB[0],      topStreaks(poolLB,      byWins)),
       poker: (() => {
         if (!pokerTop) return null
         const abs = Math.abs(pokerTop.total_profit_cents)
@@ -150,6 +163,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
           losses: pokerTop.games_played - pokerTop.win_sessions,
           winRatePct: Math.round(pokerTop.win_rate * 100),
           statLine: `${sign}$${dollars} · ${pokerTop.games_played} games`,
+          hotStreaks: topStreaks(pokerLB, byWinSessions),
         }
       })(),
     }
@@ -217,7 +231,18 @@ export default async function GroupHomePage({ params }: { params: { slug: string
               href={`${base}/${slug}`}
               className="bg-card rounded-xl p-4 border border-warm hover:bg-amber-50 transition-colors"
             >
-              <div className="text-xl mb-1">{icon}</div>
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="text-xl">{icon}</div>
+                {leader && leader.hotStreaks.length > 0 && (
+                  <div className="flex flex-col items-end gap-0.5">
+                    {leader.hotStreaks.map(({ name: n, streak }) => (
+                      <div key={n} className="text-[10px] font-bold text-amber-600 leading-tight whitespace-nowrap">
+                        🔥{streak} {n}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="text-[10px] font-black uppercase tracking-widest text-stone-900 mb-2">{name}</div>
               <div className="text-sm font-black text-stone-900 truncate">{leader?.name ?? '—'}</div>
               <div className={`text-[10px] font-bold ${leader ? 'text-muted' : 'text-stone-300'}`}>
