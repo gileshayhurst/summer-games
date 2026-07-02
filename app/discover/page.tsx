@@ -25,7 +25,7 @@ async function getPublicGroups(): Promise<PublicGroup[]> {
   const memberCounts = await Promise.all(
     groups.map(g =>
       supabase
-        .from('group_members')
+        .from('users')
         .select('id', { count: 'exact', head: true })
         .eq('group_id', g.id)
         .then(({ count }) => ({ id: g.id, count: count ?? 0 }))
@@ -63,7 +63,7 @@ export default async function DiscoverPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-black text-stone-900">{g.name}</span>
-                  <span className="text-xs text-muted">{g.memberCount} member{g.memberCount !== 1 ? 's' : ''}</span>
+                  <span className="text-xs text-muted">{g.memberCount} player{g.memberCount !== 1 ? 's' : ''}</span>
                 </div>
               </Link>
             ))}
