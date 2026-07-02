@@ -139,7 +139,7 @@ export default async function LandingPage() {
           </Link>
         </div>
         <div className="relative">
-          <div className="grid grid-cols-3 gap-6 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
             <div id="multi-games-card" className="bg-card rounded-xl p-5 border border-warm">
               <div className="text-2xl mb-2">🏓</div>
               <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Multiple Games</h3>
@@ -157,9 +157,6 @@ export default async function LandingPage() {
             </div>
           </div>
           <div className="mt-16">
-            <p className="text-muted text-sm mb-4">
-              <span id="want-anchor">Want</span> to suggest a game or give other feedback?
-            </p>
             <SuggestionForm />
           </div>
           <CurvedArrow fromId="multi-games-card" toId="want-anchor" />
