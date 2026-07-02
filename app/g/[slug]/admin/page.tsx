@@ -1,14 +1,29 @@
 export const dynamic = 'force-dynamic'
 
-import { requireRole } from '@/lib/auth'
+import { notFound } from 'next/navigation'
+import { requireMembership } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase-server'
 import AdminPanel from '@/components/admin/AdminPanel'
 import SuggestionsList from '@/components/admin/SuggestionsList'
+import AdminRequestsList from '@/components/admin/AdminRequestsList'
+import RequestAdminStatus from '@/components/admin/RequestAdminStatus'
 import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
-import { User } from '@/lib/types'
+import { User, MemberWithProfile } from '@/lib/types'
 
 export default async function GroupAdminPage({ params }: { params: { slug: string } }) {
-  const { group, member } = await requireRole(params.slug, ['admin', 'owner'])
+  const { group, member } = await requireMembership(params.slug)
+
+  if (!member) notFound()
+
+  if (member.role === 'member') {
+    return (
+      <RequestAdminStatus
+        groupId={group.id}
+        slug={params.slug}
+        initialPending={!!member.admin_requested_at}
+      />
+    )
+  }
 
   const supabase = createServerClient()
   const [
@@ -88,11 +103,14 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
     }))
 
   const suggestions = (suggestionsRaw ?? []) as { id: string; name: string | null; email: string | null; game_suggestion: string | null; feedback: string | null; created_at: string }[]
+  const members = (membersRaw ?? []) as MemberWithProfile[]
+  const pendingRequests = member.role === 'owner' ? members.filter(m => m.admin_requested_at) : []
 
   return (
     <div>
       <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
       <p className="text-muted text-sm mb-8">Manage your group.</p>
+      <AdminRequestsList initial={pendingRequests} groupId={group.id} />
       <SuggestionsList initial={suggestions} />
       <AdminPanel
         pongGames={assemblePong(pongGamesRaw ?? [])}
@@ -103,7 +121,7 @@ export default async function GroupAdminPage({ params }: { params: { slug: strin
         poolGames={assemblePool(poolGamesRaw ?? [])}
         pokerGames={assemblePoker(pokerGamesRaw ?? [])}
         players={(users ?? []) as User[]}
-        members={(membersRaw ?? []) as any}
+        members={members}
         groupId={group.id}
         groupSlug={group.slug}
         visibility={group.visibility}
