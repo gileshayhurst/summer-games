@@ -1,9 +1,42 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import CurvedArrow from '@/components/CurvedArrow'
 import SuggestionForm from '@/components/SuggestionForm'
 import JoinByCodeButton from '@/components/JoinByCodeButton'
+import { getCurrentUser } from '@/lib/auth'
+import { createServerClient } from '@/lib/supabase-server'
 
-export default function LandingPage() {
+type MyGroup = {
+  name: string
+  slug: string
+  role: string
+  playerName: string | null
+}
+
+export default async function LandingPage() {
+  const user = await getCurrentUser()
+
+  let myGroups: MyGroup[] = []
+  if (user) {
+    const supabase = createServerClient()
+    const { data } = await supabase
+      .from('group_members')
+      .select('role, player_id, groups ( name, slug ), users!player_id ( name )')
+      .eq('user_id', user.id)
+
+    myGroups = (data ?? [])
+      .map(m => ({
+        name: (m.groups as { name: string; slug: string }).name,
+        slug: (m.groups as { name: string; slug: string }).slug,
+        role: m.role as string,
+        playerName: m.player_id
+          ? ((m as any).users as { name: string } | null)?.name ?? null
+          : null,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }
+
   return (
     <div className="min-h-screen bg-bg">
       <header className="px-6 py-4 flex items-center justify-between border-b border-warm bg-card">
@@ -16,6 +49,66 @@ export default function LandingPage() {
           Create Your Group →
         </Link>
       </header>
+
+      <div className="bg-amber-50 border-b border-amber-200 px-6 py-4">
+        {!user ? (
+          <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-amber-800 mb-0.5">Your Groups</p>
+              <p className="text-sm text-muted">Sign in to see your groups.</p>
+            </div>
+            <Link
+              href="/signin?next=/"
+              className="shrink-0 bg-white border-2 border-amber-600 text-amber-700 text-xs font-black px-5 py-2 rounded-full hover:bg-amber-100 transition-colors tracking-wider uppercase"
+            >
+              Sign In →
+            </Link>
+          </div>
+        ) : myGroups.length === 0 ? (
+          <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-amber-800 mb-0.5">Your Groups</p>
+              <p className="text-sm text-muted">You&apos;re not in any groups yet.</p>
+            </div>
+            <Link
+              href="/create"
+              className="shrink-0 bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
+            >
+              Create One →
+            </Link>
+          </div>
+        ) : (
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xs font-black uppercase tracking-widest text-amber-800 mb-3">Your Groups</p>
+            <div className="space-y-2">
+              {myGroups.map(g => (
+                <Link
+                  key={g.slug}
+                  href={`/g/${g.slug}`}
+                  className="flex items-center justify-between bg-white border border-warm rounded-xl px-4 py-3 hover:bg-amber-50 transition-colors"
+                >
+                  <div>
+                    <p className="font-black text-stone-900 text-sm">{g.name}</p>
+                    {g.playerName ? (
+                      <p className="text-xs text-muted">Playing as <strong className="text-stone-900">{g.playerName}</strong></p>
+                    ) : (
+                      <p className="text-xs text-muted italic">No player claimed yet</p>
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${
+                    g.role === 'owner' || g.role === 'admin'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-stone-100 text-stone-500'
+                  }`}>
+                    {g.role}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       <main className="max-w-2xl mx-auto px-6 py-20 text-center">
         <div className="inline-block bg-amber-100 text-brand text-xs font-black px-4 py-1.5 rounded-full tracking-widest uppercase mb-6">
           Free
