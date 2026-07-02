@@ -9,6 +9,7 @@ import {
   computePoolPartnerRecord,
   computePokerLeaderboard,
   computeStreaks,
+  topStreaks,
 } from '../../lib/stats'
 import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
@@ -420,5 +421,63 @@ describe('computePokerLeaderboard', () => {
     const u1 = result.find(e => e.player_id === 'u1')!
     expect(u1.current_streak).toBe(1)
     expect(u1.max_streak).toBe(2)
+  })
+})
+
+describe('topStreaks', () => {
+  const byWins = (e: any) => e.wins
+
+  it('returns empty array when no player has current_streak >= 3', () => {
+    const entries = [
+      { name: 'Alice', current_streak: 2, wins: 10 },
+      { name: 'Bob',   current_streak: 0, wins: 5 },
+    ]
+    expect(topStreaks(entries, byWins)).toEqual([])
+  })
+
+  it('returns qualifying players sorted by streak descending', () => {
+    const entries = [
+      { name: 'Alice', current_streak: 5, wins: 8 },
+      { name: 'Bob',   current_streak: 3, wins: 4 },
+      { name: 'Carol', current_streak: 2, wins: 6 },
+    ]
+    expect(topStreaks(entries, byWins)).toEqual([
+      { name: 'Alice', streak: 5 },
+      { name: 'Bob',   streak: 3 },
+    ])
+  })
+
+  it('caps results at 3', () => {
+    const entries = [
+      { name: 'A', current_streak: 5, wins: 10 },
+      { name: 'B', current_streak: 4, wins: 8 },
+      { name: 'C', current_streak: 4, wins: 7 },
+      { name: 'D', current_streak: 3, wins: 6 },
+    ]
+    const result = topStreaks(entries, byWins)
+    expect(result).toHaveLength(3)
+    expect(result.map(e => e.name)).toEqual(['A', 'B', 'C'])
+  })
+
+  it('breaks ties by the winsOf accessor descending', () => {
+    const entries = [
+      { name: 'Alice', current_streak: 3, wins: 10 },
+      { name: 'Bob',   current_streak: 3, wins: 15 },
+      { name: 'Carol', current_streak: 3, wins: 5 },
+      { name: 'Dave',  current_streak: 3, wins: 12 },
+    ]
+    const result = topStreaks(entries, byWins)
+    expect(result.map(e => e.name)).toEqual(['Bob', 'Dave', 'Alice'])
+  })
+
+  it('works with a custom winsOf accessor (e.g. win_sessions for poker)', () => {
+    const entries = [
+      { name: 'Alice', current_streak: 3, win_sessions: 7 },
+      { name: 'Bob',   current_streak: 3, win_sessions: 9 },
+    ]
+    expect(topStreaks(entries, e => e.win_sessions)).toEqual([
+      { name: 'Bob',   streak: 3 },
+      { name: 'Alice', streak: 3 },
+    ])
   })
 })
