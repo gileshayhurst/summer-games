@@ -48,7 +48,18 @@ export default function MembersTab({
   }
 
   const unlinkPlayer = async (userId: string) => {
-    await updateMember(userId, { player_id: null })
+    if (!confirm('Unlink this member from their player slot?')) return
+    setLoading(userId)
+    setError('')
+    const res = await fetch(`/api/groups/${groupId}/members/${userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ player_id: null }),
+    })
+    const data = await res.json()
+    setLoading(null)
+    if (!res.ok) { setError(data.error); return }
+    setMembers(prev => prev.map(m => m.user_id === userId ? { ...m, player_id: null, users: null } : m))
   }
 
   return (
