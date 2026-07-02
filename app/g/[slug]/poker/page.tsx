@@ -34,6 +34,11 @@ export default async function GroupPokerPage({ params }: { params: { slug: strin
     (gamePlayers ?? []) as unknown as PokerGamePlayer[]
   )
 
+  const entries = leaderboard.map(e => ({
+    ...e,
+    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+  }))
+
   const recentGames: RecentPokerGame[] = (recentRaw ?? []).map((g: any) => ({
     type: 'poker' as const,
     id: g.id,
@@ -58,7 +63,7 @@ export default async function GroupPokerPage({ params }: { params: { slug: strin
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♠ Poker</h1>
         <p className="text-muted text-sm">Ranked by total profit</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="total_profit_cents" />
+      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="total_profit_cents" />
       <div>
         <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
         <RecentGames games={recentGames} />

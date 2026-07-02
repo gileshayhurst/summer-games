@@ -49,7 +49,7 @@ export default async function GroupBeerDiePage({ params }: { params: { slug: str
 
   const entries = leaderboard.map(e => ({
     ...e,
-    name: e.current_streak >= 3 ? `${e.name} 🔥${e.current_streak}` : e.name,
+    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
   }))
 
   return (

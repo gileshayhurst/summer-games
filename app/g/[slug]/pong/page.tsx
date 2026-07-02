@@ -23,6 +23,11 @@ export default async function GroupPongPage({ params }: { params: { slug: string
 
   const leaderboard = computePongLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as PongGamePlayer[])
 
+  const entries = leaderboard.map(e => ({
+    ...e,
+    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+  }))
+
   const recentGames: RecentPongGame[] = (recentRaw ?? []).map((g: any) => ({
     type: 'pong' as const,
     id: g.id,
@@ -46,7 +51,7 @@ export default async function GroupPongPage({ params }: { params: { slug: string
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">🏓 Pong</h1>
         <p className="text-muted text-sm">Ranked by win rate</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
+      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <HeadToHead players={(users ?? []) as User[]} game="pong" />

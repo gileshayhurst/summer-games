@@ -21,6 +21,11 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
 
   const leaderboard = computeHeartsLeaderboard((users ?? []) as User[], (gamePlayers ?? []) as unknown as HeartsGamePlayer[])
 
+  const entries = leaderboard.map(e => ({
+    ...e,
+    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+  }))
+
   const recentGames: RecentHeartsGame[] = (recentRaw ?? []).map((g: any) => ({
     type: 'hearts' as const,
     id: g.id,
@@ -42,7 +47,7 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♥ Hearts</h1>
         <p className="text-muted text-sm">Ranked by lowest loss rate</p>
       </div>
-      <Leaderboard entries={leaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="loss_rate" />
+      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="loss_rate" />
       <div>
         <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
         <RecentGames games={recentGames} />
