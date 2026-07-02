@@ -24,6 +24,19 @@ export async function PATCH(
       return NextResponse.json({ error: 'Only owner can change roles' }, { status: 403 })
     }
     update.role = body.role
+    // A role change (promote or demote) makes any pending admin request stale.
+    update.admin_requested_at = null
+  }
+
+  if ('admin_requested_at' in body) {
+    if (body.admin_requested_at !== null) {
+      return NextResponse.json({ error: 'Invalid admin_requested_at' }, { status: 400 })
+    }
+    // Only owner can deny a pending admin request
+    if (requester.role !== 'owner') {
+      return NextResponse.json({ error: 'Only owner can deny admin requests' }, { status: 403 })
+    }
+    update.admin_requested_at = null
   }
 
   if ('player_id' in body) {

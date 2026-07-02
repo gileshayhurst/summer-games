@@ -273,6 +273,7 @@ export type GroupMember = {
   role: GroupMemberRole
   player_id: string | null
   joined_at: string
+  admin_requested_at: string | null
 }
 
 export type MemberWithProfile = GroupMember & {

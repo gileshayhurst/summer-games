@@ -19,11 +19,6 @@ export type MembershipResult = {
   isPublic: boolean
 }
 
-export type RoleResult = {
-  group: GroupInfo
-  member: GroupMember
-}
-
 function createCookieClient() {
   const cookieStore = cookies()
   return createSSRClient(
@@ -105,13 +100,6 @@ export async function requireMembership(slug: string): Promise<MembershipResult>
   }
 
   return { group, member, isPublic: group.visibility === 'public' }
-}
-
-// Use on pages/routes that require admin or owner role
-export async function requireRole(slug: string, allowedRoles: GroupMemberRole[]): Promise<RoleResult> {
-  const { group, member } = await requireMembership(slug)
-  if (!member || !allowedRoles.includes(member.role)) notFound()
-  return { group, member }
 }
 
 // Use in POST API routes — returns null if unauthenticated or not a member

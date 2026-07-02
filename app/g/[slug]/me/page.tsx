@@ -14,6 +14,7 @@ import {
 } from '@/lib/types'
 import StatCard from '@/components/StatCard'
 import GameIcon from '@/components/icons/GameIcon'
+import LogOutButton from '@/components/LogOutButton'
 
 function GameCard({
   gameType, name, rank, children,
@@ -371,9 +372,12 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-black uppercase tracking-tight mb-1">My Dashboard</h1>
-        <p className="text-muted text-sm">Signed in as {playerName}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black uppercase tracking-tight mb-1">My Dashboard</h1>
+          <p className="text-muted text-sm">Signed in as {playerName}</p>
+        </div>
+        <LogOutButton />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
