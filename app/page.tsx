@@ -6,11 +6,12 @@ import SuggestionForm from '@/components/SuggestionForm'
 import JoinByCodeButton from '@/components/JoinByCodeButton'
 import { getCurrentUser } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase-server'
+import type { GroupMemberRole } from '@/lib/types'
 
 type MyGroup = {
   name: string
   slug: string
-  role: string
+  role: GroupMemberRole
   playerName: string | null
 }
 
@@ -26,14 +27,17 @@ export default async function LandingPage() {
       .eq('user_id', user.id)
 
     myGroups = (data ?? [])
-      .map(m => ({
-        name: (m.groups as { name: string; slug: string }).name,
-        slug: (m.groups as { name: string; slug: string }).slug,
-        role: m.role as string,
-        playerName: m.player_id
-          ? ((m as any).users as { name: string } | null)?.name ?? null
-          : null,
-      }))
+      .map(m => {
+        const g = (Array.isArray(m.groups) ? m.groups[0] : m.groups) as { name: string; slug: string }
+        return {
+          name: g.name,
+          slug: g.slug,
+          role: m.role as GroupMemberRole,
+          playerName: m.player_id
+            ? ((m as any).users as { name: string } | null)?.name ?? null
+            : null,
+        }
+      })
       .sort((a, b) => a.name.localeCompare(b.name))
   }
 
