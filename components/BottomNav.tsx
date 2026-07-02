@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const ALL_GAMES = [
+  { slug: 'me', label: 'My Stats', icon: '👤' },
   { slug: 'pong', label: 'Pong', icon: '🏓' },
   { slug: 'beer-die', label: 'Beer Die', icon: '🎲' },
   { slug: 'hearts', label: 'Hearts', icon: '♥' },
@@ -12,7 +13,6 @@ const ALL_GAMES = [
   { slug: 'pool', label: 'Pool', icon: '🎱' },
   { slug: 'poker', label: 'Poker', icon: '♠' },
   { slug: 'players', label: 'Players', icon: '👥' },
-  { slug: 'me', label: 'My Stats', icon: '👤' },
 ]
 
 const DEFAULT_PINS = ['me', 'pong', 'beer-die']
