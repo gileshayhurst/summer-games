@@ -15,7 +15,7 @@ export default function LogOutButton() {
   const logOut = async () => {
     setLoading(true)
     await supabase.auth.signOut()
-    router.push('/')
+    router.push('/signin')
   }
 
   return (
@@ -24,7 +24,7 @@ export default function LogOutButton() {
       disabled={loading}
       className="text-xs font-black px-3 py-1.5 rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200 disabled:opacity-50 uppercase tracking-wide transition-colors shrink-0"
     >
-      {loading ? 'Logging Out…' : 'Log Out'}
+      {loading ? 'Logging Out…' : 'Log Out (not recommended)'}
     </button>
   )
 }

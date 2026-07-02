@@ -6,6 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'Garage League',
     description: "Track your friend group's game results",
     start_url: '/',
+    scope: '/',
     display: 'standalone',
     theme_color: '#1A4731',
     background_color: '#faf8f5',
