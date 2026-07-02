@@ -236,7 +236,7 @@ export default async function GroupHomePage({ params }: { params: { slug: string
                 {leader && leader.hotStreaks.length > 0 && (
                   <div className="flex flex-col items-end gap-0.5">
                     {leader.hotStreaks.map(({ name: n, streak }) => (
-                      <div key={n} className="text-[10px] font-bold text-amber-600 leading-tight whitespace-nowrap">
+                      <div key={`${n}-${streak}`} className="text-[10px] font-bold text-amber-600 leading-tight whitespace-nowrap">
                         🔥{streak} {n}
                       </div>
                     ))}
