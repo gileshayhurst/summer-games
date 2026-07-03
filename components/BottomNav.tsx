@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useGroup } from '@/lib/group-context'
 
 const ALL_GAMES = [
   { slug: 'me', label: 'My Stats', icon: '👤' },
@@ -53,6 +54,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
   }
 
   const isFull = pinned.length >= MAX_PINS
+  const { membership } = useGroup()
   const pinnedGames = ALL_GAMES.filter(g => pinned.includes(g.slug) && (!isExample || g.slug !== 'me'))
   // ALL_GAMES is ordered for the pin bar (My Stats first, so it defaults to the leftmost slot).
   // The "All Games" sheet lists actual games first, then utility entries (Players, My Stats),
@@ -127,7 +129,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
             </Link>
           ) : <div className="flex-1" />}
 
-          {isExample ? (
+          {isExample || !membership ? (
             <div className="flex-1" />
           ) : (
             <Link
