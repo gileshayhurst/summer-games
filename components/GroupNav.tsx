@@ -1,12 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function GroupNav({ slug, groupName, isExample = false }: { slug: string; groupName: string; isExample?: boolean }) {
   const base = `/g/${slug}`
   const pathname = usePathname()
   const [showHomeModal, setShowHomeModal] = useState(false)
+  const router = useRouter()
+  const [showBrowseButton, setShowBrowseButton] = useState(false)
+
+  useEffect(() => {
+    if (sessionStorage.getItem('fromDiscover')) setShowBrowseButton(true)
+  }, [])
 
   useEffect(() => {
     if (!showHomeModal) return
@@ -38,6 +44,17 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
         >
           <img src="/icon.svg" alt="Garage League" className="h-7 w-auto" />
         </button>
+        {showBrowseButton && (
+          <button
+            onClick={() => {
+              sessionStorage.removeItem('fromDiscover')
+              router.push('/discover')
+            }}
+            className="text-muted text-xs hover:text-stone-900 transition-colors shrink-0 mr-3 font-semibold"
+          >
+            ← Browse
+          </button>
+        )}
         <Link href={base} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 text-brand font-black text-sm tracking-widest uppercase shrink-0">
           {groupName}
         </Link>
