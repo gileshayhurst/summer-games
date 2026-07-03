@@ -1,13 +1,9 @@
-import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
+import { createServerClient } from '@/lib/supabase-server'
 import { requireMembership } from '@/lib/auth'
 import LogTabs from '@/components/log/LogTabs'
-import { notFound } from 'next/navigation'
 
 export default async function GroupLogPage({ params }: { params: { slug: string } }) {
-  const group = await getGroupBySlug(params.slug)
-  if (!group) notFound()
-
-  const { member } = await requireMembership(params.slug)
+  const { group, member } = await requireMembership(params.slug)
 
   if (!member) {
     return (
