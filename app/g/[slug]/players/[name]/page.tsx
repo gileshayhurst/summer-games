@@ -42,7 +42,7 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-black uppercase tracking-tight">{name}</h1>
+      <h1 className="text-3xl font-black uppercase tracking-tight">{player.name}</h1>
 
       <PlayerStats
         playerId={player.id}
