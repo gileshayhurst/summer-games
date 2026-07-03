@@ -34,7 +34,12 @@
   .bg-stone-100  { background-color: #3c3836; }
   .bg-stone-200  { background-color: #44403c; }
   .hover\:bg-stone-200:hover { background-color: #57534e; }
-  .hover\:bg-amber-50:hover  { background-color: #312e2b; }
+  .hover\:bg-amber-50:hover  { background-color: #3c3836; }
+  .hover\:bg-stone-50:hover  { background-color: #3c3836; }
+  .bg-white        { background-color: #3c3836; }
+  .text-amber-800  { color: #fcd34d; }
+  .border-amber-200 { border-color: #57534e; }
+  .border-amber-600 { border-color: #d97706; }
   .bg-amber-50   { background-color: #292524; }
   .bg-amber-100  { background-color: #3a2e1c; }
   .text-amber-700 { color: #fbbf24; }

@@ -113,11 +113,11 @@ export default async function LandingPage() {
         )}
       </div>
 
-      <main className="max-w-2xl mx-auto px-6 py-20 text-center">
+      <main className="max-w-2xl mx-auto px-6 py-10 md:py-20 text-center">
         <div className="inline-block bg-amber-100 text-brand text-xs font-black px-4 py-1.5 rounded-full tracking-widest uppercase mb-6">
           Free
         </div>
-        <h1 className="text-5xl font-black uppercase tracking-tight leading-none text-stone-900 mb-4">
+        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight leading-none text-stone-900 mb-4">
           Track Your Group&apos;s<br />
           <span className="text-win">Wins &amp; Losses.</span>
         </h1>
@@ -127,7 +127,7 @@ export default async function LandingPage() {
         <p className="text-base font-bold italic text-brand mb-12">
           The unofficial official scoreboard.
         </p>
-        <div className="flex gap-4 justify-center flex-wrap mb-20">
+        <div className="flex gap-4 justify-center flex-wrap mb-10 md:mb-20">
           <Link href="/create"
             className="bg-win text-white font-black px-8 py-3 rounded-full hover:bg-orange-400 transition-colors text-base tracking-wider uppercase">
             Create Your Group →
@@ -159,7 +159,9 @@ export default async function LandingPage() {
           <div className="mt-16">
             <SuggestionForm />
           </div>
-          <CurvedArrow fromId="multi-games-card" toId="want-anchor" />
+          <div className="hidden md:block">
+            <CurvedArrow fromId="multi-games-card" toId="want-anchor" />
+          </div>
         </div>
       </main>
     </div>

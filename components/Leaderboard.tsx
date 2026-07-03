@@ -66,7 +66,8 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
         </div>
       </div>
       <div className="bg-card rounded-xl overflow-hidden border border-warm">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-warm">
               <th className="text-left px-4 py-3 text-muted text-xs uppercase tracking-widest font-black w-8">#</th>
@@ -111,6 +112,7 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )
