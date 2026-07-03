@@ -195,20 +195,20 @@ export function computeHeartsLeaderboard(
   return users
     .map(u => {
       const s = stats.get(u.id)!
-      const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
-      const { current, max } = computeStreaks(games.map(g => g.isWin))
+      const wins = s.played - s.losses
+      const { current, max } = computeStreaks((gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at)).map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
         games_played: s.played,
-        losses: s.losses,
-        loss_rate: s.played > 0 ? s.losses / s.played : 0,
+        wins,
+        win_rate: s.played > 0 ? wins / s.played : 0,
         current_streak: current,
         max_streak: max,
       }
     })
     .filter(e => e.games_played > 0 && isVisible(e.name))
-    .sort((a, b) => a.loss_rate - b.loss_rate || b.games_played - a.games_played)
+    .sort((a, b) => b.win_rate - a.win_rate || b.games_played - a.games_played)
 }
 
 export function computePongPartnerRecord(

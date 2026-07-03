@@ -137,8 +137,8 @@ export type HeartsLeaderboardEntry = {
   player_id: string
   name: string
   games_played: number
-  losses: number
-  loss_rate: number
+  wins: number
+  win_rate: number
   current_streak: number
   max_streak: number
 }
