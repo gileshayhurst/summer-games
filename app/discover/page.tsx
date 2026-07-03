@@ -46,7 +46,7 @@ export default async function DiscoverPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-black uppercase tracking-tight text-stone-900">Discover Groups</h1>
-            <p className="text-muted text-sm mt-1">Public groups you can follow.</p>
+            <p className="text-muted text-sm mt-1">Public groups you can view.</p>
           </div>
           <Link href="/" className="text-muted text-sm hover:text-stone-900">← Home</Link>
         </div>
