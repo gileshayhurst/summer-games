@@ -349,60 +349,15 @@ export const exampleSpikeballLeaderboard = [] as const
 export const exampleSpikeballRecent = [] as const
 
 export const exampleHeartsLeaderboard = [
-  {
-    "name": "Adrian",
-    "games_played": 1,
-    "losses": 0,
-    "loss_rate": 0
-  },
-  {
-    "name": "Giles",
-    "games_played": 11,
-    "losses": 0,
-    "loss_rate": 0
-  },
-  {
-    "name": "Noah",
-    "games_played": 3,
-    "losses": 0,
-    "loss_rate": 0
-  },
-  {
-    "name": "Ant",
-    "games_played": 7,
-    "losses": 1,
-    "loss_rate": 0.14285714285714285
-  },
-  {
-    "name": "Rowan",
-    "games_played": 4,
-    "losses": 1,
-    "loss_rate": 0.25
-  },
-  {
-    "name": "Cole",
-    "games_played": 8,
-    "losses": 3,
-    "loss_rate": 0.375
-  },
-  {
-    "name": "Jackson",
-    "games_played": 7,
-    "losses": 3,
-    "loss_rate": 0.42857142857142855
-  },
-  {
-    "name": "Allie",
-    "games_played": 2,
-    "losses": 1,
-    "loss_rate": 0.5
-  },
-  {
-    "name": "Rob",
-    "games_played": 4,
-    "losses": 2,
-    "loss_rate": 0.5
-  }
+  { name: 'Adrian',  games_played: 1,  wins: 1, win_rate: 1.0 },
+  { name: 'Giles',   games_played: 11, wins: 11, win_rate: 1.0 },
+  { name: 'Noah',    games_played: 3,  wins: 3, win_rate: 1.0 },
+  { name: 'Ant',     games_played: 7,  wins: 6, win_rate: 0.8571428571428571 },
+  { name: 'Rowan',   games_played: 4,  wins: 3, win_rate: 0.75 },
+  { name: 'Cole',    games_played: 8,  wins: 5, win_rate: 0.625 },
+  { name: 'Jackson', games_played: 7,  wins: 4, win_rate: 0.5714285714285714 },
+  { name: 'Allie',   games_played: 2,  wins: 1, win_rate: 0.5 },
+  { name: 'Rob',     games_played: 4,  wins: 2, win_rate: 0.5 },
 ] as const
 
 export const exampleHeartsRecent = [

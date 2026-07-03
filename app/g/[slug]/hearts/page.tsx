@@ -37,17 +37,17 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
   const columns = [
     { key: 'name', label: 'Player' },
     { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
-    { key: 'losses', label: 'Losses', sortDirection: 'asc' as const },
-    { key: 'loss_rate', label: 'Loss%', format: 'percent', sortDirection: 'asc' as const },
+    { key: 'wins', label: 'Wins', sortDirection: 'desc' as const },
+    { key: 'win_rate', label: 'Win%', format: 'percent', sortDirection: 'desc' as const },
   ]
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♥ Hearts</h1>
-        <p className="text-muted text-sm">Ranked by lowest loss rate</p>
+        <p className="text-muted text-sm">Ranked by highest win rate</p>
       </div>
-      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="loss_rate" />
+      <Leaderboard entries={entries as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div>
         <p className="text-xs text-muted uppercase tracking-widest font-black mb-3">Recent Games</p>
         <RecentGames games={recentGames} />

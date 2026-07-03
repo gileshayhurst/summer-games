@@ -6,8 +6,8 @@ import { exampleHeartsLeaderboard, exampleHeartsRecent } from '../data'
 const columns = [
   { key: 'name', label: 'Player' },
   { key: 'games_played', label: 'Games', sortDirection: 'desc' as const },
-  { key: 'losses', label: 'Losses', sortDirection: 'asc' as const },
-  { key: 'loss_rate', label: 'Loss%', format: 'percent', sortDirection: 'asc' as const },
+  { key: 'wins', label: 'Wins', sortDirection: 'desc' as const },
+  { key: 'win_rate', label: 'Win%', format: 'percent', sortDirection: 'desc' as const },
 ]
 
 export default function ExampleHeartsPage() {
@@ -15,9 +15,9 @@ export default function ExampleHeartsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1">♥ Hearts</h1>
-        <p className="text-muted text-sm">Ranked by lowest loss rate</p>
+        <p className="text-muted text-sm">Ranked by highest win rate</p>
       </div>
-      <Leaderboard entries={exampleHeartsLeaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="loss_rate" />
+      <Leaderboard entries={exampleHeartsLeaderboard as unknown as Record<string, string | number>[]} columns={columns} defaultSortKey="win_rate" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-card border border-warm rounded-xl p-5 text-center">
           <p className="text-sm font-bold text-stone-900 mb-1">Want head-to-head stats and partner records?</p>
