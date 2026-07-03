@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase-server'
+import DiscoverList from '@/components/DiscoverList'
 
 type PublicGroup = {
   id: string
@@ -54,20 +55,7 @@ export default async function DiscoverPage() {
         {groups.length === 0 ? (
           <p className="text-muted text-sm">No public groups yet.</p>
         ) : (
-          <div className="space-y-3">
-            {groups.map(g => (
-              <Link
-                key={g.id}
-                href={`/g/${g.slug}`}
-                className="block bg-card border border-warm rounded-xl p-4 hover:bg-amber-50 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-black text-stone-900">{g.name}</span>
-                  <span className="text-xs text-muted">{g.memberCount} player{g.memberCount !== 1 ? 's' : ''}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <DiscoverList groups={groups} />
         )}
       </div>
     </div>
