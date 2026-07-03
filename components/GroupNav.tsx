@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useGroup } from '@/lib/group-context'
 
 export default function GroupNav({ slug, groupName, isExample = false }: { slug: string; groupName: string; isExample?: boolean }) {
   const base = `/g/${slug}`
@@ -9,6 +10,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
   const [showHomeModal, setShowHomeModal] = useState(false)
   const router = useRouter()
   const [showBrowseButton, setShowBrowseButton] = useState(false)
+  const { membership } = useGroup()
 
   useEffect(() => {
     if (sessionStorage.getItem('fromDiscover')) setShowBrowseButton(true)
@@ -96,7 +98,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
             ⚙️
           </Link>
         )}
-        {!isExample && (
+        {!isExample && membership && (
           <Link
             href={`${base}/log`}
             className="hidden md:inline-flex shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
