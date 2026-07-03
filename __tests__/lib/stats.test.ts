@@ -228,10 +228,20 @@ describe('computeHeartsLeaderboard', () => {
     { game_id: 'g3', player_id: 'u2', lost: true,  hearts_games: { id: 'g3', played_at: '2026-05-03T12:00:00Z' } },
   ]
 
-  it('ranks by loss rate ascending', () => {
+  it('ranks by win rate descending', () => {
     const result = computeHeartsLeaderboard(users, gamePlayers)
-    expect(result[0].name).toBe('Giles')   // 1/2 = 50%
-    expect(result[1].name).toBe('Sherm')   // 2/3 = 67%
+    expect(result[0].name).toBe('Giles')   // 1 win / 2 games = 50% win rate
+    expect(result[1].name).toBe('Sherm')   // 1 win / 3 games = 33% win rate
+  })
+
+  it('computes wins and win_rate correctly', () => {
+    const result = computeHeartsLeaderboard(users, gamePlayers)
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.wins).toBe(1)
+    expect(giles.win_rate).toBeCloseTo(0.5)
+    const sherm = result.find(e => e.name === 'Sherm')!
+    expect(sherm.wins).toBe(1)
+    expect(sherm.win_rate).toBeCloseTo(1 / 3)
   })
 
   it('excludes players with 0 games', () => {
@@ -239,13 +249,13 @@ describe('computeHeartsLeaderboard', () => {
   })
 
   it('computes current_streak and max_streak based on not losing', () => {
-    // Giles (u1): g1 lost=true (loss), g2 lost=false (win) → current streak 1, max streak 1
+    // Giles (u1): g1 lost=true (loss), g2 lost=false (win) → current 1, max 1
     const result = computeHeartsLeaderboard(users, gamePlayers)
     const giles = result.find(e => e.name === 'Giles')!
     expect(giles.current_streak).toBe(1)
     expect(giles.max_streak).toBe(1)
 
-    // Sherm (u2): g1 lost=false (win), g2 lost=true (loss), g3 lost=true (loss) → current streak 0, max streak 1
+    // Sherm (u2): g1 lost=false (win), g2 lost=true (loss), g3 lost=true (loss) → current 0, max 1
     const sherm = result.find(e => e.name === 'Sherm')!
     expect(sherm.current_streak).toBe(0)
     expect(sherm.max_streak).toBe(1)
