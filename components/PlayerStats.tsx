@@ -192,8 +192,8 @@ function HeartsCard({
       {entry ? (
         <StatGrid>
           <StatCard label="Games" value={String(entry.games_played)} />
-          <StatCard label="Losses" value={String(entry.losses)} />
-          <StatCard label="Loss%" value={`${(entry.loss_rate * 100).toFixed(1)}%`} />
+          <StatCard label="Wins" value={String(entry.wins)} />
+          <StatCard label="Win%" value={`${(entry.win_rate * 100).toFixed(1)}%`} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
         </StatGrid>
