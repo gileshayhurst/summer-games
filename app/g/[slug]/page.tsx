@@ -197,14 +197,8 @@ export default async function GroupHomePage({ params }: { params: { slug: string
     <div className="space-y-10">
       <InstallPrompt />
       {!member && isPublic && (
-        <div className="bg-amber-50 border border-warm rounded-xl p-4 flex items-center justify-between mb-6">
-          <p className="text-sm font-bold text-stone-900">Sign in and join to log games.</p>
-          <a
-            href={`/join/${group.join_code}`}
-            className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
-          >
-            Join →
-          </a>
+        <div className="bg-amber-50 border border-warm rounded-xl p-4 mb-6">
+          <p className="text-sm font-bold text-stone-900">Join this group with an invite link from a member.</p>
         </div>
       )}
       {member && !member.player_id && (
