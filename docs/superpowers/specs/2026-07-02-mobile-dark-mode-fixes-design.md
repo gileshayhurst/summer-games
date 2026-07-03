@@ -73,7 +73,7 @@ No other files change. The leaderboard shows numeric sink counts (e.g., 3 sinks,
 
 | Class | Problem | Fix value |
 |---|---|---|
-| `bg-white` | Landing group cards render white background; `text-stone-900` is overridden to near-white, making text invisible on white bg | `background-color: #292524` |
+| `bg-white` | Landing group cards render white background; `text-stone-900` is overridden to near-white, making text invisible on white bg | `background-color: #3c3836` (slightly elevated — avoids blending with the `bg-amber-50` section which also maps to `#292524` in dark mode) |
 | `text-amber-800` | "Your Groups" heading and similar labels render dark amber on dark background — unreadable | `color: #fcd34d` |
 | `border-amber-200` | Yellow banner border barely distinguishable from background | `border-color: #57534e` |
 | `hover:bg-amber-50` | Currently overridden to `#312e2b`, almost identical to card bg `#292524` — tap highlight imperceptible | Change to `#3c3836` |
@@ -83,7 +83,7 @@ No other files change. The leaderboard shows numeric sink counts (e.g., 3 sinks,
 **File: `app/globals.css`** — add to the existing `@media (prefers-color-scheme: dark)` block:
 
 ```css
-.bg-white        { background-color: #292524; }
+.bg-white        { background-color: #3c3836; }
 .text-amber-800  { color: #fcd34d; }
 .border-amber-200 { border-color: #57534e; }
 .hover\:bg-amber-50:hover { background-color: #3c3836; }  /* replace existing */
