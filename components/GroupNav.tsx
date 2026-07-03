@@ -44,7 +44,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
         >
           <img src="/icon.svg" alt="Garage League" className="h-7 w-auto" />
         </button>
-        {showBrowseButton && (
+        {showBrowseButton && !isExample && (
           <button
             onClick={() => {
               sessionStorage.removeItem('fromDiscover')
