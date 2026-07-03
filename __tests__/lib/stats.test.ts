@@ -14,26 +14,36 @@ import {
 import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
 describe('computeStreaks', () => {
-  it('returns 0/0 for no games', () => {
-    expect(computeStreaks([])).toEqual({ current: 0, max: 0 })
+  it('returns 0/0/0/0 for no games', () => {
+    expect(computeStreaks([])).toEqual({ current: 0, max: 0, currentLoss: 0, maxLoss: 0 })
   })
 
   it('returns the full length when every game is a win', () => {
-    expect(computeStreaks([true, true, true])).toEqual({ current: 3, max: 3 })
+    expect(computeStreaks([true, true, true])).toEqual({ current: 3, max: 3, currentLoss: 0, maxLoss: 0 })
   })
 
-  it('returns 0/0 when every game is a loss', () => {
-    expect(computeStreaks([false, false])).toEqual({ current: 0, max: 0 })
+  it('returns current/max 0 when every game is a loss', () => {
+    expect(computeStreaks([false, false])).toEqual({ current: 0, max: 0, currentLoss: 2, maxLoss: 2 })
   })
 
   it('current streak only counts the trailing run; max looks at the whole history', () => {
-    // oldest → newest: W W W L W  →  current streak is 1 (just the last game),
-    // max streak is 3 (the run at the start)
-    expect(computeStreaks([true, true, true, false, true])).toEqual({ current: 1, max: 3 })
+    // W W W L W → current win 1, max win 3, current loss 0, max loss 1
+    expect(computeStreaks([true, true, true, false, true])).toEqual({ current: 1, max: 3, currentLoss: 0, maxLoss: 1 })
   })
 
   it('current streak equals max streak when the trailing run is the longest', () => {
-    expect(computeStreaks([false, true, true])).toEqual({ current: 2, max: 2 })
+    // L W W → current win 2, max win 2, current loss 0, max loss 1
+    expect(computeStreaks([false, true, true])).toEqual({ current: 2, max: 2, currentLoss: 0, maxLoss: 1 })
+  })
+
+  it('tracks the current loss streak at the end of the sequence', () => {
+    // W W L L → current win 0, max win 2, current loss 2, max loss 2
+    expect(computeStreaks([true, true, false, false])).toEqual({ current: 0, max: 2, currentLoss: 2, maxLoss: 2 })
+  })
+
+  it('keeps historical max loss streak when the current run is a win', () => {
+    // L L L W → current win 1, max win 1, current loss 0, max loss 3
+    expect(computeStreaks([false, false, false, true])).toEqual({ current: 1, max: 1, currentLoss: 0, maxLoss: 3 })
   })
 })
 
