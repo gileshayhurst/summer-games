@@ -129,9 +129,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
             </Link>
           ) : <div className="flex-1" />}
 
-          {isExample || !membership ? (
-            <div className="flex-1" />
-          ) : (
+          {!isExample && membership ? (
             <Link
               href={`${base}/log`}
               onClick={() => setShowMore(false)}
@@ -139,6 +137,8 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
             >
               <span className="bg-win text-white text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
             </Link>
+          ) : (
+            <div className="flex-1" />
           )}
 
           {pinnedGames[2] ? (
