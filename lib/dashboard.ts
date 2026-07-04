@@ -37,6 +37,10 @@ export function formatStreak(value: number): string {
   return value >= 3 ? `🔥${value}` : String(value)
 }
 
+export function formatLossStreak(value: number): string {
+  return value >= 3 ? `😂${value}` : String(value)
+}
+
 export function sortCardsByPlayed<T extends { hasPlayed: boolean }>(cards: T[]): T[] {
   return [...cards].sort((a, b) => Number(b.hasPlayed) - Number(a.hasPlayed))
 }
