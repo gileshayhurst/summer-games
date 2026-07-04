@@ -5,7 +5,7 @@ import {
 } from '@/lib/stats'
 import {
   getLeaderboardRank, mergeRecentActivity, formatSideResult, formatHeartsResult,
-  formatPokerResult, formatStreak, sortCardsByPlayed, ActivityItem,
+  formatPokerResult, formatStreak, formatLossStreak, sortCardsByPlayed, ActivityItem,
 } from '@/lib/dashboard'
 import {
   User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
@@ -64,6 +64,8 @@ function PongCard({
           <StatCard label="Cup Diff" value={signed(entry.cup_differential)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -88,6 +90,8 @@ function BeerDieCard({
           <StatCard label="Self Sinks" value={String(entry.self_sinks)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -110,6 +114,8 @@ function CornholeCard({
           <StatCard label="Pt Diff" value={signed(entry.point_differential)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -132,6 +138,8 @@ function SpikeballCard({
           <StatCard label="Pt Diff" value={signed(entry.point_differential)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -154,6 +162,8 @@ function PoolCard({
           <StatCard label="Ball Diff" value={signed(entry.balls_differential)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -175,6 +185,8 @@ function PokerCard({
           <StatCard label="Profit" value={`${entry.total_profit_cents >= 0 ? '+' : '-'}$${(Math.abs(entry.total_profit_cents) / 100).toFixed(2)}`} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
@@ -196,6 +208,8 @@ function HeartsCard({
           <StatCard label="Win%" value={`${(entry.win_rate * 100).toFixed(1)}%`} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
         </StatGrid>
       ) : <NoGamesYet />}
     </GameCard>
