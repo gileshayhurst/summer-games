@@ -34,7 +34,7 @@ function computeStreaksByPlayer<GP>(
   playerId: (gp: GP) => string,
   isWin: (gp: GP) => boolean,
   playedAt: (gp: GP) => string
-): Map<string, { current: number; max: number }> {
+): Map<string, { current: number; max: number; currentLoss: number; maxLoss: number }> {
   const gamesByPlayer = new Map<string, GP[]>()
   for (const gp of gamePlayers) {
     const pid = playerId(gp)
@@ -42,7 +42,7 @@ function computeStreaksByPlayer<GP>(
     gamesByPlayer.get(pid)!.push(gp)
   }
 
-  const streaksByPlayer = new Map<string, { current: number; max: number }>()
+  const streaksByPlayer = new Map<string, { current: number; max: number; currentLoss: number; maxLoss: number }>()
   for (const [pid, games] of gamesByPlayer) {
     const sorted = [...games].sort((a, b) => playedAt(a).localeCompare(playedAt(b)))
     streaksByPlayer.set(pid, computeStreaks(sorted.map(isWin)))
@@ -74,7 +74,7 @@ export function computePongLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      const { current, max } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0 }
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
       return {
         player_id: u.id,
         name: u.name,
@@ -84,6 +84,8 @@ export function computePongLeaderboard(
         cup_differential: s.cup_diff,
         current_streak: current,
         max_streak: max,
+        current_loss_streak: currentLoss,
+        max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
@@ -141,7 +143,7 @@ export function computeBeerDieLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      const { current, max } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0 }
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
       return {
         player_id: u.id,
         name: u.name,
@@ -153,6 +155,8 @@ export function computeBeerDieLeaderboard(
         self_sinks: s.self_sinks,
         current_streak: current,
         max_streak: max,
+        current_loss_streak: currentLoss,
+        max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
@@ -201,15 +205,18 @@ export function computeHeartsLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const wins = s.played - s.losses
-      const { current, max } = computeStreaks((gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at)).map(g => g.isWin))
+      const { current, max, currentLoss, maxLoss } = computeStreaks((gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at)).map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
         games_played: s.played,
         wins,
+        losses: s.losses,
         win_rate: s.played > 0 ? wins / s.played : 0,
         current_streak: current,
         max_streak: max,
+        current_loss_streak: currentLoss,
+        max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.games_played > 0 && isVisible(e.name))
@@ -275,11 +282,12 @@ export function computeCornholeLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      const { current, max } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0 }
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
       return {
         player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
         win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff,
         current_streak: current, max_streak: max,
+        current_loss_streak: currentLoss, max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
@@ -337,11 +345,12 @@ export function computeSpikeballLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      const { current, max } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0 }
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
       return {
         player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
         win_rate: total > 0 ? s.wins / total : 0, point_differential: s.point_diff,
         current_streak: current, max_streak: max,
+        current_loss_streak: currentLoss, max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
@@ -399,11 +408,12 @@ export function computePoolLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const total = s.wins + s.losses
-      const { current, max } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0 }
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
       return {
         player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
         win_rate: total > 0 ? s.wins / total : 0, balls_differential: s.balls_diff,
         current_streak: current, max_streak: max,
+        current_loss_streak: currentLoss, max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
@@ -461,7 +471,7 @@ export function computePokerLeaderboard(
     .map(u => {
       const s = stats.get(u.id)!
       const games = (gamesByPlayer.get(u.id) ?? []).sort((a, b) => a.played_at.localeCompare(b.played_at))
-      const { current, max } = computeStreaks(games.map(g => g.isWin))
+      const { current, max, currentLoss, maxLoss } = computeStreaks(games.map(g => g.isWin))
       return {
         player_id: u.id,
         name: u.name,
@@ -471,6 +481,8 @@ export function computePokerLeaderboard(
         win_rate: s.games_played > 0 ? s.win_sessions / s.games_played : 0,
         current_streak: current,
         max_streak: max,
+        current_loss_streak: currentLoss,
+        max_loss_streak: maxLoss,
       }
     })
     .filter(e => e.games_played > 0 && isVisible(e.name))

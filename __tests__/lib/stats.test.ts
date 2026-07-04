@@ -97,6 +97,30 @@ describe('computePongLeaderboard', () => {
     expect(giles.current_streak).toBe(1)
     expect(giles.max_streak).toBe(1)
   })
+
+  it('computes current_loss_streak and max_loss_streak', () => {
+    const mkPongGP = (gameId: string, playerId: string, side: 'winner' | 'loser', at: string) => ({
+      game_id: gameId, player_id: playerId, side,
+      pong_games: { id: gameId, cups_left: 2, played_at: at },
+    })
+    // u1: win (oldest), loss, win (newest) → current_loss_streak 0, max_loss_streak 1
+    // u2: loss (oldest), win, loss (newest) → current_loss_streak 1, max_loss_streak 1
+    const gps = [
+      mkPongGP('g1', 'u1', 'winner', '2026-05-01T12:00:00Z'),
+      mkPongGP('g1', 'u2', 'loser',  '2026-05-01T12:00:00Z'),
+      mkPongGP('g2', 'u1', 'loser',  '2026-05-02T12:00:00Z'),
+      mkPongGP('g2', 'u2', 'winner', '2026-05-02T12:00:00Z'),
+      mkPongGP('g3', 'u1', 'winner', '2026-05-03T12:00:00Z'),
+      mkPongGP('g3', 'u2', 'loser',  '2026-05-03T12:00:00Z'),
+    ]
+    const result = computePongLeaderboard(users, gps)
+    const u1 = result.find(e => e.player_id === 'u1')!
+    expect(u1.current_loss_streak).toBe(0)
+    expect(u1.max_loss_streak).toBe(1)
+    const u2 = result.find(e => e.player_id === 'u2')!
+    expect(u2.current_loss_streak).toBe(1)
+    expect(u2.max_loss_streak).toBe(1)
+  })
 })
 
 describe('computePongHeadToHead', () => {
@@ -269,6 +293,20 @@ describe('computeHeartsLeaderboard', () => {
     const sherm = result.find(e => e.name === 'Sherm')!
     expect(sherm.current_streak).toBe(0)
     expect(sherm.max_streak).toBe(1)
+  })
+
+  it('computes losses, current_loss_streak, and max_loss_streak', () => {
+    const result = computeHeartsLeaderboard(users, gamePlayers)
+    // Giles (u1): g1 lost=true, g2 lost=false → losses 1, current_loss_streak 0, max_loss_streak 1
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.losses).toBe(1)
+    expect(giles.current_loss_streak).toBe(0)
+    expect(giles.max_loss_streak).toBe(1)
+    // Sherm (u2): g1 lost=false, g2 lost=true, g3 lost=true → losses 2, current_loss_streak 2, max_loss_streak 2
+    const sherm = result.find(e => e.name === 'Sherm')!
+    expect(sherm.losses).toBe(2)
+    expect(sherm.current_loss_streak).toBe(2)
+    expect(sherm.max_loss_streak).toBe(2)
   })
 })
 

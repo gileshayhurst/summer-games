@@ -89,6 +89,8 @@ export type PongLeaderboardEntry = {
   cup_differential: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type BeerDieSink = {
@@ -109,6 +111,8 @@ export type BeerDieLeaderboardEntry = {
   self_sinks: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type CornholeLeaderboardEntry = {
@@ -120,6 +124,8 @@ export type CornholeLeaderboardEntry = {
   point_differential: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type SpikeballLeaderboardEntry = {
@@ -131,6 +137,8 @@ export type SpikeballLeaderboardEntry = {
   point_differential: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type HeartsLeaderboardEntry = {
@@ -138,9 +146,12 @@ export type HeartsLeaderboardEntry = {
   name: string
   games_played: number
   wins: number
+  losses: number
   win_rate: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type HeadToHeadResult = {
@@ -214,6 +225,8 @@ export type PoolLeaderboardEntry = {
   balls_differential: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type RecentPoolGame = {
@@ -246,6 +259,8 @@ export type PokerLeaderboardEntry = {
   win_rate: number
   current_streak: number
   max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
 }
 
 export type RecentPokerGame = {
