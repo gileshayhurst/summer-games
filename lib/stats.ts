@@ -499,3 +499,14 @@ export function topStreaks<E extends { name: string; current_streak: number }>(
     .slice(0, 3)
     .map(e => ({ name: e.name, streak: e.current_streak }))
 }
+
+export function topLossStreaks<E extends { name: string; current_loss_streak: number }>(
+  entries: E[],
+  lossesOf: (e: E) => number
+): { name: string; streak: number }[] {
+  return entries
+    .filter(e => e.current_loss_streak >= 3)
+    .sort((a, b) => b.current_loss_streak - a.current_loss_streak || lossesOf(b) - lossesOf(a))
+    .slice(0, 3)
+    .map(e => ({ name: e.name, streak: e.current_loss_streak }))
+}

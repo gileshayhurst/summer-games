@@ -10,6 +10,7 @@ import {
   computePokerLeaderboard,
   computeStreaks,
   topStreaks,
+  topLossStreaks,
 } from '../../lib/stats'
 import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
@@ -534,6 +535,64 @@ describe('topStreaks', () => {
       { name: 'Bob',   current_streak: 3, win_sessions: 9 },
     ]
     expect(topStreaks(entries, e => e.win_sessions)).toEqual([
+      { name: 'Bob',   streak: 3 },
+      { name: 'Alice', streak: 3 },
+    ])
+  })
+})
+
+describe('topLossStreaks', () => {
+  const byLosses = (e: any) => e.losses
+
+  it('returns empty array when no player has current_loss_streak >= 3', () => {
+    const entries = [
+      { name: 'Alice', current_loss_streak: 2, losses: 10 },
+      { name: 'Bob',   current_loss_streak: 0, losses: 5 },
+    ]
+    expect(topLossStreaks(entries, byLosses)).toEqual([])
+  })
+
+  it('returns qualifying players sorted by streak descending', () => {
+    const entries = [
+      { name: 'Alice', current_loss_streak: 5, losses: 8 },
+      { name: 'Bob',   current_loss_streak: 3, losses: 4 },
+      { name: 'Carol', current_loss_streak: 2, losses: 6 },
+    ]
+    expect(topLossStreaks(entries, byLosses)).toEqual([
+      { name: 'Alice', streak: 5 },
+      { name: 'Bob',   streak: 3 },
+    ])
+  })
+
+  it('caps results at 3', () => {
+    const entries = [
+      { name: 'A', current_loss_streak: 5, losses: 10 },
+      { name: 'B', current_loss_streak: 4, losses: 8 },
+      { name: 'C', current_loss_streak: 4, losses: 7 },
+      { name: 'D', current_loss_streak: 3, losses: 6 },
+    ]
+    const result = topLossStreaks(entries, byLosses)
+    expect(result).toHaveLength(3)
+    expect(result.map(e => e.name)).toEqual(['A', 'B', 'C'])
+  })
+
+  it('breaks ties by the lossesOf accessor descending', () => {
+    const entries = [
+      { name: 'Alice', current_loss_streak: 3, losses: 10 },
+      { name: 'Bob',   current_loss_streak: 3, losses: 15 },
+      { name: 'Carol', current_loss_streak: 3, losses: 5 },
+      { name: 'Dave',  current_loss_streak: 3, losses: 12 },
+    ]
+    const result = topLossStreaks(entries, byLosses)
+    expect(result.map(e => e.name)).toEqual(['Bob', 'Dave', 'Alice'])
+  })
+
+  it('works with a custom lossesOf accessor (e.g. losing sessions for poker)', () => {
+    const entries = [
+      { name: 'Alice', current_loss_streak: 3, losing_sessions: 7 },
+      { name: 'Bob',   current_loss_streak: 3, losing_sessions: 9 },
+    ]
+    expect(topLossStreaks(entries, e => e.losing_sessions)).toEqual([
       { name: 'Bob',   streak: 3 },
       { name: 'Alice', streak: 3 },
     ])
