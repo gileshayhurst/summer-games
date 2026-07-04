@@ -23,7 +23,11 @@ export default async function GroupHeartsPage({ params }: { params: { slug: stri
 
   const entries = leaderboard.map(e => ({
     ...e,
-    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+    name: e.current_streak >= 3
+      ? `🔥${e.current_streak} ${e.name}`
+      : e.current_loss_streak >= 3
+        ? `😂${e.current_loss_streak} ${e.name}`
+        : e.name,
   }))
 
   const recentGames: RecentHeartsGame[] = (recentRaw ?? []).map((g: any) => ({

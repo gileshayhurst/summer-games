@@ -29,7 +29,11 @@ export default async function GroupSpikeballPage({ params }: { params: { slug: s
 
   const entries = leaderboard.map(e => ({
     ...e,
-    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+    name: e.current_streak >= 3
+      ? `🔥${e.current_streak} ${e.name}`
+      : e.current_loss_streak >= 3
+        ? `😂${e.current_loss_streak} ${e.name}`
+        : e.name,
   }))
 
   const recentGames: RecentSpikeballGame[] = (recentRaw ?? []).map((g: any) => ({

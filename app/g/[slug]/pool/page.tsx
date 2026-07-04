@@ -28,7 +28,11 @@ export default async function GroupPoolPage({ params }: { params: { slug: string
 
   const entries = leaderboard.map(e => ({
     ...e,
-    name: e.current_streak >= 3 ? `🔥${e.current_streak} ${e.name}` : e.name,
+    name: e.current_streak >= 3
+      ? `🔥${e.current_streak} ${e.name}`
+      : e.current_loss_streak >= 3
+        ? `😂${e.current_loss_streak} ${e.name}`
+        : e.name,
   }))
 
   const recentGames: RecentPoolGame[] = (recentRaw ?? []).map((g: any) => ({
