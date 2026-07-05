@@ -12,7 +12,7 @@ import {
   topStreaks,
   topLossStreaks,
 } from '../../lib/stats'
-import { User, PongGamePlayer, BeerDieGame, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
+import { User, PongGamePlayer, BeerDieGamePlayer, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
 describe('computeStreaks', () => {
   it('returns 0/0/0/0 for no games', () => {
@@ -83,7 +83,7 @@ describe('computePongLeaderboard', () => {
     expect(result[0].name).toBe('Giles')
     expect(result[0].wins).toBe(2)
     expect(result[0].losses).toBe(1)
-    expect(result[0].cup_differential).toBe(5) // 3+2
+    expect(result[0].cup_differential).toBe(4) // +3-1+2
     expect(result[2].win_rate).toBeCloseTo(0.333)
   })
 
@@ -159,13 +159,25 @@ describe('computePongHeadToHead', () => {
 // ── Beer Die ──────────────────────────────────────────────────────────────────
 
 describe('computeBeerDieLeaderboard', () => {
-  const games: BeerDieGame[] = [
-    { id: 'g1', winner1_id: 'u1', winner2_id: 'u2', loser1_id: 'u3', loser2_id: 'u4', points_differential: 5, played_at: '2026-05-01T12:00:00Z' },
-    { id: 'g2', winner1_id: 'u3', winner2_id: 'u4', loser1_id: 'u1', loser2_id: 'u2', points_differential: 3, played_at: '2026-05-02T12:00:00Z' },
+  const mkBDGP = (gameId: string, playerId: string, side: 'winner' | 'loser', diff: number, at: string): BeerDieGamePlayer => ({
+    game_id: gameId, player_id: playerId, side,
+    beer_die_games: { id: gameId, points_differential: diff, played_at: at },
+  })
+  const gamePlayers: BeerDieGamePlayer[] = [
+    // g1: Giles+Sherm beat Rob+Ant, diff 5
+    mkBDGP('g1', 'u1', 'winner', 5, '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u2', 'winner', 5, '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u3', 'loser',  5, '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u4', 'loser',  5, '2026-05-01T12:00:00Z'),
+    // g2: Rob+Ant beat Giles+Sherm, diff 3
+    mkBDGP('g2', 'u3', 'winner', 3, '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u4', 'winner', 3, '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u1', 'loser',  3, '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u2', 'loser',  3, '2026-05-02T12:00:00Z'),
   ]
 
   it('computes point differential correctly', () => {
-    const result = computeBeerDieLeaderboard(users, games)
+    const result = computeBeerDieLeaderboard(users, gamePlayers)
     const giles = result.find(e => e.name === 'Giles')!
     expect(giles.wins).toBe(1)
     expect(giles.losses).toBe(1)
@@ -238,15 +250,31 @@ describe('computeBeerDieLeaderboard — streaks', () => {
 })
 
 describe('computeBeerDieHeadToHead', () => {
-  const games: BeerDieGame[] = [
-    { id: 'g1', winner1_id: 'u1', winner2_id: 'u2', loser1_id: 'u3', loser2_id: 'u4', points_differential: 5, played_at: '2026-05-01T12:00:00Z' },
-    { id: 'g2', winner1_id: 'u1', winner2_id: 'u2', loser1_id: 'u3', loser2_id: 'u4', points_differential: 2, played_at: '2026-05-02T12:00:00Z' },
-    { id: 'g3', winner1_id: 'u1', winner2_id: 'u3', loser1_id: 'u2', loser2_id: 'u4', points_differential: 1, played_at: '2026-05-03T12:00:00Z' },
+  const mkBDGP = (gameId: string, playerId: string, side: 'winner' | 'loser', at: string): BeerDieGamePlayer => ({
+    game_id: gameId, player_id: playerId, side,
+    beer_die_games: { id: gameId, points_differential: 1, played_at: at },
+  })
+  const gamePlayers: BeerDieGamePlayer[] = [
+    // g1: Giles(u1)+Sherm(u2) beat Rob(u3)+Ant(u4)
+    mkBDGP('g1', 'u1', 'winner', '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u2', 'winner', '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u3', 'loser',  '2026-05-01T12:00:00Z'),
+    mkBDGP('g1', 'u4', 'loser',  '2026-05-01T12:00:00Z'),
+    // g2: Giles(u1)+Sherm(u2) beat Rob(u3)+Ant(u4)
+    mkBDGP('g2', 'u1', 'winner', '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u2', 'winner', '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u3', 'loser',  '2026-05-02T12:00:00Z'),
+    mkBDGP('g2', 'u4', 'loser',  '2026-05-02T12:00:00Z'),
+    // g3: Giles(u1)+Rob(u3) beat Sherm(u2)+Ant(u4) — teammates, should skip
+    mkBDGP('g3', 'u1', 'winner', '2026-05-03T12:00:00Z'),
+    mkBDGP('g3', 'u3', 'winner', '2026-05-03T12:00:00Z'),
+    mkBDGP('g3', 'u2', 'loser',  '2026-05-03T12:00:00Z'),
+    mkBDGP('g3', 'u4', 'loser',  '2026-05-03T12:00:00Z'),
   ]
 
   it('counts opponent matchups only', () => {
     // g1+g2: Giles wins vs Rob. g3: Giles+Rob teammates → skip
-    const r = computeBeerDieHeadToHead('u1', 'u3', games)
+    const r = computeBeerDieHeadToHead('u1', 'u3', gamePlayers)
     expect(r.wins).toBe(2)
     expect(r.losses).toBe(0)
   })
