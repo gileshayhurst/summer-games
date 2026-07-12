@@ -107,7 +107,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
 
   const tabClass = (gameSlug: string) =>
     `flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
-      pathname.startsWith(`${base}/${gameSlug}`) ? 'text-win' : 'text-muted'
+      pathname.startsWith(`${base}/${gameSlug}`) ? 'text-win-ink' : 'text-muted'
     }`
 
   return (
@@ -135,7 +135,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
               onClick={() => setShowMore(false)}
               className="flex-1 flex items-center justify-center"
             >
-              <span className="bg-win text-white text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
+              <span className="bg-win text-ink text-[9px] font-black px-3 py-2 rounded-full tracking-wider uppercase">LOG+</span>
             </Link>
           ) : (
             <div className="flex-1" />
@@ -151,7 +151,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
           <button
             onClick={() => setShowMore(s => !s)}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-black uppercase tracking-wide transition-colors ${
-              showMore ? 'text-win' : 'text-muted'
+              showMore ? 'text-win-ink' : 'text-muted'
             }`}
           >
             <span className="text-lg leading-none">···</span>
@@ -183,7 +183,7 @@ export default function BottomNav({ slug, isExample = false }: { slug: string; i
           <div className="px-4 pb-6">
             <p className="text-[10px] font-black text-muted uppercase tracking-widest mb-2">All Games</p>
             {isFull && (
-              <p className="text-[11px] text-win font-bold mb-2">Bar full — unpin one to add another</p>
+              <p className="text-[11px] text-win-ink font-bold mb-2">Bar full — unpin one to add another</p>
             )}
             {sheetGames.filter(g => !isExample || g.slug !== 'me').map(game => {
               const isPinned = pinned.includes(game.slug)

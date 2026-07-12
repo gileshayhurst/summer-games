@@ -23,7 +23,7 @@ export default function ExamplePokerPage() {
         <div className="bg-card border border-warm rounded-xl p-5 text-center">
           <p className="text-sm font-bold text-stone-900 mb-1">Want to track your crew&apos;s poker results?</p>
           <p className="text-sm text-muted mb-3">Create your own group to track profit and loss over time.</p>
-          <Link href="/create" className="inline-block bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
+          <Link href="/create" className="inline-block bg-win text-ink text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
             Create Your Group →
           </Link>
         </div>

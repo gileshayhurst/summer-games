@@ -34,7 +34,7 @@ function SignInContent() {
         <h1 className="text-2xl font-black uppercase tracking-tight text-stone-900 mb-2">Sign In</h1>
         <p className="text-muted text-sm mb-8">Sign in to join groups and log games.</p>
         {error && (
-          <p className="text-loss text-sm mb-4">Sign-in failed. Please try again.</p>
+          <p className="text-loss-ink text-sm mb-4">Sign-in failed. Please try again.</p>
         )}
         <button
           onClick={signInWithGoogle}

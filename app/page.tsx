@@ -49,7 +49,7 @@ export default async function LandingPage() {
           <span className="text-brand font-black text-sm tracking-widest uppercase">Garage League</span>
         </div>
         <Link href="/create"
-          className="bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
+          className="bg-win text-ink text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase">
           Create Your Group →
         </Link>
       </header>
@@ -76,7 +76,7 @@ export default async function LandingPage() {
             </div>
             <Link
               href="/create"
-              className="shrink-0 bg-win text-white text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
+              className="shrink-0 bg-win text-ink text-xs font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
             >
               Create One →
             </Link>
@@ -119,7 +119,7 @@ export default async function LandingPage() {
         </div>
         <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight leading-none text-stone-900 mb-4">
           Track Your Group&apos;s<br />
-          <span className="text-win">Wins &amp; Losses.</span>
+          <span className="text-win-ink">Wins &amp; Losses.</span>
         </h1>
         <p className="text-lg text-muted mb-3 leading-relaxed">
           Leaderboards for Pong, Beer Die, Cards, and more — shared with your whole crew.
@@ -129,7 +129,7 @@ export default async function LandingPage() {
         </p>
         <div className="flex gap-4 justify-center flex-wrap mb-10 md:mb-20">
           <Link href="/create"
-            className="bg-win text-white font-black px-8 py-3 rounded-full hover:bg-orange-400 transition-colors text-base tracking-wider uppercase">
+            className="bg-win text-ink font-black px-8 py-3 rounded-full hover:bg-orange-400 transition-colors text-base tracking-wider uppercase">
             Create Your Group →
           </Link>
           <JoinByCodeButton />
@@ -139,21 +139,25 @@ export default async function LandingPage() {
           </Link>
         </div>
         <div className="relative">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-            <div id="multi-games-card" className="bg-card rounded-xl p-5 border border-warm">
-              <div className="text-2xl mb-2">🏓</div>
-              <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Multiple Games</h3>
-              <p className="text-muted text-sm">Pong, Beer Die, Cards — <span className="text-brand font-bold">with more games to come!</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+            <div id="multi-games-card" className="sm:col-span-2 bg-card rounded-xl p-5 border border-warm">
+              <div className="text-2xl mb-3 space-x-1.5">
+                <span>🏓</span><span>🎲</span><span>🌽</span><span>🏐</span><span>🎱</span><span>♥</span><span>♠</span>
+              </div>
+              <h3 className="font-black text-sm uppercase tracking-widest text-stone-900 mb-2">Multiple Games</h3>
+              <p className="text-muted text-sm">Pong, Beer Die, Hearts, Cornhole, Spikeball, Pool &amp; Poker — <span className="text-brand font-bold">with more to come!</span></p>
             </div>
             <div className="bg-card rounded-xl p-5 border border-warm">
               <div className="text-2xl mb-2">📊</div>
               <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Live Leaderboards</h3>
               <p className="text-muted text-sm">Win rates, differentials, head-to-head. Always up to date.</p>
             </div>
-            <div className="bg-card rounded-xl p-5 border border-warm">
-              <div className="text-2xl mb-2">🔗</div>
-              <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-2">Shareable</h3>
-              <p className="text-muted text-sm">Public link your whole group can add to home screen to view as an app!</p>
+            <div className="sm:col-span-3 bg-card rounded-xl p-5 border border-warm flex items-center gap-4">
+              <div className="text-3xl shrink-0">🔗</div>
+              <div>
+                <h3 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-1">Shareable</h3>
+                <p className="text-muted text-sm">Public link your whole group can add to the home screen and use like an app.</p>
+              </div>
             </div>
           </div>
           <div className="mt-16">

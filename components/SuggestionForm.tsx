@@ -52,14 +52,14 @@ export default function SuggestionForm() {
                 <label className="text-xs text-muted uppercase tracking-wide block mb-1">Name</label>
                 <input
                   type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Optional"
-                  className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win"
+                  className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win-ink"
                 />
               </div>
               <div>
                 <label className="text-xs text-muted uppercase tracking-wide block mb-1">Email</label>
                 <input
                   type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Optional"
-                  className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win"
+                  className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win-ink"
                 />
               </div>
             </div>
@@ -67,19 +67,19 @@ export default function SuggestionForm() {
               <label className="text-xs text-muted uppercase tracking-wide block mb-1">Game Suggestion</label>
               <input
                 type="text" value={gameSuggestion} onChange={e => setGameSuggestion(e.target.value)} placeholder="Optional"
-                className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win"
+                className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win-ink"
               />
             </div>
             <div>
               <label className="text-xs text-muted uppercase tracking-wide block mb-1">Feedback</label>
               <textarea
                 value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="Optional" rows={3}
-                className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win resize-none"
+                className="bg-card border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full focus:outline-none focus:border-win-ink resize-none"
               />
             </div>
-            {error && <p className="text-loss text-sm">{error}</p>}
+            {error && <p className="text-loss-ink text-sm">{error}</p>}
             <button type="submit" disabled={loading}
-              className="bg-win text-white font-black px-5 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors text-sm uppercase tracking-wide">
+              className="bg-win text-ink font-black px-5 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors text-sm uppercase tracking-wide">
               {loading ? 'Sending...' : 'Submit →'}
             </button>
           </form>

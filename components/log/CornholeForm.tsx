@@ -39,14 +39,14 @@ export default function CornholeForm({ players }: { players: User[] }) {
         <label className="text-xs text-muted uppercase tracking-widest font-black block mb-2">Points Won By</label>
         <input
           type="number" min="1" value={points} onChange={e => setPoints(e.target.value)}
-          className="bg-card border border-warm rounded px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win"
+          className="bg-card border border-warm rounded px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win-ink"
           placeholder="1"
         />
       </div>
-      {error && <p className="text-loss text-sm">{error}</p>}
-      {success && <p className="text-win text-sm font-bold">Game logged! ✓</p>}
+      {error && <p className="text-loss-ink text-sm">{error}</p>}
+      {success && <p className="text-win-ink text-sm font-bold">Game logged! ✓</p>}
       <button type="submit" disabled={loading}
-        className="bg-win text-white font-black px-6 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors uppercase tracking-wide">
+        className="bg-win text-ink font-black px-6 py-2 rounded-full hover:bg-orange-400 disabled:opacity-50 transition-colors uppercase tracking-wide">
         {loading ? 'Saving...' : 'Submit'}
       </button>
     </form>

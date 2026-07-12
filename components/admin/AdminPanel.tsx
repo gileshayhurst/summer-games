@@ -177,7 +177,7 @@ export default function AdminPanel({
                 </button>
                 <button
                   onClick={() => setConfirmDeleteId(id)}
-                  className="text-xs text-muted hover:text-loss px-2 py-1 rounded hover:bg-amber-50 transition-colors"
+                  className="text-xs text-muted hover:text-loss-ink px-2 py-1 rounded hover:bg-amber-50 transition-colors"
                 >
                   🗑 Delete
                 </button>

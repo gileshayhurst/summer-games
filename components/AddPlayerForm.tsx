@@ -29,13 +29,13 @@ export default function AddPlayerForm({ groupId, groupSlug }: { groupId: string;
       <h2 className="font-black text-xs uppercase tracking-widest text-stone-900 mb-4">Add New Player</h2>
       <form onSubmit={submit} className="flex gap-3">
         <input name="name" value={name} onChange={e => setName(e.target.value)} placeholder="Name" required
-          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win text-sm" />
+          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win-ink text-sm" />
         <button type="submit" disabled={loading}
-          className="bg-win text-white font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors text-sm disabled:opacity-50 uppercase tracking-wide">
+          className="bg-win text-ink font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors text-sm disabled:opacity-50 uppercase tracking-wide">
           Add
         </button>
       </form>
-      {error && <p className="text-loss text-sm mt-2">{error}</p>}
+      {error && <p className="text-loss-ink text-sm mt-2">{error}</p>}
     </div>
   )
 }

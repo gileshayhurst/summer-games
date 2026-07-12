@@ -210,7 +210,7 @@ export default async function GroupHomePage({ params }: { params: { slug: string
           <p className="text-sm font-bold text-stone-900">You haven&apos;t claimed a player yet.</p>
           <a
             href={`/g/${params.slug}/claim`}
-            className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
+            className="bg-win text-ink text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
           >
             Claim →
           </a>
@@ -234,12 +234,12 @@ export default async function GroupHomePage({ params }: { params: { slug: string
                 {leader && (leader.hotStreaks.length > 0 || leader.coldStreaks.length > 0) && (
                   <div className="flex flex-col items-end gap-0.5">
                     {leader.hotStreaks.map(({ name: n, streak }) => (
-                      <div key={`hot-${n}-${streak}`} className="text-[10px] font-bold text-amber-600 leading-tight whitespace-nowrap">
+                      <div key={`hot-${n}-${streak}`} className="text-[10px] font-bold text-amber-700 leading-tight whitespace-nowrap">
                         🔥{streak} {n}
                       </div>
                     ))}
                     {leader.coldStreaks.map(({ name: n, streak }) => (
-                      <div key={`cold-${n}-${streak}`} className="text-[10px] font-bold text-blue-500 leading-tight whitespace-nowrap">
+                      <div key={`cold-${n}-${streak}`} className="text-[10px] font-bold text-blue-600 leading-tight whitespace-nowrap">
                         😂{streak} {n}
                       </div>
                     ))}
@@ -248,7 +248,7 @@ export default async function GroupHomePage({ params }: { params: { slug: string
               </div>
               <div className="text-[10px] font-black uppercase tracking-widest text-stone-900 mb-2">{name}</div>
               <div className="text-sm font-black text-stone-900 truncate">{leader?.name ?? '—'}</div>
-              <div className={`text-[10px] font-bold ${leader ? 'text-muted' : 'text-stone-300'}`}>
+              <div className="text-[10px] font-bold text-muted">
                 {leader ? (leader.statLine ?? `${leader.wins}W · ${leader.losses}L · ${leader.winRatePct}%`) : 'No games yet'}
               </div>
             </Link>

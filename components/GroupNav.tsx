@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useGroup } from '@/lib/group-context'
@@ -8,6 +8,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
   const base = `/g/${slug}`
   const pathname = usePathname()
   const [showHomeModal, setShowHomeModal] = useState(false)
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const router = useRouter()
   const [showBrowseButton, setShowBrowseButton] = useState(false)
   const { membership } = useGroup()
@@ -16,11 +17,12 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
     if (sessionStorage.getItem('fromDiscover')) setShowBrowseButton(true)
   }, [])
 
+  // Native <dialog> handles Escape, focus trap, and focus restore; just sync open state.
   useEffect(() => {
-    if (!showHomeModal) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowHomeModal(false) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    const d = dialogRef.current
+    if (!d) return
+    if (showHomeModal && !d.open) d.showModal()
+    else if (!showHomeModal && d.open) d.close()
   }, [showHomeModal])
 
   const navItems = [
@@ -64,7 +66,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
           <Link
             href={myStatsHref}
             className={`hidden md:inline-block ml-4 text-xs font-black uppercase tracking-widest transition-colors shrink-0 ${
-              isMyStatsActive ? 'text-win border-b-2 border-win pb-0.5' : 'text-muted hover:text-stone-900'
+              isMyStatsActive ? 'text-win-ink border-b-2 border-win pb-0.5' : 'text-muted hover:text-stone-900'
             }`}
           >
             My Stats
@@ -79,7 +81,7 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
                 href={href}
                 className={`text-xs font-black uppercase tracking-widest transition-colors ${
                   isActive
-                    ? 'text-win border-b-2 border-win pb-0.5'
+                    ? 'text-win-ink border-b-2 border-win pb-0.5'
                     : 'text-muted hover:text-stone-900'
                 }`}
               >
@@ -101,42 +103,42 @@ export default function GroupNav({ slug, groupName, isExample = false }: { slug:
         {!isExample && membership && (
           <Link
             href={`${base}/log`}
-            className="hidden md:inline-flex shrink-0 bg-win text-white text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
+            className="hidden md:inline-flex shrink-0 bg-win text-ink text-xs font-black px-4 py-2 rounded-full hover:bg-orange-400 transition-colors tracking-wider uppercase"
           >
             LOG GAME →
           </Link>
         )}
       </nav>
 
-      {showHomeModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-          onClick={() => setShowHomeModal(false)}
-        >
-          <div
-            className="bg-card border border-warm rounded-2xl p-6 max-w-sm mx-4 shadow-lg"
-            onClick={e => e.stopPropagation()}
-          >
-            <p className="text-stone-900 font-bold mb-6">
-              This will take you back to the &apos;create a group screen&apos;.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowHomeModal(false)}
-                className="bg-stone-100 text-stone-600 font-bold px-4 py-2 rounded-full text-sm hover:bg-stone-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <Link
-                href="/"
-                className="bg-win text-white font-black px-4 py-2 rounded-full text-sm hover:bg-orange-400 transition-colors uppercase tracking-wide"
-              >
-                Confirm
-              </Link>
-            </div>
+      <dialog
+        ref={dialogRef}
+        onClose={() => setShowHomeModal(false)}
+        onClick={e => { if (e.target === dialogRef.current) setShowHomeModal(false) }}
+        aria-label="Leave this group"
+        aria-describedby="home-modal-desc"
+        className="bg-transparent p-0 w-[min(24rem,calc(100%-2rem))] backdrop:bg-black/40"
+      >
+        <div className="bg-card border border-warm rounded-2xl p-6 shadow-lg">
+          <p id="home-modal-desc" className="text-stone-900 font-bold mb-6">
+            This will take you back to the &apos;create a group screen&apos;.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              type="button"
+              onClick={() => setShowHomeModal(false)}
+              className="bg-stone-100 text-stone-600 font-bold px-4 py-2 rounded-full text-sm hover:bg-stone-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <Link
+              href="/"
+              className="bg-win text-ink font-black px-4 py-2 rounded-full text-sm hover:bg-orange-400 transition-colors uppercase tracking-wide"
+            >
+              Confirm
+            </Link>
           </div>
         </div>
-      )}
+      </dialog>
     </>
   )
 }

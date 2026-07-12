@@ -49,15 +49,15 @@ export default function EditPokerGame({ game, players, onSave, onCancel }: Props
               step="0.01"
               value={amounts[pa.player_id] ?? ''}
               onChange={e => setAmounts(prev => ({ ...prev, [pa.player_id]: e.target.value }))}
-              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win text-sm"
+              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-24 focus:outline-none focus:border-win-ink text-sm"
             />
           </div>
         </div>
       ))}
-      {error && <p className="text-loss text-sm">{error}</p>}
+      {error && <p className="text-loss-ink text-sm">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="bg-win text-white font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
+          className="bg-win text-ink font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
           {loading ? 'Saving...' : 'Save'}
         </button>
         <button onClick={onCancel}

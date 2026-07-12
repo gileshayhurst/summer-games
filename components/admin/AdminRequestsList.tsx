@@ -40,7 +40,7 @@ export default function AdminRequestsList({
         Admin Requests
         <span className="ml-2 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded-full">{requests.length}</span>
       </h2>
-      {error && <p className="text-loss text-sm mb-2">{error}</p>}
+      {error && <p className="text-loss-ink text-sm mb-2">{error}</p>}
       <div className="space-y-3">
         {requests.map(r => (
           <div key={r.user_id} className="bg-card rounded-xl border border-warm px-4 py-3 flex items-center justify-between gap-2">

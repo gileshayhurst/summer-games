@@ -62,7 +62,7 @@ export default function ClaimPage() {
             }`}
           >
             {p.name}
-            {p.claimed && <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-stone-300">Claimed</span>}
+            {p.claimed && <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-muted">Claimed</span>}
           </button>
         ))}
         <button
@@ -80,16 +80,16 @@ export default function ClaimPage() {
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="Your name"
-          className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win mb-4"
+          className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win-ink mb-4"
         />
       )}
 
-      {error && <p className="text-loss text-sm mb-4">{error}</p>}
+      {error && <p className="text-loss-ink text-sm mb-4">{error}</p>}
 
       <button
         onClick={save}
         disabled={saving || (mode === 'list' && !selectedId) || (mode === 'create' && !newName.trim())}
-        className="w-full bg-win text-white font-black py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors"
+        className="w-full bg-win text-ink font-black py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors"
       >
         {saving ? 'Saving…' : 'Save →'}
       </button>

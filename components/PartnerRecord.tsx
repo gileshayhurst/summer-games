@@ -47,7 +47,7 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
         <select
           value={player1Id}
           onChange={handlePlayer1Change}
-          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-2 focus:outline-none focus:border-win"
+          className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-2 focus:outline-none focus:border-win-ink"
         >
           <option value="">Select player...</option>
           {players.map(p => (
@@ -59,7 +59,7 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
       <select
         value={player2Id}
         onChange={handlePlayer2Change}
-        className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-4 focus:outline-none focus:border-win"
+        className="bg-bg border border-warm rounded px-3 py-2 text-stone-900 text-sm w-full mb-4 focus:outline-none focus:border-win-ink"
       >
         <option value="">{currentPlayerId ? 'Select teammate...' : 'with teammate...'}</option>
         {players
@@ -73,12 +73,12 @@ export default function PartnerRecord({ players, currentPlayerId, game }: Props)
       {result && !loading && (
         <div className="flex gap-6 text-center">
           <div>
-            <p className="text-2xl font-black text-win">{result.wins}</p>
+            <p className="text-2xl font-black text-win-ink">{result.wins}</p>
             <p className="text-xs text-muted uppercase tracking-wide">{currentPlayerId ? 'Wins' : `${player1Name} Wins`}</p>
           </div>
           <div className="text-muted text-2xl self-center">–</div>
           <div>
-            <p className="text-2xl font-black text-loss">{result.losses}</p>
+            <p className="text-2xl font-black text-loss-ink">{result.losses}</p>
             <p className="text-xs text-muted uppercase tracking-wide">{currentPlayerId ? 'Losses' : `${player1Name} Losses`}</p>
           </div>
         </div>

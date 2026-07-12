@@ -61,7 +61,7 @@ export default function CreatePage() {
           <p className="text-muted text-sm mb-6">You need to sign in first.</p>
           <Link
             href="/signin?next=/create"
-            className="bg-win text-white font-black px-6 py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors inline-block"
+            className="bg-win text-ink font-black px-6 py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors inline-block"
           >
             Sign In →
           </Link>
@@ -98,7 +98,7 @@ export default function CreatePage() {
           </div>
           <Link
             href={`/g/${created.slug}`}
-            className="bg-win text-white font-black px-6 py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors inline-block w-full text-center"
+            className="bg-win text-ink font-black px-6 py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 transition-colors inline-block w-full text-center"
           >
             Go to Your Group →
           </Link>
@@ -119,7 +119,7 @@ export default function CreatePage() {
             <input
               value={name} onChange={e => handleNameChange(e.target.value)}
               placeholder="Rob's Crew"
-              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
+              className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win-ink"
             />
           </div>
           <div>
@@ -129,7 +129,7 @@ export default function CreatePage() {
               <input
                 value={slug} onChange={e => setSlug(toSlug(e.target.value))}
                 placeholder="robs-crew"
-                className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win"
+                className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 flex-1 focus:outline-none focus:border-win-ink"
               />
             </div>
           </div>
@@ -164,14 +164,14 @@ export default function CreatePage() {
                 <input
                   key={i} value={p} onChange={e => updatePlayer(i, e.target.value)}
                   placeholder={`Player ${i + 1}`}
-                  className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
+                  className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win-ink"
                 />
               ))}
             </div>
           </div>
-          {error && <p className="text-loss text-sm">{error}</p>}
+          {error && <p className="text-loss-ink text-sm">{error}</p>}
           <button type="submit" disabled={loadingSubmit}
-            className="bg-win text-white font-black px-6 py-2 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors w-full">
+            className="bg-win text-ink font-black px-6 py-2 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors w-full">
             {loadingSubmit ? 'Creating...' : 'Create Group →'}
           </button>
         </form>

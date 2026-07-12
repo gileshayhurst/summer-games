@@ -18,7 +18,7 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
         <p className="text-sm font-bold text-stone-900">Sign in and join to see your dashboard.</p>
         <a
           href={`/join/${group.join_code}`}
-          className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
+          className="bg-win text-ink text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
         >
           Join →
         </a>
@@ -32,7 +32,7 @@ export default async function MyDashboardPage({ params }: { params: { slug: stri
         <p className="text-sm font-bold text-stone-900">You haven&apos;t claimed a player yet.</p>
         <a
           href={`/g/${params.slug}/claim`}
-          className="bg-win text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
+          className="bg-win text-ink text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide hover:bg-orange-400 transition-colors"
         >
           Claim →
         </a>

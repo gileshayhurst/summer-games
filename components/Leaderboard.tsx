@@ -56,7 +56,7 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
           <select
             value={sortKey}
             onChange={e => setSortKey(e.target.value)}
-            className="text-xs border border-warm rounded-lg px-2 py-1 bg-card text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="text-xs border border-warm rounded-lg px-3 min-h-[44px] bg-card text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-400"
             aria-label="Sort leaderboard by"
           >
             {sortOptions.map(opt => (
@@ -80,7 +80,7 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
           </thead>
           <tbody>
             {sorted.map((entry, i) => (
-              <tr key={entry.player_id as string} className="border-b border-warm hover:bg-amber-50 transition-colors">
+              <tr key={(entry.player_id ?? entry.name) as string} className="border-b border-warm hover:bg-amber-50 transition-colors">
                 <td className="px-4 py-3 text-muted font-mono">
                   {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
                 </td>
@@ -90,9 +90,9 @@ export default function Leaderboard({ entries, columns, defaultSortKey }: Props)
                   let color = 'text-stone-900 font-bold'
                   if (c.colorize) {
                     color = typeof val === 'number' && val > 0
-                      ? 'text-win font-bold'
+                      ? 'text-win-ink font-bold'
                       : typeof val === 'number' && val < 0
-                      ? 'text-loss font-bold'
+                      ? 'text-loss-ink font-bold'
                       : 'text-stone-900 font-bold'
                   }
                   return (

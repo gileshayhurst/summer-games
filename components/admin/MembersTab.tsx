@@ -64,7 +64,7 @@ export default function MembersTab({
 
   return (
     <div>
-      {error && <p className="text-loss text-sm mb-4">{error}</p>}
+      {error && <p className="text-loss-ink text-sm mb-4">{error}</p>}
       {members.length === 0 && <p className="text-muted text-sm">No members yet.</p>}
       <div className="space-y-3">
         {members.map(m => (

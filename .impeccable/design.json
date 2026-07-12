@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-10T00:00:00.000Z",
+  "title": "Design System: Garage League",
+  "extensions": {
+    "colorMeta": {
+      "win-orange": { "role": "primary", "displayName": "Live Orange", "canonical": "#f97316", "tonalRamp": ["#431407", "#7c2d12", "#9a3412", "#c2410c", "#ea580c", "#f97316", "#fb923c", "#fed7aa"] },
+      "win-ink": { "role": "primary", "displayName": "Broadcast Ember (orange-as-text)", "canonical": "#c2410c", "tonalRamp": ["#431407", "#7c2d12", "#9a3412", "#c2410c", "#ea580c", "#f97316", "#fdba74", "#ffedd5"] },
+      "ink": { "role": "neutral", "displayName": "Scoreboard Ink (text on orange)", "canonical": "#1c1917", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
+      "brand-deep": { "role": "primary", "displayName": "Broadcast Ember", "canonical": "#c2410c", "tonalRamp": ["#431407", "#7c2d12", "#9a3412", "#c2410c", "#ea580c", "#f97316", "#fdba74", "#ffedd5"] },
+      "loss-red": { "role": "secondary", "displayName": "Loss Red (fill)", "canonical": "#dc2626", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fecaca"] },
+      "loss-ink": { "role": "secondary", "displayName": "Loss Red (as text)", "canonical": "#dc2626", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fecaca"] },
+      "gold": { "role": "secondary", "displayName": "Trophy Gold", "canonical": "#eab308", "tonalRamp": ["#422006", "#713f12", "#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fef08a"] },
+      "forest": { "role": "secondary", "displayName": "Field Forest", "canonical": "#1a4731", "tonalRamp": ["#0a1f15", "#12301f", "#1a4731", "#22593e", "#2f7351", "#3d9169", "#63b98d", "#a7e0c3"] },
+      "streak-cold": { "role": "tertiary", "displayName": "Streak Cold", "canonical": "#3b82f6", "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"] },
+      "cream-bg": { "role": "neutral", "displayName": "Garage Cream", "canonical": "#fffbf0", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f0e0b8", "#fffbf0"] },
+      "cream-card": { "role": "neutral", "displayName": "Card Cream", "canonical": "#fff7ed", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#e7e5e4", "#fdecd8", "#fff7ed"] },
+      "sand-border": { "role": "neutral", "displayName": "Sand", "canonical": "#f0e0b8", "tonalRamp": ["#3a3218", "#5c4f26", "#84713a", "#a89252", "#cbb277", "#e0cd97", "#f0e0b8", "#faf3dd"] },
+      "ink": { "role": "neutral", "displayName": "Scoreboard Ink", "canonical": "#1c1917", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
+      "muted": { "role": "neutral", "displayName": "Muted Stone", "canonical": "#78716c", "tonalRamp": ["#1c1917", "#292524", "#44403c", "#57534e", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero and title cards — the broadcast title-card. UPPERCASE, weight 900, tight tracking." },
+      "headline": { "displayName": "Headline", "purpose": "Group name / page title — the chyron's main bar." },
+      "title": { "displayName": "Title", "purpose": "Stat values and leader names — heavy, read fast." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and prose. Measure capped 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "The signature: tracked black-caps micro-type. Kickers, table headers, nav, form labels, badges." }
+    },
+    "shadows": [
+      { "name": "sheet-lift", "value": "0 -4px 24px rgba(0,0,0,0.15)", "purpose": "Mobile 'All Games' bottom sheet sliding up over the page. Overlay only." },
+      { "name": "modal-lift", "value": "0 10px 30px rgba(0,0,0,0.15)", "purpose": "Centered confirmation dialogs above their black/40 backdrop. Overlay only." }
+    ],
+    "motion": [
+      { "name": "color-shift", "value": "background-color 0.15s ease, color 0.15s ease", "purpose": "Default hover/active feedback on buttons, rows, nav. Color-shift only — no transform, no bounce." },
+      { "name": "sheet-snap", "value": "transform 0.25s ease", "purpose": "Bottom-sheet drag-to-dismiss snap." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The tap target — every primary action. Live Orange pill, black-caps, color-shift on hover.",
+      "html": "<button class=\"ds-btn-primary\">Log Game →</button>",
+      "css": ".ds-btn-primary { background: var(--color-win, #f97316); color: var(--color-ink, #1c1917); font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 8px 24px; border: none; border-radius: 9999px; cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-primary:hover { background: #fb923c; } .ds-btn-primary:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The not-primary action — keeps orange scarce. Bordered pill on cream.",
+      "html": "<button class=\"ds-btn-ghost\">Browse Public Groups</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: var(--color-muted, #78716c); font-family: Inter, system-ui, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.025em; text-transform: uppercase; padding: 12px 32px; border: 2px solid var(--color-warm, #f0e0b8); border-radius: 9999px; cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-ghost:hover { background: var(--color-card, #fff7ed); } .ds-btn-ghost:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat Card Cream surface, sand hairline, no rest shadow. Interactive cards wash to hover-tint.",
+      "html": "<a class=\"ds-card\"><div class=\"ds-card-icon\">🏓</div><div class=\"ds-card-label\">Pong</div><div class=\"ds-card-name\">Marcus</div><div class=\"ds-card-stat\">12W · 3L · 80%</div></a>",
+      "css": ".ds-card { display: block; background: var(--color-card, #fff7ed); border: 1px solid var(--color-warm, #f0e0b8); border-radius: 12px; padding: 16px; text-decoration: none; transition: background-color 0.15s ease; } .ds-card:hover { background: #fffbeb; } .ds-card-icon { font-size: 20px; margin-bottom: 4px; } .ds-card-label { font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink, #1c1917); margin-bottom: 8px; } .ds-card-name { font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 14px; color: var(--color-ink, #1c1917); } .ds-card-stat { font-family: Inter, system-ui, sans-serif; font-weight: 700; font-size: 10px; color: var(--color-muted, #78716c); }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "stat-card",
+      "description": "Compact centered metric — big black value over a tracked muted label.",
+      "html": "<div class=\"ds-stat\"><p class=\"ds-stat-value\">80%</p><p class=\"ds-stat-label\">Win Rate</p></div>",
+      "css": ".ds-stat { background: var(--color-card, #fff7ed); border: 1px solid var(--color-warm, #f0e0b8); border-radius: 12px; padding: 12px; text-align: center; } .ds-stat-value { font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 18px; color: var(--color-ink, #1c1917); margin: 0; } .ds-stat-label { font-family: Inter, system-ui, sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted, #78716c); margin: 4px 0 0; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Cream fill, sand border, small radius. Focus shifts border to Live Orange.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Player Name</span><input class=\"ds-input\" type=\"text\" placeholder=\"Name\" /></label>",
+      "css": ".ds-field { display: block; } .ds-field-label { display: block; font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted, #78716c); margin-bottom: 8px; } .ds-input { background: var(--color-card, #fff7ed); border: 1px solid var(--color-warm, #f0e0b8); border-radius: 4px; padding: 8px 12px; font-family: Inter, system-ui, sans-serif; font-size: 14px; color: var(--color-ink, #1c1917); } .ds-input::placeholder { color: var(--color-muted, #78716c); } .ds-input:focus { outline: none; border-color: var(--color-win, #f97316); }"
+    },
+    {
+      "name": "Badge Pill",
+      "kind": "chip",
+      "refersTo": "badge-pill",
+      "description": "Tiny role/status pill in tracked black-caps. Shown here in the Field Forest 'pinned' variant.",
+      "html": "<span class=\"ds-badge\">Pinned</span>",
+      "css": ".ds-badge { display: inline-block; background: var(--color-forest, #1a4731); color: #fff; font-family: Inter, system-ui, sans-serif; font-weight: 900; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 9999px; }"
+    },
+    {
+      "name": "Leaderboard Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The signature scoreboard row — theatrical rank, hairline separators, colorized stat.",
+      "html": "<div class=\"ds-lb\"><table class=\"ds-lb-table\"><thead><tr><th>#</th><th>Player</th><th>W</th><th>Diff</th></tr></thead><tbody><tr><td>🥇</td><td class=\"ds-lb-name\">Marcus</td><td class=\"ds-lb-name\">12</td><td class=\"ds-lb-pos\">+34</td></tr><tr><td class=\"ds-lb-rank\">2</td><td class=\"ds-lb-name\">Priya</td><td class=\"ds-lb-name\">9</td><td class=\"ds-lb-neg\">-8</td></tr></tbody></table></div>",
+      "css": ".ds-lb { background: var(--color-card, #fff7ed); border: 1px solid var(--color-warm, #f0e0b8); border-radius: 12px; overflow: hidden; } .ds-lb-table { width: 100%; border-collapse: collapse; font-family: Inter, system-ui, sans-serif; font-size: 14px; } .ds-lb-table th { text-align: left; padding: 12px 16px; font-weight: 900; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted, #78716c); border-bottom: 1px solid var(--color-warm, #f0e0b8); } .ds-lb-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-warm, #f0e0b8); } .ds-lb-table tr:hover td { background: #fffbeb; } .ds-lb-rank { font-variant-numeric: tabular-nums; font-family: ui-monospace, monospace; color: var(--color-muted, #78716c); } .ds-lb-name { font-weight: 700; color: var(--color-ink, #1c1917); } .ds-lb-pos { font-weight: 700; color: var(--color-win, #f97316); } .ds-lb-neg { font-weight: 700; color: var(--color-loss, #ef4444); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Broadcast Lower-Third",
+    "overview": "Garage League looks like the on-screen graphics package for a sports broadcast that a friend group built for itself. Every screen is a name bar, a streak chyron, a stat line — the punchy uppercase overlay that flashes at the bottom of the TV telling you who's winning and by how much. The interface talks like a scoreboard graphic, never like a spreadsheet. The system runs warm, not cold: a cream/amber field, with orange as the 'live' tally-light signal meaning win / now / do-this. Type carries the personality — Inter pushed to weight 900, uppercase, tracked. Depth is nearly flat; shadows appear only when something genuinely lifts off the page. It rejects the corporate SaaS dashboard and the childish over-gamified look in equal measure: the humor is dry, the palette grown-up-warm, the loudness broadcast-loud not toy-loud.",
+    "keyCharacteristics": [
+      "Broadcast-graphic voice: uppercase, black-weight, tracked type as the primary material",
+      "Warm garage palette — cream field, orange 'live' signal, sand hairlines",
+      "Flat by default; elevation reserved for true overlays",
+      "Orange = win / primary action, and almost nothing else",
+      "Thumb-first: built to be logged one-handed on a phone at a party"
+    ],
+    "rules": [
+      { "name": "The Tally-Light Rule", "body": "Orange means win or primary action — nothing else. It never decorates. Its scarcity is what makes it read as 'live'.", "section": "colors" },
+      { "name": "The Fills-vs-Writes Rule", "body": "Live Orange (#f97316) is a fill color; Broadcast Ember (#c2410c, token win-ink) is orange as text. Text on a Live Orange fill is Scoreboard Ink (#1c1917), never white. This keeps every orange element at WCAG AA — white-on-Live-Orange is 2.80:1 and Live-Orange-as-text is 2.64:1; both fail.", "section": "colors" },
+      { "name": "The No Cold Lines Rule", "body": "Every border, divider, and rule is Sand (#f0e0b8), never a gray hairline. Cold gray lines are the SaaS-dashboard tell; warm sand keeps the garage.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Inter only. Never pair it with a second sans — hierarchy is built from weight (400 → 900), case, and tracking, never from a new typeface.", "section": "typography" },
+      { "name": "The Loudest-One-Thing Rule", "body": "Black-weight uppercase is the brand, but it only works when one thing is loudest per screen. Pick the hero — the winner, the streak, the standing — and let supporting type step down to muted body.", "section": "typography" },
+      { "name": "The Flat-Field Rule", "body": "Surfaces are flat at rest — cream on cream, separated by a sand hairline. A shadow is a verb, not a decoration: it may appear only while an element is actively lifted.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep orange on its leash — Live Orange (#f97316) means win or primary action only. One orange thing per screen wherever possible.",
+      "Do build hierarchy from Inter's weight range (400 → 900), case, and tracking — one family, no second typeface.",
+      "Do pick one loudest element per screen — the winner, the streak, the standing — and let everything else step down to muted body.",
+      "Do use 1px Sand (#f0e0b8) for every border and divider.",
+      "Do keep surfaces flat at rest; reserve shadows for elements actively lifting off the page.",
+      "Do make everything work one-handed on a phone — real touch targets, the LOG+ pill within thumb reach, nothing important behind a hover.",
+      "Do pair every win/loss and hot/cold signal with text, sign, or emoji — never color alone.",
+      "Do ship a visible focus state (orange border or amber ring) with every focus:outline-none."
+    ],
+    "donts": [
+      "Don't drift toward a corporate SaaS analytics dashboard — no cold gray/blue chrome, no sterile hero-metric card grid, no gray hairline rules.",
+      "Don't go childish or over-gamified — no cartoon mascots, confetti storms, or Duolingo-style badge overload.",
+      "Don't reach for the generic AI-template startup look — no purple gradients, no glassmorphism, no floating 3D blobs, no tracked eyebrow above every section.",
+      "Don't let Poker (or anything) slide into gambling/sportsbook slickness — keep the friendly-ledger warmth, not a neon betting board.",
+      "Don't nest a card inside a card, ever.",
+      "Don't put a drop shadow on a resting surface — if it's not actively lifting, it's flat.",
+      "Don't use a second font family to create emphasis — that's what weight is for.",
+      "Don't set label, title, and value all at max loudness; if everything shouts, nothing does.",
+      "Don't use muted stone body text on the cream field below 4.5:1 — bump toward Scoreboard Ink when contrast is close."
+    ]
+  }
+}

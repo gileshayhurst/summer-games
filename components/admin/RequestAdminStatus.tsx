@@ -35,18 +35,18 @@ export default function RequestAdminStatus({
           ? 'The group owner will review your request soon.'
           : 'Ask the group owner to make you an admin, or request it yourself.'}
       </p>
-      {error && <p className="text-loss text-sm">{error}</p>}
+      {error && <p className="text-loss-ink text-sm">{error}</p>}
       {!pending && (
         <button
           onClick={requestAdmin}
           disabled={loading}
-          className="bg-win text-white text-xs font-black px-6 py-3 rounded-full uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50 transition-colors"
+          className="bg-win text-ink text-xs font-black px-6 py-3 rounded-full uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50 transition-colors"
         >
           {loading ? 'Requesting…' : 'Request Admin Status'}
         </button>
       )}
       <div>
-        <Link href={`/g/${slug}`} className="text-sm font-bold text-win hover:text-orange-400">
+        <Link href={`/g/${slug}`} className="text-sm font-bold text-win-ink hover:text-orange-400">
           ← Back to group
         </Link>
       </div>

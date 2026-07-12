@@ -38,3 +38,5 @@ next-env.d.ts
 # Claude Code internal
 .superpowers/
 .worktrees/
+.claude/
+.impeccable/live/

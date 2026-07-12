@@ -70,10 +70,10 @@ export default function EditHeartsGame({ game, players, onSave, onCancel }: Prop
           })}
         </div>
       </div>
-      {error && <p className="text-loss text-sm">{error}</p>}
+      {error && <p className="text-loss-ink text-sm">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="bg-win text-white font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
+          className="bg-win text-ink font-black px-4 py-1.5 rounded-full text-sm uppercase tracking-wide hover:bg-orange-400 disabled:opacity-50">
           {loading ? 'Saving...' : 'Save'}
         </button>
         <button onClick={onCancel}

@@ -60,7 +60,7 @@ export default function GroupSettingsTab({
 
   return (
     <div className="space-y-6">
-      {error && <p className="text-loss text-sm">{error}</p>}
+      {error && <p className="text-loss-ink text-sm">{error}</p>}
 
       <div>
         <p className="text-xs font-black uppercase tracking-widest text-muted mb-3">Visibility</p>

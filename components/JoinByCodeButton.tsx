@@ -35,11 +35,11 @@ export default function JoinByCodeButton() {
           placeholder="Enter code"
           autoFocus
           required
-          className="bg-card border border-warm rounded-full px-4 py-2 text-stone-900 text-sm flex-1 focus:outline-none focus:border-win uppercase"
+          className="bg-card border border-warm rounded-full px-4 py-2 text-stone-900 text-sm flex-1 focus:outline-none focus:border-win-ink uppercase"
         />
         <button
           type="submit"
-          className="bg-win text-white font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors text-sm uppercase tracking-wide"
+          className="bg-win text-ink font-black px-5 py-2 rounded-full hover:bg-orange-400 transition-colors text-sm uppercase tracking-wide"
         >
           Join →
         </button>

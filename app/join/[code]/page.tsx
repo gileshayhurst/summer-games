@@ -81,7 +81,7 @@ export default function JoinPage({ params }: { params: { code: string } }) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center px-6">
         <div className="max-w-sm text-center">
-          <p className="text-loss font-bold mb-4">{error}</p>
+          <p className="text-loss-ink font-bold mb-4">{error}</p>
           <p className="text-muted text-sm">This join link may have expired or been reset.</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function JoinPage({ params }: { params: { code: string } }) {
                 }`}
               >
                 {p.name}
-                {p.claimed && <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-stone-300">Claimed</span>}
+                {p.claimed && <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-muted">Claimed</span>}
               </button>
             ))}
             <button
@@ -136,19 +136,19 @@ export default function JoinPage({ params }: { params: { code: string } }) {
                 value={newPlayerName}
                 onChange={e => setNewPlayerName(e.target.value)}
                 placeholder="Your name"
-                className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win"
+                className="bg-card border border-warm rounded-xl px-3 py-2 text-stone-900 w-full focus:outline-none focus:border-win-ink"
               />
             </div>
           )}
         </div>
 
-        {error && <p className="text-loss text-sm mb-4">{error}</p>}
+        {error && <p className="text-loss-ink text-sm mb-4">{error}</p>}
 
         <div className="space-y-3">
           <button
             onClick={() => handleJoin(false)}
             disabled={joining || (mode === 'list' && !selectedPlayerId) || (mode === 'create' && !newPlayerName.trim())}
-            className="w-full bg-win text-white font-black py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors"
+            className="w-full bg-win text-ink font-black py-3 rounded-full uppercase tracking-wider hover:bg-orange-400 disabled:opacity-50 transition-colors"
           >
             {joining ? 'Joining…' : 'Join Group →'}
           </button>

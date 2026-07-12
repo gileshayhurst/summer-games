@@ -32,7 +32,7 @@ export default function LogTabs({ players }: { players: User[] }) {
         {tabs.map(t => (
           <button key={t.id} onClick={() => setActive(t.id)}
             className={`px-5 py-2 rounded-full font-black text-sm transition-colors uppercase tracking-wide ${
-              active === t.id ? 'bg-win text-white' : 'bg-card text-muted hover:text-stone-900 border border-warm'
+              active === t.id ? 'bg-win text-ink' : 'bg-card text-muted hover:text-stone-900 border border-warm'
             }`}>
             {t.label}
           </button>
