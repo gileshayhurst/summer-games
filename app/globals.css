@@ -17,6 +17,15 @@
   --color-forest: #1A4731;
 }
 
+::selection      { background: #fde68a; color: #1c1917; }
+::-moz-selection { background: #fde68a; color: #1c1917; }
+
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-bg: #1c1917;
