@@ -22,7 +22,6 @@ Extract all rendering logic from `me/page.tsx` into a shared `PlayerStats` serve
 A server component (React, no `'use client'`) that owns all stats rendering.
 
 **Props:**
-- `playerName: string` — displayed as the page heading (overridden by the me page which renders its own "My Dashboard" heading above the component)
 - `playerId: string`
 - `users: User[]`
 - `pongPlayers: PongGamePlayer[]`

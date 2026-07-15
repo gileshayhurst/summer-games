@@ -80,7 +80,7 @@ Cards are full-width links. The section expands naturally to fit the list — no
 
 ## Edge Cases
 
-- **User is a member with no player claimed**: card shows "No player claimed yet" with a link to `/g/[slug]/claim` (via the normal group page — no special handling needed in this view).
+- **User is a member with no player claimed**: card shows "No player claimed yet" in muted italic. The card still links to `/g/[slug]`, from which the user can claim a player as usual. No special handling needed in this view.
 - **Query returns no rows / DB error**: treat as zero groups — show State 2 (empty state) rather than crashing.
 
 ---
