@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
+import { canReadGroup } from '@/lib/auth'
 import { computeBeerDieHeadToHead } from '@/lib/stats'
 import { BeerDieGamePlayer } from '@/lib/types'
 
@@ -10,6 +11,8 @@ export async function GET(req: NextRequest) {
   const group_id = searchParams.get('group_id')
   if (!player1 || !player2) return NextResponse.json({ error: 'player1 and player2 required' }, { status: 400 })
   if (!group_id) return NextResponse.json({ error: 'group_id required' }, { status: 400 })
+  if (!(await canReadGroup(group_id)))
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
 
   const supabase = createServerClient()
   const { data, error } = await supabase

@@ -1,6 +1,8 @@
 export const dynamic = 'force-dynamic'
 
+import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase-server'
+import { requireGroupAdmin } from '@/lib/auth'
 import AdminPanel from '@/components/admin/AdminPanel'
 import { User } from '@/lib/types'
 
@@ -153,6 +155,14 @@ async function getData() {
 }
 
 export default async function AdminPage() {
+  // This global page dumps every group's games plus all suggestion emails, so it
+  // must not be reachable by anonymous visitors. Restrict it to admins/owners of
+  // the summer-games operator group — the same gate the suggestions API uses.
+  const authClient = createServerClient()
+  const { data: opGroup } = await authClient
+    .from('groups').select('id').eq('slug', 'summer-games').single()
+  if (!opGroup || !(await requireGroupAdmin(opGroup.id))) notFound()
+
   const { pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, suggestions } = await getData()
   return (
     <div>

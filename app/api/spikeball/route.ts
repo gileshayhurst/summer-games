@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { computeSpikeballLeaderboard } from '@/lib/stats'
 import { SpikeballGamePlayer, User } from '@/lib/types'
-import { getMemberForAPI } from '@/lib/auth'
+import { getMemberForAPI, canReadGroup } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const group_id = new URL(req.url).searchParams.get('group_id')
   if (!group_id) return NextResponse.json({ error: 'group_id required' }, { status: 400 })
+  if (!(await canReadGroup(group_id)))
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
   const supabase = createServerClient()
   const [{ data: users }, { data: gamePlayers }] = await Promise.all([
     supabase.from('users').select('id, name, created_at').eq('group_id', group_id).order('name'),

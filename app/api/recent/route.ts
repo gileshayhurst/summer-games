@@ -15,32 +15,37 @@ export async function GET() {
     ] = await Promise.all([
       supabase
         .from('pong_games')
-        .select(`id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )`)
+        .select(`id, cups_left, played_at, groups!inner ( visibility ), pong_game_players ( side, users ( id, name ) )`)
         .eq('approved', true)
+        .eq('groups.visibility', 'public')
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('beer_die_games')
-        .select(`id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )`)
+        .select(`id, points_differential, played_at, groups!inner ( visibility ), beer_die_game_players ( side, users ( id, name ) )`)
         .eq('approved', true)
+        .eq('groups.visibility', 'public')
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('hearts_games')
-        .select(`id, played_at, hearts_game_players ( lost, users ( id, name ) )`)
+        .select(`id, played_at, groups!inner ( visibility ), hearts_game_players ( lost, users ( id, name ) )`)
         .eq('approved', true)
+        .eq('groups.visibility', 'public')
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('pool_games')
-        .select(`id, balls_differential, played_at, pool_game_players ( side, users ( id, name ) )`)
+        .select(`id, balls_differential, played_at, groups!inner ( visibility ), pool_game_players ( side, users ( id, name ) )`)
         .eq('approved', true)
+        .eq('groups.visibility', 'public')
         .order('played_at', { ascending: false })
         .limit(10),
       supabase
         .from('poker_games')
-        .select(`id, played_at, poker_game_players ( player_id, amount_cents, users ( id, name ) )`)
+        .select(`id, played_at, groups!inner ( visibility ), poker_game_players ( player_id, amount_cents, users ( id, name ) )`)
         .eq('approved', true)
+        .eq('groups.visibility', 'public')
         .order('played_at', { ascending: false })
         .limit(10),
     ])

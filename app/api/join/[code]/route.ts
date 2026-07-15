@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 // GET /api/join/[code] — validate code and return group info + unclaimed players
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { code: string } }
 ) {
+  if (!rateLimit(`join:${clientIp(req)}`, 20, 60_000))
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
   const supabase = createServerClient()
   const { data: group } = await supabase
     .from('groups')
@@ -38,6 +42,9 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { code: string } }
 ) {
+  if (!rateLimit(`join:${clientIp(req)}`, 20, 60_000))
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Sign in required' }, { status: 401 })
 

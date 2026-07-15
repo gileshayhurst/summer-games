@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { generateJoinCode } from '@/lib/join-code'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 function toSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40)
@@ -17,6 +18,9 @@ async function generateUniqueJoinCode(supabase: ReturnType<typeof createServerCl
 }
 
 export async function POST(req: NextRequest) {
+  if (!rateLimit(`groups:${clientIp(req)}`, 10, 60_000))
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'Sign in required' }, { status: 401 })
 

@@ -2,7 +2,7 @@ import { createServerClient as createSSRClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { createServerClient } from './supabase-server'
-import type { GroupMember, GroupMemberRole } from './types'
+import type { GroupMember } from './types'
 
 type GroupInfo = {
   id: string
@@ -114,4 +114,25 @@ export async function getMemberForAPI(groupId: string): Promise<GroupMember | nu
     .eq('user_id', user.id)
     .single()
   return (data as GroupMember) ?? null
+}
+
+// Returns the member row when the caller is admin/owner of the group, else null.
+export async function requireGroupAdmin(groupId: string): Promise<GroupMember | null> {
+  const member = await getMemberForAPI(groupId)
+  if (!member || !['admin', 'owner'].includes(member.role)) return null
+  return member
+}
+
+// True if a non-member may read the group (it's public) or the caller is a
+// member. Mirrors the read rule in requireMembership for API route handlers.
+export async function canReadGroup(groupId: string): Promise<boolean> {
+  const supabase = createServerClient()
+  const { data: group } = await supabase
+    .from('groups')
+    .select('visibility')
+    .eq('id', groupId)
+    .single()
+  if (!group) return false
+  if (group.visibility === 'public') return true
+  return (await getMemberForAPI(groupId)) !== null
 }

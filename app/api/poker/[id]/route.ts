@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
+import { authorizeGameMutation } from '@/lib/api-auth'
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const { player_amounts, group_id } = await req.json()
+  const auth = await authorizeGameMutation('poker_games', params.id)
+  if (!auth.ok) return auth.response
+
+  const { player_amounts } = await req.json()
   if (!Array.isArray(player_amounts) || player_amounts.length < 2)
     return NextResponse.json({ error: 'At least 2 players required' }, { status: 400 })
   const supabase = createServerClient()
@@ -13,7 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     game_id: params.id,
     player_id: pa.player_id,
     amount_cents: pa.amount_cents,
-    group_id,
+    group_id: auth.groupId,
   }))
   const { error: insertErr } = await supabase.from('poker_game_players').insert(playerRows)
   if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 })
@@ -21,6 +25,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await authorizeGameMutation('poker_games', params.id)
+  if (!auth.ok) return auth.response
+
   const supabase = createServerClient()
   const { error } = await supabase.from('poker_games').delete().eq('id', params.id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
