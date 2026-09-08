@@ -2,8 +2,8 @@
  * @jest-environment node
  */
 // Covers the API authorization helpers added in the security remediation:
-// requireGroupAdmin, canReadGroup, and authorizeGameMutation.
-// Runs in the node environment because authorizeGameMutation imports next/server,
+// requireGroupAdmin, canReadGroup, and authorizeRowMutation.
+// Runs in the node environment because authorizeRowMutation imports next/server,
 // which needs runtime web globals (Request/Response) absent under jsdom.
 
 let mockUser: { id: string } | null = null
@@ -47,7 +47,7 @@ jest.mock('../../lib/supabase-server', () => ({
 }))
 
 import { requireGroupAdmin, canReadGroup } from '../../lib/auth'
-import { authorizeGameMutation } from '../../lib/api-auth'
+import { authorizeRowMutation } from '../../lib/api-auth'
 
 beforeEach(() => {
   mockUser = null
@@ -108,11 +108,11 @@ describe('canReadGroup', () => {
   })
 })
 
-describe('authorizeGameMutation', () => {
+describe('authorizeRowMutation', () => {
   it('403s an unauthenticated caller', async () => {
     db.gameGroupId = 'g1'
     db.member = null
-    const result = await authorizeGameMutation('pong_games', 'game1')
+    const result = await authorizeRowMutation('pong_games', 'game1')
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.response.status).toBe(403)
   })
@@ -121,7 +121,7 @@ describe('authorizeGameMutation', () => {
     mockUser = { id: 'u1' }
     db.gameGroupId = 'g1'
     db.member = { id: 'm1', role: 'member', player_id: null }
-    const result = await authorizeGameMutation('pong_games', 'game1')
+    const result = await authorizeRowMutation('pong_games', 'game1')
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.response.status).toBe(403)
   })
@@ -130,7 +130,7 @@ describe('authorizeGameMutation', () => {
     mockUser = { id: 'u1' }
     db.gameGroupId = null
     db.member = { id: 'm1', role: 'owner', player_id: null }
-    const result = await authorizeGameMutation('pong_games', 'missing')
+    const result = await authorizeRowMutation('pong_games', 'missing')
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.response.status).toBe(404)
   })
@@ -139,7 +139,7 @@ describe('authorizeGameMutation', () => {
     mockUser = { id: 'u1' }
     db.gameGroupId = 'g-from-record'
     db.member = { id: 'm1', role: 'admin', player_id: null }
-    const result = await authorizeGameMutation('pong_games', 'game1')
+    const result = await authorizeRowMutation('pong_games', 'game1')
     expect(result.ok).toBe(true)
     if (result.ok) expect(result.groupId).toBe('g-from-record')
   })

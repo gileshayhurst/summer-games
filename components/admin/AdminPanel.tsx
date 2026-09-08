@@ -1,20 +1,23 @@
 'use client'
 import { useState } from 'react'
 import { User } from '@/lib/types'
-import { AdminPongGame, AdminBeerDieGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
+import { AdminPongGame, AdminBeerDieGame, AdminBeerBallGame, AdminCornholeGame, AdminSpikeballGame, AdminHeartsGame, AdminPoolGame, AdminPokerGame } from '@/app/admin/page'
 import EditPongGame from './EditPongGame'
 import EditBeerDieGame from './EditBeerDieGame'
+import EditBeerBallGame from './EditBeerBallGame'
 import EditCornholeGame from './EditCornholeGame'
 import EditSpikeballGame from './EditSpikeballGame'
 import EditHeartsGame from './EditHeartsGame'
 import EditPoolGame from './EditPoolGame'
 import EditPokerGame from './EditPokerGame'
 import MembersTab from './MembersTab'
+import PlayersTab from './PlayersTab'
 import GroupSettingsTab from './GroupSettingsTab'
 
 type AllGame =
   | { kind: 'pong'; played_at: string; data: AdminPongGame }
   | { kind: 'beer-die'; played_at: string; data: AdminBeerDieGame }
+  | { kind: 'beer-ball'; played_at: string; data: AdminBeerBallGame }
   | { kind: 'cornhole'; played_at: string; data: AdminCornholeGame }
   | { kind: 'spikeball'; played_at: string; data: AdminSpikeballGame }
   | { kind: 'hearts'; played_at: string; data: AdminHeartsGame }
@@ -33,6 +36,7 @@ type MemberRow = {
 type Props = {
   pongGames: AdminPongGame[]
   beerDieGames: AdminBeerDieGame[]
+  beerBallGames: AdminBeerBallGame[]
   cornholeGames: AdminCornholeGame[]
   spikeballGames: AdminSpikeballGame[]
   heartsGames: AdminHeartsGame[]
@@ -47,10 +51,10 @@ type Props = {
   currentUserRole?: string
 }
 
-type Tab = 'games' | 'members' | 'settings'
+type Tab = 'games' | 'players' | 'members' | 'settings'
 
 export default function AdminPanel({
-  pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
+  pongGames, beerDieGames, beerBallGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
   players, members = [], groupId = '', groupSlug = '', visibility = 'private', joinCode = '', currentUserRole = 'member',
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('games')
@@ -67,6 +71,7 @@ export default function AdminPanel({
   const allGames: AllGame[] = [
     ...pongGames.map(g => ({ kind: 'pong' as const, played_at: g.played_at, data: g })),
     ...beerDieGames.map(g => ({ kind: 'beer-die' as const, played_at: g.played_at, data: g })),
+    ...beerBallGames.map(g => ({ kind: 'beer-ball' as const, played_at: g.played_at, data: g })),
     ...cornholeGames.map(g => ({ kind: 'cornhole' as const, played_at: g.played_at, data: g })),
     ...spikeballGames.map(g => ({ kind: 'spikeball' as const, played_at: g.played_at, data: g })),
     ...heartsGames.map(g => ({ kind: 'hearts' as const, played_at: g.played_at, data: g })),
@@ -77,6 +82,7 @@ export default function AdminPanel({
   const apiPath = (kind: string, id: string) => {
     if (kind === 'pong') return `/api/pong/${id}`
     if (kind === 'beer-die') return `/api/beer-die/${id}`
+    if (kind === 'beer-ball') return `/api/beer-ball/${id}`
     if (kind === 'cornhole') return `/api/cornhole/${id}`
     if (kind === 'spikeball') return `/api/spikeball/${id}`
     if (kind === 'pool') return `/api/pool/${id}`
@@ -102,6 +108,10 @@ export default function AdminPanel({
     if (g.kind === 'beer-die') {
       const d = g.data as AdminBeerDieGame
       return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} +${d.points_differential}`
+    }
+    if (g.kind === 'beer-ball') {
+      const d = g.data as AdminBeerBallGame
+      return `${d.winner_ids.map(name).join(' & ')} def. ${d.loser_ids.map(name).join(' & ')} (${d.cans_left} cans)`
     }
     if (g.kind === 'cornhole') {
       const d = g.data as AdminCornholeGame
@@ -134,6 +144,7 @@ export default function AdminPanel({
   const badgeLabel = (kind: string) => {
     if (kind === 'pong') return 'PONG'
     if (kind === 'beer-die') return 'DIE'
+    if (kind === 'beer-ball') return 'BALL'
     if (kind === 'cornhole') return 'CORN'
     if (kind === 'spikeball') return 'SPIKE'
     if (kind === 'pool') return 'POOL'
@@ -144,6 +155,7 @@ export default function AdminPanel({
   const badgeColor = (kind: string) => {
     if (kind === 'pong') return 'bg-blue-100 text-blue-700'
     if (kind === 'beer-die') return 'bg-amber-100 text-amber-700'
+    if (kind === 'beer-ball') return 'bg-yellow-100 text-yellow-700'
     if (kind === 'cornhole') return 'bg-green-100 text-green-700'
     if (kind === 'spikeball') return 'bg-orange-100 text-orange-700'
     if (kind === 'pool') return 'bg-purple-100 text-purple-700'
@@ -210,6 +222,9 @@ export default function AdminPanel({
         {isEditing && g.kind === 'beer-die' && (
           <EditBeerDieGame game={g.data as AdminBeerDieGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
+        {isEditing && g.kind === 'beer-ball' && (
+          <EditBeerBallGame game={g.data as AdminBeerBallGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
+        )}
         {isEditing && g.kind === 'cornhole' && (
           <EditCornholeGame game={g.data as AdminCornholeGame} players={players} onSave={() => window.location.reload()} onCancel={() => setEditingId(null)} />
         )}
@@ -242,7 +257,7 @@ export default function AdminPanel({
   return (
     <div>
       <div className="flex gap-1 mb-6 border-b border-warm">
-        {(['games', 'members', 'settings'] as Tab[]).map(tab => (
+        {(['games', 'players', 'members', 'settings'] as Tab[]).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -256,6 +271,8 @@ export default function AdminPanel({
           </button>
         ))}
       </div>
+
+      {activeTab === 'players' && <PlayersTab players={players} />}
 
       {activeTab === 'members' && (
         <MembersTab initial={members} groupId={groupId} currentUserRole={currentUserRole} />

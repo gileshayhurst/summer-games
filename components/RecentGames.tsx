@@ -10,6 +10,10 @@ function formatGame(g: RecentGame): { title: string; detail: string } {
     title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,
   }
+  if (g.type === 'beer-ball') return {
+    title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
+    detail: `${g.cans_left} can${g.cans_left !== 1 ? 's' : ''} left`,
+  }
   if (g.type === 'cornhole') return {
     title: `${g.winners.join(' & ')} beat ${g.losers.join(' & ')}`,
     detail: `won by ${g.points_differential} pt${g.points_differential !== 1 ? 's' : ''}`,

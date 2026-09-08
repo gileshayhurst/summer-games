@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard,
+  computePongLeaderboard, computeBeerDieLeaderboard, computeBeerBallLeaderboard, computeHeartsLeaderboard,
   computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard,
 } from '@/lib/stats'
 import {
@@ -8,7 +8,7 @@ import {
   formatPokerResult, formatStreak, formatLossStreak, sortCardsByPlayed, ActivityItem,
 } from '@/lib/dashboard'
 import {
-  User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
+  User, PongGamePlayer, BeerDieGamePlayer, BeerBallGamePlayer, BeerDieSink, HeartsGamePlayer,
   CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer,
 } from '@/lib/types'
 import StatCard from '@/components/StatCard'
@@ -88,6 +88,30 @@ function BeerDieCard({
           <StatCard label="Pt Diff" value={signed(entry.point_differential)} />
           <StatCard label="Sinks" value={String(entry.sinks)} />
           <StatCard label="Self Sinks" value={String(entry.self_sinks)} />
+          <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
+          <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
+          <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
+          <StatCard label="Max Loss Streak" value={formatLossStreak(entry.max_loss_streak)} />
+        </StatGrid>
+      ) : <NoGamesYet />}
+    </GameCard>
+  )
+}
+
+function BeerBallCard({
+  entry, rank,
+}: {
+  entry: ReturnType<typeof computeBeerBallLeaderboard>[number] | undefined
+  rank: { rank: number; total: number } | null
+}) {
+  return (
+    <GameCard gameType="beer-ball" name="Beer Ball" rank={rank}>
+      {entry ? (
+        <StatGrid>
+          <StatCard label="Wins" value={String(entry.wins)} />
+          <StatCard label="Losses" value={String(entry.losses)} />
+          <StatCard label="Win%" value={`${(entry.win_rate * 100).toFixed(1)}%`} />
+          <StatCard label="Can Diff" value={signed(entry.can_differential)} />
           <StatCard label="Streak" value={formatStreak(entry.current_streak)} />
           <StatCard label="Max Streak" value={formatStreak(entry.max_streak)} />
           <StatCard label="Loss Streak" value={formatLossStreak(entry.current_loss_streak)} />
@@ -222,6 +246,7 @@ export default function PlayerStats({
   pongPlayers,
   beerDiePlayers,
   beerDieSinks,
+  beerBallPlayers,
   heartsPlayers,
   cornholePlayers,
   spikeballPlayers,
@@ -233,6 +258,7 @@ export default function PlayerStats({
   pongPlayers: PongGamePlayer[]
   beerDiePlayers: BeerDieGamePlayer[]
   beerDieSinks: BeerDieSink[]
+  beerBallPlayers: BeerBallGamePlayer[]
   heartsPlayers: HeartsGamePlayer[]
   cornholePlayers: CornholeGamePlayer[]
   spikeballPlayers: SpikeballGamePlayer[]
@@ -241,6 +267,7 @@ export default function PlayerStats({
 }) {
   const pongLB = computePongLeaderboard(users, pongPlayers)
   const beerDieLB = computeBeerDieLeaderboard(users, beerDiePlayers, beerDieSinks)
+  const beerBallLB = computeBeerBallLeaderboard(users, beerBallPlayers)
   const heartsLB = computeHeartsLeaderboard(users, heartsPlayers)
   const cornholeLB = computeCornholeLeaderboard(users, cornholePlayers)
   const spikeballLB = computeSpikeballLeaderboard(users, spikeballPlayers)
@@ -249,6 +276,7 @@ export default function PlayerStats({
 
   const pongEntry = pongLB.find(e => e.player_id === playerId)
   const beerDieEntry = beerDieLB.find(e => e.player_id === playerId)
+  const beerBallEntry = beerBallLB.find(e => e.player_id === playerId)
   const heartsEntry = heartsLB.find(e => e.player_id === playerId)
   const cornholeEntry = cornholeLB.find(e => e.player_id === playerId)
   const spikeballEntry = spikeballLB.find(e => e.player_id === playerId)
@@ -267,6 +295,12 @@ export default function PlayerStats({
       id: gp.game_id,
       played_at: gp.beer_die_games.played_at,
       result: formatSideResult(gp.side, `${gp.beer_die_games.points_differential} pt${gp.beer_die_games.points_differential !== 1 ? 's' : ''}`),
+    })),
+    ...beerBallPlayers.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
+      type: 'beer-ball',
+      id: gp.game_id,
+      played_at: gp.beer_ball_games.played_at,
+      result: formatSideResult(gp.side, `${gp.beer_ball_games.cans_left} can${gp.beer_ball_games.cans_left !== 1 ? 's' : ''} left`),
     })),
     ...cornholePlayers.filter(gp => gp.player_id === playerId).map((gp): ActivityItem => ({
       type: 'cornhole',
@@ -303,6 +337,7 @@ export default function PlayerStats({
   const gameCards = [
     { key: 'pong', hasPlayed: !!pongEntry, node: <PongCard entry={pongEntry} rank={getLeaderboardRank(pongLB, playerId)} /> },
     { key: 'beer-die', hasPlayed: !!beerDieEntry, node: <BeerDieCard entry={beerDieEntry} rank={getLeaderboardRank(beerDieLB, playerId)} /> },
+    { key: 'beer-ball', hasPlayed: !!beerBallEntry, node: <BeerBallCard entry={beerBallEntry} rank={getLeaderboardRank(beerBallLB, playerId)} /> },
     { key: 'cornhole', hasPlayed: !!cornholeEntry, node: <CornholeCard entry={cornholeEntry} rank={getLeaderboardRank(cornholeLB, playerId)} /> },
     { key: 'spikeball', hasPlayed: !!spikeballEntry, node: <SpikeballCard entry={spikeballEntry} rank={getLeaderboardRank(spikeballLB, playerId)} /> },
     { key: 'pool', hasPlayed: !!poolEntry, node: <PoolCard entry={poolEntry} rank={getLeaderboardRank(poolLB, playerId)} /> },

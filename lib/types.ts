@@ -270,7 +270,42 @@ export type RecentPokerGame = {
   results: { name: string; amount_cents: number }[]
 }
 
-export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame | RecentPokerGame
+export type BeerBallGame = {
+  id: string
+  cans_left: number
+  played_at: string
+}
+
+export type BeerBallGamePlayer = {
+  game_id: string
+  player_id: string
+  side: 'winner' | 'loser'
+  beer_ball_games: BeerBallGame
+}
+
+export type BeerBallLeaderboardEntry = {
+  player_id: string
+  name: string
+  wins: number
+  losses: number
+  win_rate: number
+  can_differential: number
+  current_streak: number
+  max_streak: number
+  current_loss_streak: number
+  max_loss_streak: number
+}
+
+export type RecentBeerBallGame = {
+  type: 'beer-ball'
+  id: string
+  played_at: string
+  winners: string[]
+  losers: string[]
+  cans_left: number
+}
+
+export type RecentGame = RecentPongGame | RecentBeerDieGame | RecentCornholeGame | RecentSpikeballGame | RecentHeartsGame | RecentPoolGame | RecentPokerGame | RecentBeerBallGame
 
 export type Profile = {
   id: string

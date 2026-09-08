@@ -145,7 +145,7 @@ export default async function LandingPage() {
                 <span>🏓</span><span>🎲</span><span>🌽</span><span>🏐</span><span>🎱</span><span>♥</span><span>♠</span>
               </div>
               <h3 className="font-black text-sm uppercase tracking-widest text-stone-900 mb-2">Multiple Games</h3>
-              <p className="text-muted text-sm">Pong, Beer Die, Hearts, Cornhole, Spikeball, Pool &amp; Poker — <span className="text-brand font-bold">with more to come!</span></p>
+              <p className="text-muted text-sm">Pong, Beer Die, Beer Ball, Hearts, Cornhole, Spikeball, Pool &amp; Poker — <span className="text-brand font-bold">with more to come!</span></p>
             </div>
             <div className="bg-card rounded-xl p-5 border border-warm">
               <div className="text-2xl mb-2">📊</div>

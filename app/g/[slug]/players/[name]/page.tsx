@@ -4,7 +4,7 @@ import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
 import { notFound } from 'next/navigation'
 import {
   User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer,
-  CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer,
+  BeerBallGamePlayer, CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer,
 } from '@/lib/types'
 import PlayerStats from '@/components/PlayerStats'
 
@@ -22,6 +22,7 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
     { data: heartsPlayers },
     { data: cornholePlayers },
     { data: spikeballPlayers },
+    { data: beerBallPlayers },
     { data: poolPlayers },
     { data: pokerPlayers },
   ] = await Promise.all([
@@ -32,6 +33,7 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
     supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games ( id, played_at )').eq('group_id', group.id),
     supabase.from('cornhole_game_players').select('game_id, player_id, side, cornhole_games ( id, points_differential, played_at )').eq('group_id', group.id),
     supabase.from('spikeball_game_players').select('game_id, player_id, side, spikeball_games ( id, points_differential, played_at )').eq('group_id', group.id),
+    supabase.from('beer_ball_game_players').select('game_id, player_id, side, beer_ball_games ( id, cans_left, played_at )').eq('group_id', group.id),
     supabase.from('pool_game_players').select('game_id, player_id, side, pool_games ( id, balls_differential, played_at )').eq('group_id', group.id),
     supabase.from('poker_game_players').select('game_id, player_id, amount_cents, poker_games ( id, played_at )').eq('group_id', group.id),
   ])
@@ -53,6 +55,7 @@ export default async function GroupPlayerPage({ params }: { params: { slug: stri
         heartsPlayers={(heartsPlayers ?? []) as unknown as HeartsGamePlayer[]}
         cornholePlayers={(cornholePlayers ?? []) as unknown as CornholeGamePlayer[]}
         spikeballPlayers={(spikeballPlayers ?? []) as unknown as SpikeballGamePlayer[]}
+        beerBallPlayers={(beerBallPlayers ?? []) as unknown as BeerBallGamePlayer[]}
         poolPlayers={(poolPlayers ?? []) as unknown as PoolGamePlayer[]}
         pokerPlayers={(pokerPlayers ?? []) as unknown as PokerGamePlayer[]}
       />

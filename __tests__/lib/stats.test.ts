@@ -4,6 +4,9 @@ import {
   computeBeerDieLeaderboard,
   computeBeerDieHeadToHead,
   computeHeartsLeaderboard,
+  computeBeerBallLeaderboard,
+  computeBeerBallHeadToHead,
+  computeBeerBallPartnerRecord,
   computePoolLeaderboard,
   computePoolHeadToHead,
   computePoolPartnerRecord,
@@ -12,7 +15,7 @@ import {
   topStreaks,
   topLossStreaks,
 } from '../../lib/stats'
-import { User, PongGamePlayer, BeerDieGamePlayer, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
+import { User, PongGamePlayer, BeerDieGamePlayer, BeerBallGamePlayer, HeartsGamePlayer, PoolGamePlayer, PokerGamePlayer } from '../../lib/types'
 
 describe('computeStreaks', () => {
   it('returns 0/0/0/0 for no games', () => {
@@ -342,6 +345,85 @@ describe('computeHeartsLeaderboard', () => {
 // ── Pool ──────────────────────────────────────────────────────────────────────
 
 const pg2 = (id: string, balls: number) => ({ id, balls_differential: balls, played_at: '2026-06-01T12:00:00Z' })
+
+// ── Beer Ball ─────────────────────────────────────────────────────────────────
+
+describe('computeBeerBallLeaderboard', () => {
+  const bb = (id: string, cans: number, at: string) => ({ id, cans_left: cans, played_at: at })
+  const gamePlayers: BeerBallGamePlayer[] = [
+    // g1: Giles+Sherm beat Rob+Ant with 3 cans left
+    { game_id: 'g1', player_id: 'u1', side: 'winner', beer_ball_games: bb('g1', 3, '2026-05-01T12:00:00Z') },
+    { game_id: 'g1', player_id: 'u2', side: 'winner', beer_ball_games: bb('g1', 3, '2026-05-01T12:00:00Z') },
+    { game_id: 'g1', player_id: 'u3', side: 'loser',  beer_ball_games: bb('g1', 3, '2026-05-01T12:00:00Z') },
+    { game_id: 'g1', player_id: 'u4', side: 'loser',  beer_ball_games: bb('g1', 3, '2026-05-01T12:00:00Z') },
+    // g2: Rob+Ant beat Giles+Sherm with 1 can left
+    { game_id: 'g2', player_id: 'u3', side: 'winner', beer_ball_games: bb('g2', 1, '2026-05-02T12:00:00Z') },
+    { game_id: 'g2', player_id: 'u4', side: 'winner', beer_ball_games: bb('g2', 1, '2026-05-02T12:00:00Z') },
+    { game_id: 'g2', player_id: 'u1', side: 'loser',  beer_ball_games: bb('g2', 1, '2026-05-02T12:00:00Z') },
+    { game_id: 'g2', player_id: 'u2', side: 'loser',  beer_ball_games: bb('g2', 1, '2026-05-02T12:00:00Z') },
+    // g3: Giles+Sherm beat Rob+Ant with 2 cans left
+    { game_id: 'g3', player_id: 'u1', side: 'winner', beer_ball_games: bb('g3', 2, '2026-05-03T12:00:00Z') },
+    { game_id: 'g3', player_id: 'u2', side: 'winner', beer_ball_games: bb('g3', 2, '2026-05-03T12:00:00Z') },
+    { game_id: 'g3', player_id: 'u3', side: 'loser',  beer_ball_games: bb('g3', 2, '2026-05-03T12:00:00Z') },
+    { game_id: 'g3', player_id: 'u4', side: 'loser',  beer_ball_games: bb('g3', 2, '2026-05-03T12:00:00Z') },
+  ]
+
+  it('ranks by win rate descending', () => {
+    const result = computeBeerBallLeaderboard(users, gamePlayers)
+    expect(result[0].name).toBe('Giles')
+    expect(result[0].wins).toBe(2)
+    expect(result[0].losses).toBe(1)
+    expect(result[0].win_rate).toBeCloseTo(0.667)
+  })
+
+  it('adds cans_left on a win and subtracts it on a loss', () => {
+    const result = computeBeerBallLeaderboard(users, gamePlayers)
+    expect(result.find(e => e.name === 'Giles')!.can_differential).toBe(4)  // +3 -1 +2
+    expect(result.find(e => e.name === 'Rob')!.can_differential).toBe(-4)   // -3 +1 -2
+  })
+
+  it('counts a 0-can shutout as a win with no differential change', () => {
+    const shutout: BeerBallGamePlayer[] = [
+      { game_id: 'g9', player_id: 'u1', side: 'winner', beer_ball_games: bb('g9', 0, '2026-05-04T12:00:00Z') },
+      { game_id: 'g9', player_id: 'u3', side: 'loser',  beer_ball_games: bb('g9', 0, '2026-05-04T12:00:00Z') },
+    ]
+    const result = computeBeerBallLeaderboard(users, shutout)
+    expect(result.find(e => e.name === 'Giles')!.wins).toBe(1)
+    expect(result.find(e => e.name === 'Giles')!.can_differential).toBe(0)
+  })
+
+  it('excludes players with 0 games', () => {
+    expect(computeBeerBallLeaderboard(users, [])).toHaveLength(0)
+  })
+
+  it('filters out players whose name starts with random', () => {
+    const withRandom: User[] = [...users, { id: 'u5', name: 'Random Guy', created_at: '2026-01-01' }]
+    const gps: BeerBallGamePlayer[] = [
+      { game_id: 'g4', player_id: 'u5', side: 'winner', beer_ball_games: bb('g4', 2, '2026-05-05T12:00:00Z') },
+      { game_id: 'g4', player_id: 'u1', side: 'loser',  beer_ball_games: bb('g4', 2, '2026-05-05T12:00:00Z') },
+    ]
+    expect(computeBeerBallLeaderboard(withRandom, gps).map(e => e.name)).not.toContain('Random Guy')
+  })
+
+  it('computes win and loss streaks in played_at order', () => {
+    const result = computeBeerBallLeaderboard(users, gamePlayers)
+    // Giles: win, loss, win → current 1, max 1, current loss 0, max loss 1
+    const giles = result.find(e => e.name === 'Giles')!
+    expect(giles.current_streak).toBe(1)
+    expect(giles.max_streak).toBe(1)
+    expect(giles.current_loss_streak).toBe(0)
+    expect(giles.max_loss_streak).toBe(1)
+    // Rob: loss, win, loss → current loss 1, max loss 1
+    const rob = result.find(e => e.name === 'Rob')!
+    expect(rob.current_loss_streak).toBe(1)
+    expect(rob.max_loss_streak).toBe(1)
+  })
+
+  it('computes head-to-head and partner records', () => {
+    expect(computeBeerBallHeadToHead('u1', 'u3', gamePlayers)).toEqual({ wins: 2, losses: 1 })
+    expect(computeBeerBallPartnerRecord('u1', 'u2', gamePlayers)).toEqual({ wins: 2, losses: 1 })
+  })
+})
 
 describe('computePoolLeaderboard', () => {
   const gamePlayers: PoolGamePlayer[] = [

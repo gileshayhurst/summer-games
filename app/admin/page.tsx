@@ -38,6 +38,14 @@ export type AdminSpikeballGame = {
   played_at: string
 }
 
+export type AdminBeerBallGame = {
+  id: string
+  winner_ids: string[]
+  loser_ids: string[]
+  cans_left: number
+  played_at: string
+}
+
 export type AdminHeartsGame = {
   id: string
   played_at: string
@@ -79,6 +87,8 @@ async function getData() {
       { data: cornholePlayers },
       { data: spikeballGamesRaw },
       { data: spikeballPlayers },
+      { data: beerBallGamesRaw },
+      { data: beerBallPlayers },
       { data: heartsGamesRaw },
       { data: heartsPlayers },
       { data: poolGamesRaw },
@@ -96,6 +106,8 @@ async function getData() {
       supabase.from('cornhole_game_players').select('game_id, player_id, side'),
       supabase.from('spikeball_games').select('id, points_differential, played_at').order('played_at', { ascending: false }),
       supabase.from('spikeball_game_players').select('game_id, player_id, side'),
+      supabase.from('beer_ball_games').select('id, cans_left, played_at').order('played_at', { ascending: false }),
+      supabase.from('beer_ball_game_players').select('game_id, player_id, side'),
       supabase.from('hearts_games').select('id, played_at').order('played_at', { ascending: false }),
       supabase.from('hearts_game_players').select('game_id, player_id, lost'),
       supabase.from('pool_games').select('id, balls_differential, played_at').order('played_at', { ascending: false }),
@@ -126,6 +138,11 @@ async function getData() {
       return { id: g.id, points_differential: g.points_differential, played_at: g.played_at, winner_ids: gp.filter((p: any) => p.side === 'winner').map((p: any) => p.player_id), loser_ids: gp.filter((p: any) => p.side === 'loser').map((p: any) => p.player_id) }
     })
 
+    const beerBallGames: AdminBeerBallGame[] = (beerBallGamesRaw ?? []).map((g: any) => {
+      const gp = (beerBallPlayers ?? []).filter((p: any) => p.game_id === g.id)
+      return { id: g.id, cans_left: g.cans_left, played_at: g.played_at, winner_ids: gp.filter((p: any) => p.side === 'winner').map((p: any) => p.player_id), loser_ids: gp.filter((p: any) => p.side === 'loser').map((p: any) => p.player_id) }
+    })
+
     const heartsGames: AdminHeartsGame[] = (heartsGamesRaw ?? []).map((g: any) => ({
       id: g.id, played_at: g.played_at,
       game_players: (heartsPlayers ?? []).filter((p: any) => p.game_id === g.id).map((p: any) => ({ player_id: p.player_id, lost: p.lost })),
@@ -145,12 +162,12 @@ async function getData() {
     }))
 
     return {
-      pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
+      pongGames, beerDieGames, beerBallGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames,
       players: (users ?? []) as User[],
       suggestions: (suggestionsRaw ?? []) as Suggestion[],
     }
   } catch {
-    return { pongGames: [], beerDieGames: [], cornholeGames: [], spikeballGames: [], heartsGames: [], poolGames: [], pokerGames: [], players: [], suggestions: [] }
+    return { pongGames: [], beerDieGames: [], beerBallGames: [], cornholeGames: [], spikeballGames: [], heartsGames: [], poolGames: [], pokerGames: [], players: [], suggestions: [] }
   }
 }
 
@@ -163,7 +180,7 @@ export default async function AdminPage() {
     .from('groups').select('id').eq('slug', 'summer-games').single()
   if (!opGroup || !(await requireGroupAdmin(opGroup.id))) notFound()
 
-  const { pongGames, beerDieGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, suggestions } = await getData()
+  const { pongGames, beerDieGames, beerBallGames, cornholeGames, spikeballGames, heartsGames, poolGames, pokerGames, players, suggestions } = await getData()
   return (
     <div>
       <h1 className="text-3xl font-black uppercase tracking-tight mb-1">⚙️ Admin</h1>
@@ -171,6 +188,7 @@ export default async function AdminPage() {
       <AdminPanel
         pongGames={pongGames}
         beerDieGames={beerDieGames}
+        beerBallGames={beerBallGames}
         cornholeGames={cornholeGames}
         spikeballGames={spikeballGames}
         heartsGames={heartsGames}

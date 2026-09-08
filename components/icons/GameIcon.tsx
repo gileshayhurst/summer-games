@@ -6,6 +6,7 @@ import PokerIcon from './PokerIcon'
 const emojiMap: Record<string, string> = {
   pong: '🏓',
   'beer-die': '🎲',
+  'beer-ball': '🍺',
   hearts: '♥',
 }
 

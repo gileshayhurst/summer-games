@@ -1,5 +1,5 @@
 export type ActivityItem = {
-  type: 'pong' | 'beer-die' | 'hearts' | 'cornhole' | 'spikeball' | 'pool' | 'poker'
+  type: 'pong' | 'beer-die' | 'beer-ball' | 'hearts' | 'cornhole' | 'spikeball' | 'pool' | 'poker'
   id: string
   played_at: string
   result: string

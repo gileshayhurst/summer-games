@@ -2,9 +2,9 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import RecentGames from '@/components/RecentGames'
-import { RecentGame, User, PongGamePlayer, BeerDieGamePlayer, BeerDieSink, HeartsGamePlayer, CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer } from '@/lib/types'
+import { RecentGame, User, PongGamePlayer, BeerDieGamePlayer, BeerBallGamePlayer, BeerDieSink, HeartsGamePlayer, CornholeGamePlayer, SpikeballGamePlayer, PoolGamePlayer, PokerGamePlayer } from '@/lib/types'
 import { createServerClient, getGroupBySlug } from '@/lib/supabase-server'
-import { computePongLeaderboard, computeBeerDieLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard, topStreaks, topLossStreaks } from '@/lib/stats'
+import { computePongLeaderboard, computeBeerDieLeaderboard, computeBeerBallLeaderboard, computeHeartsLeaderboard, computeCornholeLeaderboard, computeSpikeballLeaderboard, computePoolLeaderboard, computePokerLeaderboard, topStreaks, topLossStreaks } from '@/lib/stats'
 import { notFound } from 'next/navigation'
 import { requireMembership } from '@/lib/auth'
 import InstallPrompt from '@/components/InstallPrompt'
@@ -25,6 +25,7 @@ async function getRecentGames(groupId: string): Promise<RecentGame[]> {
     const [
       { data: pongGames },
       { data: beerDieGames },
+      { data: beerBallGames },
       { data: cornholeGames },
       { data: spikeballGames },
       { data: heartsGames },
@@ -34,6 +35,8 @@ async function getRecentGames(groupId: string): Promise<RecentGame[]> {
       supabase.from('pong_games').select('id, cups_left, played_at, pong_game_players ( side, users ( id, name ) )')
         .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
       supabase.from('beer_die_games').select('id, points_differential, played_at, beer_die_game_players ( side, users ( id, name ) )')
+        .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
+      supabase.from('beer_ball_games').select('id, cans_left, played_at, beer_ball_game_players ( side, users ( id, name ) )')
         .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
       supabase.from('cornhole_games').select('id, points_differential, played_at, cornhole_game_players ( side, users ( id, name ) )')
         .eq('group_id', groupId).eq('approved', true).order('played_at', { ascending: false }).limit(10),
@@ -59,6 +62,12 @@ async function getRecentGames(groupId: string): Promise<RecentGame[]> {
         winners: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
         losers: (g.beer_die_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
         points_differential: g.points_differential,
+      })),
+      ...(beerBallGames ?? []).map((g: any) => ({
+        type: 'beer-ball' as const, id: g.id, played_at: g.played_at,
+        winners: (g.beer_ball_game_players ?? []).filter((p: any) => p.side === 'winner').map((p: any) => p.users?.name ?? 'Unknown'),
+        losers: (g.beer_ball_game_players ?? []).filter((p: any) => p.side === 'loser').map((p: any) => p.users?.name ?? 'Unknown'),
+        cans_left: g.cans_left,
       })),
       ...(cornholeGames ?? []).map((g: any) => ({
         type: 'cornhole' as const, id: g.id, played_at: g.played_at,
@@ -104,6 +113,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
       { data: pongPlayers },
       { data: beerDiePlayers },
       { data: beerDieSinks },
+      { data: beerBallPlayers },
       { data: heartsPlayers },
       { data: cornholePlayers },
       { data: spikeballPlayers },
@@ -114,6 +124,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
       supabase.from('pong_game_players').select('game_id, player_id, side, pong_games!inner ( id, cups_left, played_at )').eq('group_id', groupId).eq('pong_games.approved', true),
       supabase.from('beer_die_game_players').select('game_id, player_id, side, beer_die_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('beer_die_games.approved', true),
       supabase.from('beer_die_sinks').select('id, game_id, player_id, type').eq('group_id', groupId),
+      supabase.from('beer_ball_game_players').select('game_id, player_id, side, beer_ball_games!inner ( id, cans_left, played_at )').eq('group_id', groupId).eq('beer_ball_games.approved', true),
       supabase.from('hearts_game_players').select('game_id, player_id, lost, hearts_games!inner ( id, played_at )').eq('group_id', groupId).eq('hearts_games.approved', true),
       supabase.from('cornhole_game_players').select('game_id, player_id, side, cornhole_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('cornhole_games.approved', true),
       supabase.from('spikeball_game_players').select('game_id, player_id, side, spikeball_games!inner ( id, points_differential, played_at )').eq('group_id', groupId).eq('spikeball_games.approved', true),
@@ -125,6 +136,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
 
     const pongLB       = computePongLeaderboard(u, (pongPlayers ?? []) as unknown as PongGamePlayer[])
     const beerDieLB    = computeBeerDieLeaderboard(u, (beerDiePlayers ?? []) as unknown as BeerDieGamePlayer[], (beerDieSinks ?? []) as BeerDieSink[])
+    const beerBallLB   = computeBeerBallLeaderboard(u, (beerBallPlayers ?? []) as unknown as BeerBallGamePlayer[])
     const heartsLB     = computeHeartsLeaderboard(u, (heartsPlayers ?? []) as unknown as HeartsGamePlayer[])
     const cornholeLB   = computeCornholeLeaderboard(u, (cornholePlayers ?? []) as unknown as CornholeGamePlayer[])
     const spikeballLB  = computeSpikeballLeaderboard(u, (spikeballPlayers ?? []) as unknown as SpikeballGamePlayer[])
@@ -151,6 +163,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
     return {
       pong:       toLeader(pongLB[0],      topStreaks(pongLB,      byWins),            topLossStreaks(pongLB,      byLosses)),
       'beer-die': toLeader(beerDieLB[0],   topStreaks(beerDieLB,   byWins),            topLossStreaks(beerDieLB,   byLosses)),
+      'beer-ball': toLeader(beerBallLB[0], topStreaks(beerBallLB, byWins),           topLossStreaks(beerBallLB,  byLosses)),
       hearts:     toLeader(heartsLB[0],    topStreaks(heartsLB,    byGamesMinusLosses), topLossStreaks(heartsLB,    byLosses), true),
       cornhole:   toLeader(cornholeLB[0],  topStreaks(cornholeLB,  byWins),            topLossStreaks(cornholeLB,  byLosses)),
       spikeball:  toLeader(spikeballLB[0], topStreaks(spikeballLB, byWins),            topLossStreaks(spikeballLB, byLosses)),
@@ -177,6 +190,7 @@ async function getGameLeaders(groupId: string): Promise<Record<string, GameLeade
 const GAME_CARDS = [
   { key: 'pong', slug: 'pong', icon: '🏓', name: 'Pong' },
   { key: 'beer-die', slug: 'beer-die', icon: '🎲', name: 'Beer Die' },
+  { key: 'beer-ball', slug: 'beer-ball', icon: '🍺', name: 'Beer Ball' },
   { key: 'hearts', slug: 'hearts', icon: '♥', name: 'Hearts' },
   { key: 'cornhole', slug: 'cornhole', icon: '🌽', name: 'Cornhole' },
   { key: 'spikeball', slug: 'spikeball', icon: '🏐', name: 'Spikeball' },

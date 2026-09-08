@@ -4,6 +4,7 @@ import {
   SpikeballGamePlayer, SpikeballLeaderboardEntry,
   PoolGamePlayer, PoolLeaderboardEntry,
   PokerGamePlayer, PokerLeaderboardEntry,
+  BeerBallGamePlayer, BeerBallLeaderboardEntry,
   PongLeaderboardEntry, BeerDieLeaderboardEntry, HeartsLeaderboardEntry,
   HeadToHeadResult,
 } from './types'
@@ -441,6 +442,71 @@ export function computePoolPartnerRecord(player1Id: string, player2Id: string, g
     if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
     const g = gameMap.get(gp.game_id)!
     gp.side === 'winner' ? g.winners.add(gp.player_id) : g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.winners.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.losers.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeBeerBallLeaderboard(
+  users: User[],
+  gamePlayers: BeerBallGamePlayer[]
+): BeerBallLeaderboardEntry[] {
+  const stats = new Map(users.map(u => [u.id, { wins: 0, losses: 0, can_diff: 0 }]))
+  for (const gp of gamePlayers) {
+    const s = stats.get(gp.player_id)
+    if (!s) continue
+    if (gp.side === 'winner') { s.wins++; s.can_diff += gp.beer_ball_games.cans_left }
+    else { s.losses++; s.can_diff -= gp.beer_ball_games.cans_left }
+  }
+  const streaksByPlayer = computeStreaksByPlayer(
+    gamePlayers,
+    gp => gp.player_id,
+    gp => gp.side === 'winner',
+    gp => gp.beer_ball_games.played_at
+  )
+  return users
+    .map(u => {
+      const s = stats.get(u.id)!
+      const total = s.wins + s.losses
+      const { current, max, currentLoss, maxLoss } = streaksByPlayer.get(u.id) ?? { current: 0, max: 0, currentLoss: 0, maxLoss: 0 }
+      return {
+        player_id: u.id, name: u.name, wins: s.wins, losses: s.losses,
+        win_rate: total > 0 ? s.wins / total : 0, can_differential: s.can_diff,
+        current_streak: current, max_streak: max,
+        current_loss_streak: currentLoss, max_loss_streak: maxLoss,
+      }
+    })
+    .filter(e => e.wins + e.losses > 0 && isVisible(e.name))
+    .sort((a, b) => b.win_rate - a.win_rate || b.wins - a.wins)
+}
+
+export function computeBeerBallHeadToHead(player1Id: string, player2Id: string, gamePlayers: BeerBallGamePlayer[]): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    if (gp.side === 'winner') g.winners.add(gp.player_id)
+    else g.losers.add(gp.player_id)
+  }
+  let wins = 0, losses = 0
+  for (const g of Array.from(gameMap.values())) {
+    if (g.winners.has(player1Id) && g.losers.has(player2Id)) wins++
+    else if (g.losers.has(player1Id) && g.winners.has(player2Id)) losses++
+  }
+  return { wins, losses }
+}
+
+export function computeBeerBallPartnerRecord(player1Id: string, player2Id: string, gamePlayers: BeerBallGamePlayer[]): HeadToHeadResult {
+  const gameMap = new Map<string, { winners: Set<string>; losers: Set<string> }>()
+  for (const gp of gamePlayers) {
+    if (!gameMap.has(gp.game_id)) gameMap.set(gp.game_id, { winners: new Set(), losers: new Set() })
+    const g = gameMap.get(gp.game_id)!
+    if (gp.side === 'winner') g.winners.add(gp.player_id)
+    else g.losers.add(gp.player_id)
   }
   let wins = 0, losses = 0
   for (const g of Array.from(gameMap.values())) {

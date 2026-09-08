@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
-import { authorizeGameMutation } from '@/lib/api-auth'
+import { authorizeRowMutation } from '@/lib/api-auth'
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = await authorizeGameMutation('pool_games', params.id)
+  const auth = await authorizeRowMutation('pool_games', params.id)
   if (!auth.ok) return auth.response
 
   const { winner_ids, loser_ids, balls_differential } = await req.json()
@@ -33,7 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = await authorizeGameMutation('pool_games', params.id)
+  const auth = await authorizeRowMutation('pool_games', params.id)
   if (!auth.ok) return auth.response
 
   const supabase = createServerClient()
