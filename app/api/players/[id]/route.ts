@@ -13,6 +13,22 @@ const GAME_PLAYER_TABLES = [
   'poker_game_players',
 ]
 
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await authorizeRowMutation('users', params.id)
+  if (!auth.ok) return auth.response
+
+  const { name } = await req.json().catch(() => ({}))
+  const trimmed = typeof name === 'string' ? name.trim() : ''
+  if (!trimmed) return NextResponse.json({ error: 'Name required' }, { status: 400 })
+
+  const { data, error } = await createServerClient()
+    .from('users').update({ name: trimmed }).eq('id', params.id).select().single()
+  if (error?.code === '23505')
+    return NextResponse.json({ error: `${trimmed} is already taken` }, { status: 409 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ player: data })
+}
+
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
   const auth = await authorizeRowMutation('users', params.id)
   if (!auth.ok) return auth.response
